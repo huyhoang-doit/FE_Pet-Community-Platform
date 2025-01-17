@@ -13,7 +13,9 @@ const Home = () => {
                 <Feed />
                 <Outlet />
             </div>
-            <RightSidebar />
+            <div className='w-[350px]'>
+                <RightSidebar />
+            </div>
         </div>
     )
 }

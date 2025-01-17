@@ -13,11 +13,10 @@ import { Button } from './ui/button'
 
 const LeftSidebar = () => {
     const navigate = useNavigate();
-    const { user } = useSelector(store => store.auth);
+    const { userProfile, user } = useSelector(store => store.auth);
     const { likeNotification } = useSelector(store => store.realTimeNotification);
     const dispatch = useDispatch();
     const [open, setOpen] = useState(false);
-
 
     const logoutHandler = async () => {
         try {
@@ -47,7 +46,8 @@ const LeftSidebar = () => {
             navigate("/chat");
         }
     }
-
+    console.log('user', user);
+    
     const sidebarItems = [
         { icon: <Home />, text: "Home" },
         { icon: <Search />, text: "Search" },
@@ -58,7 +58,7 @@ const LeftSidebar = () => {
         {
             icon: (
                 <Avatar className='w-6 h-6'>
-                    <AvatarImage src={user?.profilePicture} alt="@shadcn" />
+                    <AvatarImage src={userProfile?.profilePicture} alt="@shadcn" />
                     <AvatarFallback>CN</AvatarFallback>
                 </Avatar>
             ),
