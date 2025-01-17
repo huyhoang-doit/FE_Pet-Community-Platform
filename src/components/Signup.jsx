@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Input } from './ui/input'
 import { Button } from './ui/button'
 import axios from 'axios';
@@ -14,7 +14,7 @@ const Signup = () => {
         password: ""
     });
     const [loading, setLoading] = useState(false);
-    const {user} = useSelector(store=>store.auth);
+    const { user } = useSelector(store => store.auth);
     const navigate = useNavigate();
 
     const changeEventHandler = (e) => {
@@ -48,11 +48,11 @@ const Signup = () => {
         }
     }
 
-    useEffect(()=>{
-        if(user){
+    useEffect(() => {
+        if (user) {
             navigate("/");
         }
-    },[])
+    }, [])
     return (
         <div className='flex items-center w-screen h-screen justify-center'>
             <form onSubmit={signupHandler} className='shadow-lg flex flex-col gap-5 p-8'>
