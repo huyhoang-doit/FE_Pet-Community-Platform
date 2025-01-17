@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import { setSelectedUser } from '@/redux/authSlice';
@@ -36,7 +36,7 @@ const ChatPage = () => {
         return () => {
             dispatch(setSelectedUser(null));
         }
-    },[]);
+    }, []);
 
     return (
         <div className='flex ml-[16%] h-screen'>
@@ -48,7 +48,11 @@ const ChatPage = () => {
                         suggestedUsers.map((suggestedUser) => {
                             const isOnline = onlineUsers.includes(suggestedUser?._id);
                             return (
-                                <div onClick={() => dispatch(setSelectedUser(suggestedUser))} className='flex gap-3 items-center p-3 hover:bg-gray-50 cursor-pointer'>
+                                <div
+                                    key={suggestedUser.id}
+                                    onClick={() => dispatch(setSelectedUser(suggestedUser))}
+                                    className='flex gap-3 items-center p-3 hover:bg-gray-50 cursor-pointer'
+                                >
                                     <Avatar className='w-14 h-14'>
                                         <AvatarImage src={suggestedUser?.profilePicture} />
                                         <AvatarFallback>CN</AvatarFallback>

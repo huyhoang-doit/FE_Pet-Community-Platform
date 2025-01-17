@@ -1,4 +1,4 @@
-import React from 'react'
+/* eslint-disable react/prop-types */
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar'
 
 const Comment = ({ comment }) => {
