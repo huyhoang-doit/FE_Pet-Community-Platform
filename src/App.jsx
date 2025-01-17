@@ -66,12 +66,9 @@ const browserRouter = createBrowserRouter([
     path: "/signup",
     element: <Signup />,
   },
-<<<<<<< HEAD
 
 ])
-=======
-]);
->>>>>>> 5e8b5c48e88db66f3a937ce03d3662afcd5ff93a
+
 
 function App() {
   const { user } = useSelector((store) => store.auth);
