@@ -11,6 +11,7 @@ const useGetUserProfile = (userId) => {
         const fetchUserProfile = async () => {
             try {
                 const res = await axios.get(`http://localhost:3000/api/v1/user/${userId}/profile`, { withCredentials: true });
+                
                 if (res.data.success) {
                     dispatch(setUserProfile(res.data.user));
                 }
@@ -19,6 +20,6 @@ const useGetUserProfile = (userId) => {
             }
         }
         fetchUserProfile();
-    }, [userId]);
+    }, [userId, dispatch]);
 };
 export default useGetUserProfile;
