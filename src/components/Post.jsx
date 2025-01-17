@@ -1,4 +1,5 @@
-import React, { useState } from 'react'
+/* eslint-disable react/prop-types */
+import { useState } from 'react'
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar'
 import { Dialog, DialogContent, DialogTrigger } from './ui/dialog'
 import { Bookmark, MessageCircle, MoreHorizontal, Send } from 'lucide-react'
@@ -98,8 +99,8 @@ const Post = ({ post }) => {
 
     const bookmarkHandler = async () => {
         try {
-            const res = await axios.get(`http://localhost:3000/api/v1/post/${post?._id}/bookmark`, {withCredentials:true});
-            if(res.data.success){
+            const res = await axios.get(`http://localhost:3000/api/v1/post/${post?._id}/bookmark`, { withCredentials: true });
+            if (res.data.success) {
                 toast.success(res.data.message);
             }
         } catch (error) {
@@ -116,7 +117,7 @@ const Post = ({ post }) => {
                     </Avatar>
                     <div className='flex items-center gap-3'>
                         <h1>{post.author?.username}</h1>
-                       {user?._id === post.author._id &&  <Badge variant="secondary">Author</Badge>}
+                        {user?._id === post.author._id && <Badge variant="secondary">Author</Badge>}
                     </div>
                 </div>
                 <Dialog>
@@ -125,9 +126,9 @@ const Post = ({ post }) => {
                     </DialogTrigger>
                     <DialogContent className="flex flex-col items-center text-sm text-center">
                         {
-                        post?.author?._id !== user?._id && <Button variant='ghost' className="cursor-pointer w-fit text-[#ED4956] font-bold">Unfollow</Button>
+                            post?.author?._id !== user?._id && <Button variant='ghost' className="cursor-pointer w-fit text-[#ED4956] font-bold">Unfollow</Button>
                         }
-                        
+
                         <Button variant='ghost' className="cursor-pointer w-fit">Add to favorites</Button>
                         {
                             user && user?._id === post?.author._id && <Button onClick={deletePostHandler} variant='ghost' className="cursor-pointer w-fit">Delete</Button>

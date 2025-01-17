@@ -1,4 +1,5 @@
-import React, { useRef, useState } from 'react'
+/* eslint-disable react/prop-types */
+import { useRef, useState } from 'react'
 import { Dialog, DialogContent, DialogHeader } from './ui/dialog'
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import { Textarea } from './ui/textarea';
