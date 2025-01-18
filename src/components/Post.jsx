@@ -13,6 +13,7 @@ import { setPosts, setSelectedPost } from "@/redux/postSlice";
 import { Badge } from "./ui/badge";
 import { Link } from "react-router-dom";
 import authorizedAxiosInstance from "@/utils/authorizedAxios";
+import VerifiedBadge from "./VerifiedBadge";
 
 const Post = ({ post }) => {
   const [text, setText] = useState("");
@@ -137,8 +138,11 @@ const Post = ({ post }) => {
             </Avatar>
           </Link>
           <Link to={`/profile/${post.author?._id}`}>
-            <div className="flex items-center gap-3">
-              <h1>{post.author?.username}</h1>
+            <div className="flex items-center gap-2">
+              <span className="font-medium text-sm">
+                {post.author?.username}
+              </span>
+              {post.author.isVerified && <VerifiedBadge size={14}/>}
               {user?._id === post.author._id && (
                 <Badge variant="secondary">Author</Badge>
               )}
@@ -211,9 +215,15 @@ const Post = ({ post }) => {
         />
       </div>
       <span className="font-medium block mb-2">{postLike} likes</span>
-      <p>
-        <span className="font-medium mr-2">{post.author?.username}</span>
-        {post.caption}
+      <p className="text-sm">
+        <Link
+          to={`/profile/${post.author?._id}`}
+          className="flex items-center gap-1"
+        >
+          <span className="font-medium">{post.author?.username}</span>
+          {post.author.isVerified && <VerifiedBadge size={14}/>}
+          {post.caption}
+        </Link>
       </p>
       {comment.length > 0 && (
         <span
