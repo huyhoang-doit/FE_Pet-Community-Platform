@@ -11,6 +11,7 @@ import { setUserProfile } from "@/redux/authSlice";
 import { toast } from "sonner";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "./ui/dialog";
 import UserListItem from "./UserListItem";
+import authorizedAxiosInstance from "@/utils/authorizedAxios";
 
 const Profile = () => {
   const params = useParams();
@@ -36,6 +37,8 @@ const Profile = () => {
   const [comments, setComments] = useState([]);
 
   const [text, setText] = useState("");
+  console.log('userProfile', userProfile);
+  
 
   const changeEventHandler = (e) => {
     const inputText = e.target.value;
@@ -48,7 +51,7 @@ const Profile = () => {
 
   const commentHandler = async () => {
     try {
-      const res = await axios.post(
+      const res = await authorizedAxiosInstance.post(
         `http://localhost:3000/api/v1/post/${selectedPost._id}/comment`,
         { text },
         {
@@ -75,7 +78,8 @@ const Profile = () => {
   useEffect(() => {
     setNumberFollowers(userProfile?.followers.length);
     setNumberFollowing(userProfile?.following.length);
-  }, [userProfile]);
+    setIsFollowing(userProfile?.followers.includes(user?._id));
+  }, [userProfile, user]);
 
   const followOrUnfollowHandler = async () => {
     try {
@@ -124,7 +128,7 @@ const Profile = () => {
 
   const handlePostClick = async (post) => {
     try {
-      const res = await axios.post(`http://localhost:3000/api/v1/post/${post._id}/comment/all`, {}, { withCredentials: true });
+      const res = await authorizedAxiosInstance.post(`http://localhost:3000/api/v1/post/${post._id}/comment/all`);
       if (res.data.success) {
         setComments(res.data.comments);
         console.log('res.data.comments', res.data.comments)
