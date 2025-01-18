@@ -31,7 +31,7 @@ const Signup = () => {
                 },
                 withCredentials: true
             });
-            if (res.data.success) {
+            if (res.status === 200) {
                 navigate("/login");
                 toast.success(res.data.message);
                 setInput({

@@ -1,6 +1,17 @@
 import { Link } from "react-router-dom";
+import { Button } from "./ui/button";
+import axios from "axios";
 
 const ProcessDonate = () => {
+  const handleDonate = async () => {
+    const response = await axios.post('http://localhost:3000/api/v1/payment/create-payment-link', {}, {
+      withCredentials: true
+    } )
+    console.log('response', response.data.paymentLink.checkoutUrl)
+    if (response.status === 200) {
+      window.location.href = response.data.paymentLink.checkoutUrl
+    }
+  }
   return (
     <div className="my-10">
       <div className="block-container">
@@ -32,13 +43,13 @@ const ProcessDonate = () => {
           </div>
 
           <div className="block-row flex items-center justify-between gap-2">
-            <Link
-              to="/donate/danh-cap-mat-troi.3/donate"
+            <Button
               className="button--primary button rippleButton"
               data-xf-click="overlay"
+              onClick={handleDonate}
             >
               <span className="button-text">Donate</span>
-            </Link>
+            </Button>
             <Link
               to="/donate/danh-cap-mat-troi.3/"
               className="button button rippleButton"
