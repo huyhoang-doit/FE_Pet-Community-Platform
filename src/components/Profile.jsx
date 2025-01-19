@@ -8,12 +8,7 @@ import { Badge } from "./ui/badge";
 import { AtSign, Heart, MessageCircle } from "lucide-react";
 import { setUserProfile } from "@/redux/authSlice";
 import { toast } from "sonner";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle
-} from "./ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "./ui/dialog";
 import UserListItem from "./UserListItem";
 import authorizedAxiosInstance from "@/utils/authorizedAxios";
 import VerifiedBadge from "./VerifiedBadge";
@@ -53,10 +48,11 @@ const Profile = () => {
 
   const followOrUnfollowHandler = async () => {
     try {
-      const res = await authorizedAxiosInstance.post(
+      const { data } = await authorizedAxiosInstance.post(
         `http://localhost:3000/api/v1/user/followorunfollow/${userId}`
       );
-      if (res.data.success) {
+      
+      if (data.status === 200) {
         setIsFollowing(!isFollowing);
         setNumberFollowers(
           isFollowing ? numberFollowers - 1 : numberFollowers + 1
@@ -70,7 +66,7 @@ const Profile = () => {
               : [...userProfile.followers, user._id],
           })
         );
-        toast.success(res.data.message);
+        toast.success(data.message);
       }
     } catch (error) {
       console.log(error);
@@ -95,7 +91,7 @@ const Profile = () => {
         `http://localhost:3000/api/v1/post/${post._id}/getpostbyid`
       );
       console.log(res);
-      
+
       dispatch(setSelectedPost(res.data.post));
       setShowPostModal(true);
     } catch (error) {
@@ -254,7 +250,6 @@ const Profile = () => {
         </div>
       </div>
 
-      
       <CommentDialog open={showPostModal} setOpen={setShowPostModal} />
 
       <Dialog open={showFollowModal} onOpenChange={setShowFollowModal}>
