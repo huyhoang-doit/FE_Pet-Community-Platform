@@ -10,10 +10,10 @@ const useGetUserProfile = (userId) => {
     useEffect(() => {
         const fetchUserProfile = async () => {
             try {
-                const res = await authorizedAxiosInstance.get(`http://localhost:3000/api/v1/user/${userId}/profile`);
+                const { data } = await authorizedAxiosInstance.get(`http://localhost:3000/api/v1/user/${userId}/profile`);
                 
-                if (res.data.success) {
-                    dispatch(setUserProfile(res.data.user));
+                if (data.status === 200) {
+                    dispatch(setUserProfile(data.data));
                 }
             } catch (error) {
                 console.log(error);

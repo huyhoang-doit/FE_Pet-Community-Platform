@@ -25,6 +25,8 @@ const LeftSidebar = () => {
                 dispatch(setAuthUser(null));
                 dispatch(setSelectedPost(null));
                 dispatch(setPosts([]));
+                localStorage.removeItem('access_token');
+                localStorage.removeItem('refresh_token');
                 navigate("/login");
                 toast.success(res.data.message);
             }
@@ -46,7 +48,6 @@ const LeftSidebar = () => {
             navigate("/chat");
         }
     }
-    console.log('user', user);
     
     const sidebarItems = [
         { icon: <Home />, text: "Home" },

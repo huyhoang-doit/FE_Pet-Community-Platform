@@ -1,9 +1,9 @@
 /* eslint-disable react/prop-types */
-import axios from "axios";
 import { useEffect, useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { Link } from "react-router-dom";
 import VerifiedBadge from "./VerifiedBadge";
+import authorizedAxiosInstance from "@/utils/authorizedAxios";
 
 const UserListItem = ({ userId, onClose }) => {
   const [userData, setUserData] = useState(null);
@@ -11,12 +11,11 @@ const UserListItem = ({ userId, onClose }) => {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const res = await axios.get(
-          `http://localhost:3000/api/v1/user/${userId}/profile`,
-          { withCredentials: true }
+        const { data } = await authorizedAxiosInstance.get(
+          `http://localhost:3000/api/v1/user/${userId}/profile`
         );
-        if (res.data.success) {
-          setUserData(res.data.user);
+        if (data.status === 200) {
+          setUserData(data.data);
         }
       } catch (error) {
         console.log(error);
@@ -43,7 +42,7 @@ const UserListItem = ({ userId, onClose }) => {
             onClick={handleClick}
           >
             {userData.username}
-            {userData.isVerified && <VerifiedBadge size={14}/>}
+            {userData.isVerified && <VerifiedBadge size={14} />}
           </Link>
           <span className="text-gray-500 text-xs">
             {userData.bio?.slice(0, 30)}

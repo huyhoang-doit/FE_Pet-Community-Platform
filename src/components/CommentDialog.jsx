@@ -32,8 +32,6 @@ const CommentDialog = ({ open, setOpen }) => {
     }
   };
 
-  console.log(selectedPost);
-
   const sendMessageHandler = async () => {
     try {
       const res = await axios.post(

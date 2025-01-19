@@ -1,12 +1,13 @@
 import { useEffect, useState } from "react";
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
-import axios from "axios";
 import { toast } from "sonner";
 import { Link, useNavigate } from "react-router-dom";
 import { Loader2 } from "lucide-react";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { setAuthUser } from "@/redux/authSlice";
+import { setPosts, setSelectedPost } from "@/redux/postSlice";
+import { loginAPI } from "@/apis/auth";
 
 const Login = () => {
   const [input, setInput] = useState({
@@ -14,7 +15,6 @@ const Login = () => {
     password: "",
   });
   const [loading, setLoading] = useState(false);
-  const { user } = useSelector((store) => store.auth);
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -26,19 +26,14 @@ const Login = () => {
     e.preventDefault();
     try {
       setLoading(true);
-      const res = await axios.post(
-        "http://localhost:3000/api/v1/user/login",
-        input,
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-          withCredentials: true,
-        }
-      );
+      const res = await loginAPI(input);
       console.log(res);
+      
       if (res.status === 200) {
-        dispatch(setAuthUser(res.data.data));
+        const { access_token, refresh_token, user } = res.data.data;
+        localStorage.setItem('access_token', access_token);
+        localStorage.setItem('refresh_token', refresh_token);
+        dispatch(setAuthUser(user));
         console.log(res);
         navigate("/");
         toast.success(res.data.message);
@@ -56,10 +51,23 @@ const Login = () => {
   };
 
   useEffect(() => {
-    if (user) {
-      navigate("/");
-    }
+    const checkAuth = () => {
+      const access_token = localStorage.getItem('access_token');
+
+      if (!access_token) {
+        localStorage.removeItem('access_token');
+        localStorage.removeItem('refresh_token');
+        dispatch(setAuthUser(null));
+        dispatch(setSelectedPost(null));
+        dispatch(setPosts([]));
+      } else {
+        navigate("/");
+      }
+    };
+
+    checkAuth();
   }, []);
+
   return (
     <div className="flex items-center w-screen h-screen justify-center">
       <form
