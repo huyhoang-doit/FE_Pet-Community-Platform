@@ -13,7 +13,7 @@ import { setSocket } from "./redux/socketSlice";
 import { setOnlineUsers } from "./redux/chatSlice";
 import { setLikeNotification } from "./redux/rtnSlice";
 import ProtectedRoutes from "./components/ProtectedRoutes";
-import './App.css';
+import "./App.css";
 const browserRouter = createBrowserRouter([
   {
     path: "/",
