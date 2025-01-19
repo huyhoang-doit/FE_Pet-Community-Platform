@@ -8,7 +8,7 @@ const useGetSuggestedUsers = () => {
   useEffect(() => {
     const fetchSuggestedUsers = async () => {
       try {
-        const { data } = suggestedAPI();
+        const { data } = await suggestedAPI();
         if (data.status === 200) {
           dispatch(setSuggestedUsers(data.data));
         }

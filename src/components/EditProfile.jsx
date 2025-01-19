@@ -62,7 +62,7 @@ const EditProfile = () => {
     const formData = createFormData();
     try {
       setLoading(true);
-      const { data } = editProfileAPI(formData);
+      const { data } = await editProfileAPI(formData);
       if (data.status === 200) {
         const updatedUserData = {
           ...user,

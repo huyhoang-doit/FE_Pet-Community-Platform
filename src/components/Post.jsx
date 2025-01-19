@@ -27,9 +27,9 @@ const Post = ({ post }) => {
   const [open, setOpen] = useState(false);
   const { user } = useSelector((store) => store.auth);
   const { posts } = useSelector((store) => store.post);
-  const [liked, setLiked] = useState(post.likes.includes(user?._id) || false);
+  const [liked, setLiked] = useState(post.likes?.includes(user?._id) || false);
   const [bookmarked, setBookmarked] = useState(
-    user.bookmarks.includes(post?._id) || false
+    user.bookmarks?.includes(post?._id) || false
   );
   const [postLike, setPostLike] = useState(post.likes.length);
   const [comment, setComment] = useState(post.comments);

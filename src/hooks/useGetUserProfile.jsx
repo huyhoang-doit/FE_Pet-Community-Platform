@@ -10,7 +10,7 @@ const useGetUserProfile = (userId) => {
   useEffect(() => {
     const fetchUserProfile = async () => {
       try {
-        const { data } = getProfileAPI(userId);
+        const { data } = await getProfileAPI(userId);
 
         if (data.status === 200) {
           dispatch(setUserProfile(data.data));
