@@ -107,7 +107,7 @@ const Profile = () => {
       <div className="flex flex-col gap-20 p-8">
         <div className="grid grid-cols-2">
           <section className="flex items-center justify-center">
-            <Avatar className="h-40 w-40">
+            <Avatar className="h-40 w-40 rounded-full" style={{border: "1px solid #e0e0e0"}}>
               <AvatarImage
                 src={userProfile?.profilePicture}
                 alt="profilephoto"
@@ -161,26 +161,27 @@ const Profile = () => {
                   </Button>
                 )}
               </div>
-              <div className="flex items-center gap-4">
+              <div className="flex items-center gap-6">
                 <p>
                   <span className="font-semibold">
                     {userProfile?.posts.length}{" "}
                   </span>
-                  posts
+                  bài viết
                 </p>
                 <p
                   className="cursor-pointer hover:opacity-70"
                   onClick={() => handleFollowClick("followers")}
                 >
                   <span className="font-semibold">{numberFollowers} </span>
-                  followers
+                  người theo dõi
                 </p>
                 <p
                   className="cursor-pointer hover:opacity-70"
                   onClick={() => handleFollowClick("following")}
                 >
-                  <span className="font-semibold">{numberFollowing} </span>
-                  following
+                  Đang theo dõi
+                  <span className="font-semibold"> {numberFollowing} </span>
+                  người dùng
                 </p>
               </div>
               <div className="flex flex-col gap-1">

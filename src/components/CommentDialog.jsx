@@ -82,7 +82,7 @@ const CommentDialog = ({ open, setOpen }) => {
               <div className="flex justify-between items-center gap-2 p-4 border-b">
                 <div className="flex gap-3 items-center">
                   <Link>
-                    <Avatar className="h-8 w-8">
+                    <Avatar className="h-8 w-8" style={{border: "1px solid #e0e0e0"}}>
                       <AvatarImage src={selectedPost?.author.profilePicture} />
                       <AvatarFallback>UN</AvatarFallback>
                     </Avatar>
@@ -116,7 +116,7 @@ const CommentDialog = ({ open, setOpen }) => {
               <div className="flex-1 overflow-y-auto">
                 {/* Post caption */}
                 <div className="flex gap-3 px-4 pt-5">
-                  <Avatar className="h-8 w-8">
+                  <Avatar className="h-8 w-8" style={{border: "1px solid #e0e0e0"}}>
                     <AvatarImage src={selectedPost?.author.profilePicture} />
                     <AvatarFallback>UN</AvatarFallback>
                   </Avatar>
@@ -135,7 +135,7 @@ const CommentDialog = ({ open, setOpen }) => {
                 <div className="px-4 py-5 space-y-5">
                   {comment.map((comment) => (
                     <div key={comment._id} className="flex gap-3">
-                      <Avatar className="h-8 w-8">
+                      <Avatar className="h-8 w-8" style={{border: "1px solid #e0e0e0"}}>
                         <AvatarImage src={comment.author.profilePicture} />
                         <AvatarFallback>UN</AvatarFallback>
                       </Avatar>

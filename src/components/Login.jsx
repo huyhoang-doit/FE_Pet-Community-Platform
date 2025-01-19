@@ -22,12 +22,11 @@ const Login = () => {
     setInput({ ...input, [e.target.name]: e.target.value });
   };
 
-  const signupHandler = async (e) => {
+  const loginHandler = async (e) => {
     e.preventDefault();
     try {
       setLoading(true);
       const res = await loginAPI(input);
-      console.log("🚀 ~ signupHandler ~ res:", res);
 
       if (res.status === 200) {
         const { access_token, refresh_token, user } = res.data.data;
@@ -70,7 +69,7 @@ const Login = () => {
   return (
     <div className="flex items-center w-screen h-screen justify-center">
       <form
-        onSubmit={signupHandler}
+        onSubmit={loginHandler}
         className="shadow-lg flex flex-col gap-5 p-8"
       >
         <div className="my-4">

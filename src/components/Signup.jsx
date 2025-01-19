@@ -5,7 +5,7 @@ import { toast } from "sonner";
 import { Link, useNavigate } from "react-router-dom";
 import { Loader2 } from "lucide-react";
 import { useSelector } from "react-redux";
-import authorizedAxiosInstance from "@/utils/authorizedAxios";
+import { signupAPI } from "@/apis/auth";
 
 const Signup = () => {
   const [input, setInput] = useState({
@@ -25,10 +25,7 @@ const Signup = () => {
     e.preventDefault();
     try {
       setLoading(true);
-      const { data } = await authorizedAxiosInstance.post(
-        "http://localhost:3000/api/v1/auth/register",
-        input
-      );
+      const { data } = await signupAPI(input);
       if (data.status === 201) {
         navigate("/login");
         toast.success(data.message);
