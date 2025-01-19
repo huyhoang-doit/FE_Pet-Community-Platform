@@ -27,7 +27,6 @@ const Login = () => {
     try {
       setLoading(true);
       const res = await loginAPI(input);
-      console.log("🚀 ~ signupHandler ~ res:", res);
 
       if (res.status === 200) {
         const { access_token, refresh_token, user } = res.data.data;
