@@ -27,14 +27,13 @@ const Login = () => {
     try {
       setLoading(true);
       const res = await loginAPI(input);
-      console.log(res);
-      
+      console.log("🚀 ~ signupHandler ~ res:", res);
+
       if (res.status === 200) {
         const { access_token, refresh_token, user } = res.data.data;
-        localStorage.setItem('access_token', access_token);
-        localStorage.setItem('refresh_token', refresh_token);
+        localStorage.setItem("access_token", access_token);
+        localStorage.setItem("refresh_token", refresh_token);
         dispatch(setAuthUser(user));
-        console.log(res);
         navigate("/");
         toast.success(res.data.message);
         setInput({
@@ -52,11 +51,11 @@ const Login = () => {
 
   useEffect(() => {
     const checkAuth = () => {
-      const access_token = localStorage.getItem('access_token');
+      const access_token = localStorage.getItem("access_token");
 
       if (!access_token) {
-        localStorage.removeItem('access_token');
-        localStorage.removeItem('refresh_token');
+        localStorage.removeItem("access_token");
+        localStorage.removeItem("refresh_token");
         dispatch(setAuthUser(null));
         dispatch(setSelectedPost(null));
         dispatch(setPosts([]));
