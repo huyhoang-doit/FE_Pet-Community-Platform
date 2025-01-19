@@ -19,7 +19,7 @@ const SuggestedUsers = () => {
           >
             <div className="flex items-center gap-2">
               <Link to={`/profile/${user?._id}`}>
-                <Avatar>
+                <Avatar style={{border: "1px solid #e0e0e0"}}>
                   <AvatarImage src={user?.profilePicture} alt="post_image" />
                   <AvatarFallback>CN</AvatarFallback>
                 </Avatar>
