@@ -15,7 +15,7 @@ import { Loader2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { setAuthUser } from "@/redux/authSlice";
-import authorizedAxiosInstance from "@/utils/authorizedAxios";
+import { editProfileAPI } from "@/apis/user";
 
 const EditProfile = () => {
   const imageRef = useRef();
@@ -62,10 +62,7 @@ const EditProfile = () => {
     const formData = createFormData();
     try {
       setLoading(true);
-      const { data } = await authorizedAxiosInstance.post(
-        "http://localhost:3000/api/v1/user/profile/edit",
-        formData
-      );
+      const { data } = await editProfileAPI(formData);
       if (data.status === 200) {
         const updatedUserData = {
           ...user,
@@ -86,9 +83,9 @@ const EditProfile = () => {
 
   const resetFileInput = () => {
     if (imageRef.current) {
-      imageRef.current.value = ""; // Reset the file input
+      imageRef.current.value = "";
     }
-    imageRef.current?.click(); // Trigger file selection
+    imageRef.current?.click();
   };
 
   return (
