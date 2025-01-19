@@ -13,7 +13,8 @@ import { setSocket } from "./redux/socketSlice";
 import { setOnlineUsers } from "./redux/chatSlice";
 import { setLikeNotification } from "./redux/rtnSlice";
 import ProtectedRoutes from "./components/ProtectedRoutes";
-import './App.css';
+import "./App.css";
+import { BASE_WS } from "./configs/globalVariables";
 const browserRouter = createBrowserRouter([
   {
     path: "/",
@@ -75,7 +76,7 @@ function App() {
 
   useEffect(() => {
     if (user) {
-      const socketio = io("http://localhost:3000", {
+      const socketio = io(BASE_WS, {
         query: {
           userId: user?._id,
         },

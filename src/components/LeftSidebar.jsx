@@ -60,34 +60,33 @@ const LeftSidebar = () => {
   };
 
   const sidebarItems = [
-    { icon: <Home />, text: "Home" },
-    { icon: <Search />, text: "Search" },
-    { icon: <TrendingUp />, text: "Explore" },
-    { icon: <MessageCircle />, text: "Messages" },
-    { icon: <Heart />, text: "Notifications" },
-    { icon: <PlusSquare />, text: "Create" },
+    { icon: <Home />, text: "Trang chủ", textType: "Home" },
+    { icon: <Search />, text: "Tìm kiếm", textType: "Search" },
+    { icon: <TrendingUp />, text: "Khám phá", textType: "Explore" },
+    { icon: <MessageCircle />, text: "Tin nhắn", textType: "Messages" },
+    { icon: <Heart />, text: "Thông báo", textType: "Notifications" },
+    { icon: <PlusSquare />, text: "Tạo", textType: "Create" },
     {
       icon: (
-        <Avatar className="w-6 h-6">
+        <Avatar className="w-6 h-6" style={{ border: "1px solid #e0e0e0" }}>
           <AvatarImage src={user?.profilePicture} alt="@shadcn" />
           <AvatarFallback>CN</AvatarFallback>
         </Avatar>
       ),
-      text: "Profile",
+      text: "Trang cá nhân",
+      textType: "Profile",
     },
-    { icon: <LogOut />, text: "Logout" },
+    { icon: <LogOut />, text: "Đăng xuất", textType: "Logout" },
   ];
   return (
     <div className="fixed top-0 z-10 left-0 px-4 border-r border-gray-300 w-[16%] h-screen">
       <div className="flex flex-col">
-        <h1 className="my-8 pl-3 font-bold text-xl">
-          <img src="/assets/images/logo.png" alt="logo" className="w-[70%]" />
-        </h1>
+        <h1 className="my-8 pl-3 font-bold text-xl">LOGO</h1>
         <div>
           {sidebarItems.map((item, index) => {
             return (
               <div
-                onClick={() => sidebarHandler(item.text)}
+                onClick={() => sidebarHandler(item.textType)}
                 key={index}
                 className="flex items-center gap-3 relative hover:bg-gray-100 cursor-pointer rounded-lg p-3 my-3"
               >

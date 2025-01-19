@@ -22,7 +22,7 @@ const Login = () => {
     setInput({ ...input, [e.target.name]: e.target.value });
   };
 
-  const signupHandler = async (e) => {
+  const loginHandler = async (e) => {
     e.preventDefault();
     try {
       setLoading(true);
@@ -69,7 +69,7 @@ const Login = () => {
   return (
     <div className="flex items-center w-screen h-screen justify-center">
       <form
-        onSubmit={signupHandler}
+        onSubmit={loginHandler}
         className="shadow-lg flex flex-col gap-5 p-8"
       >
         <div className="my-4">
