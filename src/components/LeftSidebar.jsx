@@ -79,7 +79,7 @@ const LeftSidebar = () => {
   ];
 
   return (
-    <div className="fixed top-0 z-10 left-0 px-4 border-r border-gray-300 w-[240px] h-screen">
+    <div className="fixed top-0 z-10 left-0 px-4 border-r border-gray-300 w-[340px] h-screen">
       <div className="flex flex-col h-full">
         <Link to="/">
           <h1 className="my-8 pl-3 font-bold text-xl">

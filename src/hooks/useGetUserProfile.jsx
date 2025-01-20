@@ -5,7 +5,6 @@ import { getProfileAPI } from "@/apis/user";
 
 const useGetUserProfile = (userId) => {
   const dispatch = useDispatch();
-  // const [userProfile, setUserProfile] = useState(null);
 
   useEffect(() => {
     const fetchUserProfile = async () => {
@@ -19,7 +18,9 @@ const useGetUserProfile = (userId) => {
         console.log(error);
       }
     };
-    fetchUserProfile();
+    if (userId) {
+      fetchUserProfile();
+    }
   }, [userId, dispatch]);
 };
 export default useGetUserProfile;
