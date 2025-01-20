@@ -35,7 +35,7 @@ const Post = ({ post }) => {
   const [postLike, setPostLike] = useState(post.likes.length);
   const [comment, setComment] = useState(post.comments);
   const dispatch = useDispatch();
-  
+
   const changeEventHandler = (e) => {
     const inputText = e.target.value;
     if (inputText.trim()) {
@@ -129,8 +129,7 @@ const Post = ({ post }) => {
     }
   };
   console.log(post);
-  
-  
+
   return (
     <div className="my-8 w-full max-w-[450px] mx-auto">
       <div className="flex items-center justify-between">
@@ -182,16 +181,34 @@ const Post = ({ post }) => {
           </DialogContent>
         </Dialog>
       </div>
-      {post.image.length === 1 ? (
-        <img
-          className="rounded-sm my-2 w-full aspect-[4/5] object-cover"
-          src={post.image}
-          alt="post_img"
-        />
+
+      {post.image.length + post.video.length === 1 ? (
+        post.image.length === 1 ? (
+          <img
+            className="rounded-sm my-2 w-full aspect-[4/5] object-cover"
+            src={post.image[0]}
+            alt="post_img"
+          />
+        ) : (
+          <video
+            className="rounded-sm my-2 w-full aspect-[4/5] object-cover"
+            src={post.video[0]}
+            autoPlay
+            muted
+            loop
+          />
+        )
       ) : (
-        <div className=" my-2">
+        <div className="my-2">
           <Carousel autoSlide={false}>
-            {[...post.image.map((s) => <img key={s} src={s} />)]}
+            {[
+              ...post.image.map((image) => (
+                <img key={image} src={image} alt="carousel_img" />
+              )),
+              ...post.video.map((video) => (
+                <video key={video} src={video} autoPlay muted loop />
+              )),
+            ]}
           </Carousel>
         </div>
       )}

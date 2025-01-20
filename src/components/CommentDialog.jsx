@@ -62,21 +62,50 @@ const CommentDialog = ({ open, setOpen }) => {
         <div className="flex h-full">
           {/* Left side - Image */}
           <div className="flex-1 flex justify-center items-center">
-            {selectedPost?.image.length === 1 ? (
-              <img
-                src={selectedPost?.image[0]}
-                alt="post_img"
-                className="w-auto h-full object-cover rounded-md"
-              />
+            {selectedPost &&
+            (selectedPost.image?.length || 0) +
+              (selectedPost.video?.length || 0) ===
+              1 ? (
+              selectedPost.image?.length === 1 ? (
+                <img
+                  src={selectedPost.image[0]}
+                  alt="post_img"
+                  className="w-auto h-full object-cover rounded-md"
+                />
+              ) : (
+                <video
+                  src={selectedPost.video[0]}
+                  className="w-auto h-full object-cover rounded-md"
+                  autoPlay
+                  muted
+                  loop
+                />
+              )
             ) : (
               <Carousel
                 autoSlide={false}
                 containerClass="carousel-container"
                 itemClass="carousel-item"
               >
-                {selectedPost?.image.map((image, index) => (
-                  <img key={index} src={image} alt={`post_img_${index}`} />
-                ))}
+                {[
+                  ...(selectedPost?.image || []).map((image, index) => (
+                    <img
+                      key={`img-${index}`}
+                      src={image}
+                      alt={`post_img_${index}`}
+                    />
+                  )),
+                  ...(selectedPost?.video || []).map((video, index) => (
+                    <video
+                      key={`vid-${index}`}
+                      src={video}
+                      className="object-cover rounded-md"
+                      autoPlay
+                      muted
+                      loop
+                    />
+                  )),
+                ]}
               </Carousel>
             )}
           </div>
