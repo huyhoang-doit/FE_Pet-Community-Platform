@@ -14,7 +14,7 @@ const RightSidebar = () => {
   return (
     <div className="my-10 pr-6">
       <div className="flex items-center gap-2">
-        <Link to={`/profile/${user?._id}`}>
+        <Link to={`/profile/${user?.username}`}>
           <Avatar style={{ border: "1px solid #e0e0e0" }}>
             <AvatarImage src={user?.profilePicture} alt="post_image" />
             <AvatarFallback>CN</AvatarFallback>
@@ -22,7 +22,7 @@ const RightSidebar = () => {
         </Link>
         <div>
           <h1 className="font-semibold text-sm flex items-center gap-2">
-            <Link to={`/profile/${user?._id}`}>{user?.username}</Link>
+            <Link to={`/profile/${user?.username}`}>{user?.username}</Link>
             {user?.isVerified && <VerifiedBadge size={14} />}
           </h1>
           <span className="text-gray-600 text-sm">

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import useGetUserProfile from "@/hooks/useGetUserProfile";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { Button } from "./ui/button";
 import { Badge } from "./ui/badge";
@@ -25,9 +25,10 @@ import { followOrUnfollowAPI } from "@/apis/user";
 
 const Profile = () => {
   const params = useParams();
-  const userId = params.id;
+  const username = params.username;
   const dispatch = useDispatch();
-  useGetUserProfile(userId);
+  const navigate = useNavigate();
+  useGetUserProfile(username);
   const [activeTab, setActiveTab] = useState("posts");
   const { userProfile, user } = useSelector((store) => store.auth);
   const isLoggedInUserProfile = user?._id === userProfile?._id;
@@ -35,10 +36,10 @@ const Profile = () => {
     userProfile?.followers.includes(user?._id)
   );
   const [numberFollowers, setNumberFollowers] = useState(
-    userProfile?.followers.length
+    userProfile?.followers?.length
   );
   const [numberFollowing, setNumberFollowing] = useState(
-    userProfile?.following.length
+    userProfile?.following?.length
   );
   const [showFollowModal, setShowFollowModal] = useState(false);
   const [modalType, setModalType] = useState("");
@@ -56,7 +57,7 @@ const Profile = () => {
 
   const followOrUnfollowHandler = async () => {
     try {
-      const { data } = await followOrUnfollowAPI(userId);
+      const { data } = await followOrUnfollowAPI(userProfile._id);
 
       if (data.status === 200) {
         setIsFollowing(!isFollowing);
@@ -155,10 +156,12 @@ const Profile = () => {
                       className="h-8"
                       onClick={followOrUnfollowHandler}
                     >
-                      Unfollow
+                      Bỏ theo dõi
                     </Button>
-                    <Button variant="secondary" className="h-8">
-                      Message
+                    <Button variant="secondary" className="h-8" onClick={() => {
+                      navigate(`/chat/${userProfile?._id}`)
+                    }}>
+                      Nhắn tin
                     </Button>
                   </>
                 ) : (
@@ -170,7 +173,7 @@ const Profile = () => {
                   </Button>
                 )}
               </div>
-              <div className="flex items-center gap-6">
+              <div className="flex items-center gap-8">
                 <p>
                   <span className="font-semibold">
                     {userProfile?.posts.length}{" "}
