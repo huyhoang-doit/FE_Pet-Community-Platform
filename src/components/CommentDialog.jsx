@@ -6,18 +6,18 @@ import { Link } from "react-router-dom";
 import { Heart, MessageCircle, MoreHorizontal } from "lucide-react";
 import { Button } from "./ui/button";
 import { useDispatch, useSelector } from "react-redux";
-import axios from "axios";
 import { toast } from "sonner";
 import { setPosts } from "@/redux/postSlice";
 import VerifiedBadge from "./VerifiedBadge";
 import Carousel from "./ui/carousel";
+import { addCommentAPI } from "@/apis/comment";
 
 const CommentDialog = ({ open, setOpen }) => {
   const [text, setText] = useState("");
   const { selectedPost, posts } = useSelector((store) => store.post);
   const [comment, setComment] = useState([]);
   const dispatch = useDispatch();
-
+  
   useEffect(() => {
     if (selectedPost) {
       setComment(selectedPost.comments);
@@ -35,16 +35,9 @@ const CommentDialog = ({ open, setOpen }) => {
 
   const sendMessageHandler = async () => {
     try {
-      const res = await axios.post(
-        `http://localhost:3000/api/v1/post/${selectedPost?._id}/comment`,
-        { text },
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-          withCredentials: true,
-        }
-      );
+      const res = await addCommentAPI(selectedPost._id, text);
+      console.log(res);
+      
 
       if (res.data.success) {
         const updatedCommentData = [...comment, res.data.comment];
@@ -70,7 +63,7 @@ const CommentDialog = ({ open, setOpen }) => {
         <div className="flex h-full">
           {/* Left side - Image */}
           <div className="flex-1 flex justify-center items-center">
-            {selectedPost.image.length === 1 ? (
+            {selectedPost?.image.length === 1 ? (
               <img
                 src={selectedPost?.image}
                 alt="post_img"
@@ -78,7 +71,7 @@ const CommentDialog = ({ open, setOpen }) => {
               />
             ) : (
               <Carousel autoSlide={false}>
-                {selectedPost.image.map((s) => (
+                {selectedPost?.image.map((s) => (
                   <img
                     key={s}
                     src={s}
@@ -154,7 +147,7 @@ const CommentDialog = ({ open, setOpen }) => {
                 </span>
               </div>
               <div className="px-4 py-5 space-y-5">
-                {comment.map((comment) => (
+                {comment.length > 0 && comment.map((comment) => (
                   <div key={comment._id} className="flex gap-3">
                     <Avatar
                       className="h-8 w-8"

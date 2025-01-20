@@ -1,10 +1,22 @@
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import VerifiedBadge from "./VerifiedBadge";
+import { followOrUnfollowAPI } from "@/apis/user";
+import { toast } from "sonner";
+import { setSuggestedUsers } from "@/redux/authSlice";
 
 const SuggestedUsers = () => {
   const { suggestedUsers } = useSelector((store) => store.auth);
+  const dispatch = useDispatch();
+  const handleFollow = async (userId) => {
+    const { data } = await followOrUnfollowAPI(userId);
+
+    if (data.status === 200) {
+      dispatch(setSuggestedUsers(suggestedUsers.filter((user) => user._id !== userId)));
+      toast.success(data.message);
+    }
+  }
   return (
     <div className="my-10">
       <div className="flex items-center justify-between text-sm">
@@ -34,7 +46,7 @@ const SuggestedUsers = () => {
                 </span>
               </div>
             </div>
-            <span className="text-[#3BADF8] text-xs font-bold cursor-pointer hover:text-[#3495d6]">
+            <span className="text-[#3BADF8] text-xs font-bold cursor-pointer hover:text-[#3495d6]" onClick={() => handleFollow(user._id)}>
               Theo dõi
             </span>
           </div>

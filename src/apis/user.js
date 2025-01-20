@@ -12,3 +12,7 @@ export const suggestedAPI = async () => {
 export const getProfileAPI = async (userId) => {
   return await authorizedAxiosInstance.get(`${BASE_URL}/user/${userId}/profile`)
 }
+
+export const followOrUnfollowAPI = async (userId) => {
+  return await authorizedAxiosInstance.post(`${BASE_URL}/user/followorunfollow/${userId}`)
+}
