@@ -10,6 +10,7 @@ import { toast } from "sonner";
 import { useDispatch, useSelector } from "react-redux";
 import { setPosts } from "@/redux/postSlice";
 import { addPostsAPI } from "@/apis/post";
+import EmojiPicker from "emoji-picker-react";
 
 const CreatePost = ({ open, setOpen }) => {
   const imageRef = useRef();
@@ -40,7 +41,7 @@ const CreatePost = ({ open, setOpen }) => {
     formData.append("caption", caption);
     if (file && file.length > 0) {
       Array.from(file).forEach((fileItem) => {
-        formData.append("images", fileItem);
+        formData.append("media", fileItem);
       });
     }
     try {
@@ -82,6 +83,7 @@ const CreatePost = ({ open, setOpen }) => {
           className="focus-visible:ring-transparent border-none"
           placeholder="Write a caption..."
         />
+        <EmojiPicker open={false} />
         {imagePreview && imagePreview.length > 0 && (
           <div className="w-full h-64 flex flex-wrap items-center justify-center space-x-4">
             {imagePreview.map((preview, index) => (
