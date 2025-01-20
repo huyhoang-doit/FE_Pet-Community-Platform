@@ -21,6 +21,7 @@ import {
   likeOrDislikeAPI,
 } from "@/apis/post";
 import { setAuthUser } from "@/redux/authSlice";
+import Carousel from "./ui/carousel";
 
 const Post = ({ post }) => {
   const [text, setText] = useState("");
@@ -178,11 +179,17 @@ const Post = ({ post }) => {
           </DialogContent>
         </Dialog>
       </div>
-      <img
-        className="rounded-sm my-2 w-full aspect-[4/5] object-cover"
-        src={post.image}
-        alt="post_img"
-      />
+      {post.image.length === 1 ? (
+        <img
+          className="rounded-sm my-2 w-full aspect-[4/5] object-cover"
+          src={post.image}
+          alt="post_img"
+        />
+      ) : (
+        <Carousel autoSlide={false}>
+          {[...post.image.map((s) => <img key={s} src={s} />)]}
+        </Carousel>
+      )}
 
       <div className="flex items-center justify-between my-2">
         <div className="flex items-center gap-3">
