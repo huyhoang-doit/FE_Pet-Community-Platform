@@ -6,11 +6,11 @@ import { Link } from "react-router-dom";
 import { Heart, MessageCircle, MoreHorizontal } from "lucide-react";
 import { Button } from "./ui/button";
 import { useDispatch, useSelector } from "react-redux";
-import axios from "axios";
 import { toast } from "sonner";
 import { setPosts } from "@/redux/postSlice";
 import VerifiedBadge from "./VerifiedBadge";
 import Carousel from "./ui/carousel";
+import { addCommentAPI } from "@/apis/comment";
 
 const CommentDialog = ({ open, setOpen }) => {
   const [text, setText] = useState("");
@@ -35,16 +35,8 @@ const CommentDialog = ({ open, setOpen }) => {
 
   const sendMessageHandler = async () => {
     try {
-      const res = await axios.post(
-        `http://localhost:3000/api/v1/post/${selectedPost?._id}/comment`,
-        { text },
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-          withCredentials: true,
-        }
-      );
+      const res = await addCommentAPI(selectedPost._id, text);
+      console.log(res);
 
       if (res.data.success) {
         const updatedCommentData = [...comment, res.data.comment];
@@ -154,30 +146,31 @@ const CommentDialog = ({ open, setOpen }) => {
                 </span>
               </div>
               <div className="px-4 py-5 space-y-5">
-                {comment.map((comment) => (
-                  <div key={comment._id} className="flex gap-3">
-                    <Avatar
-                      className="h-8 w-8"
-                      style={{ border: "1px solid #e0e0e0" }}
-                    >
-                      <AvatarImage src={comment.author.profilePicture} />
-                      <AvatarFallback>UN</AvatarFallback>
-                    </Avatar>
-                    <span className="text-sm flex flex-col">
-                      <div className="flex items-center gap-2">
-                        <span className="font-semibold">
-                          {comment.author.username}
+                {comment.length > 0 &&
+                  comment.map((comment) => (
+                    <div key={comment._id} className="flex gap-3">
+                      <Avatar
+                        className="h-8 w-8"
+                        style={{ border: "1px solid #e0e0e0" }}
+                      >
+                        <AvatarImage src={comment.author.profilePicture} />
+                        <AvatarFallback>UN</AvatarFallback>
+                      </Avatar>
+                      <span className="text-sm flex flex-col">
+                        <div className="flex items-center gap-2">
+                          <span className="font-semibold">
+                            {comment.author.username}
+                          </span>
+                          {comment.author.isVerified && (
+                            <VerifiedBadge size={14} />
+                          )}
+                        </div>
+                        <span className="text-sm whitespace-normal break-all overflow-wrap-anywhere max-w-full">
+                          {comment.text}
                         </span>
-                        {comment.author.isVerified && (
-                          <VerifiedBadge size={14} />
-                        )}
-                      </div>
-                      <span className="text-sm whitespace-normal break-all overflow-wrap-anywhere max-w-full">
-                        {comment.text}
                       </span>
-                    </span>
-                  </div>
-                ))}
+                    </div>
+                  ))}
               </div>
             </div>
 

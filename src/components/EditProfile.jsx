@@ -24,6 +24,9 @@ const EditProfile = () => {
   const [loading, setLoading] = useState(false);
   const [input, setInput] = useState({
     profilePicture: user?.profilePicture,
+    username: user?.username,
+    firstName: user?.firstName,
+    lastName: user?.lastName,
     bio: user?.bio,
     gender: user?.gender,
   });
@@ -50,6 +53,9 @@ const EditProfile = () => {
 
   const createFormData = () => {
     const formData = new FormData();
+    formData.append("username", input.username);
+    formData.append("firstName", input.firstName);
+    formData.append("lastName", input.lastName);
     formData.append("bio", input.bio);
     formData.append("gender", input.gender);
     if (input.profilePicture) {
@@ -66,6 +72,9 @@ const EditProfile = () => {
       if (data.status === 200) {
         const updatedUserData = {
           ...user,
+          username: data.data?.username,
+          firstName: data.data?.firstName,
+          lastName: data.data?.lastName,
           bio: data.data?.bio,
           profilePicture: data.data?.profilePicture,
           gender: data.data.gender,
@@ -75,6 +84,7 @@ const EditProfile = () => {
         toast.success(data.message);
       }
     } catch (error) {
+      console.log(error);
       toast.error(error.response.data.message);
     } finally {
       setLoading(false);
@@ -91,7 +101,7 @@ const EditProfile = () => {
   return (
     <div className="flex max-w-2xl mx-auto pl-10">
       <section className="flex flex-col gap-6 w-full my-8">
-        <h1 className="font-bold text-xl">Edit Profile</h1>
+        <h1 className="font-bold text-xl">Chỉnh sửa trang cá nhân</h1>
         <div className="flex items-center justify-between bg-gray-100 rounded-xl p-4">
           <div className="flex items-center gap-3">
             <Avatar>
@@ -115,11 +125,43 @@ const EditProfile = () => {
             onClick={resetFileInput}
             className="bg-[#0095F6] h-8 hover:bg-[#318bc7]"
           >
-            Change photo
+            Đổi ảnh
           </Button>
         </div>
         <div>
-          <h1 className="font-bold text-xl mb-2">Bio</h1>
+          <h1 className="font-bold mb-2">Tên người dùng</h1>
+          <input
+            type="text"
+            value={input.username}
+            onChange={(e) => setInput({ ...input, username: e.target.value })}
+            name="username"
+            className="w-full rounded-md border border-input px-3 py-2 text-sm focus-visible:outline-none"
+          />
+        </div>
+        <div className="flex gap-4">
+          <div className="flex-1">
+            <h1 className="font-bold mb-2">Tên</h1>
+            <input
+              type="text"
+              value={input.firstName}
+              onChange={(e) => setInput({ ...input, firstName: e.target.value })}
+              name="firstName"
+              className="w-full rounded-md border border-input px-3 py-2 text-sm focus-visible:outline-none"
+            />
+          </div>
+          <div className="flex-1">
+            <h1 className="font-bold mb-2">Họ</h1>
+            <input
+              type="text"
+              value={input.lastName}
+              onChange={(e) => setInput({ ...input, lastName: e.target.value })}
+              name="lastName"
+              className="w-full rounded-md border border-input px-3 py-2 text-sm focus-visible:outline-none"
+            />
+          </div>
+        </div>
+        <div>
+          <h1 className="font-bold mb-2">Tiểu sử</h1>
           <Textarea
             value={input.bio}
             onChange={(e) => setInput({ ...input, bio: e.target.value })}
@@ -128,7 +170,7 @@ const EditProfile = () => {
           />
         </div>
         <div>
-          <h1 className="font-bold mb-2">Gender</h1>
+          <h1 className="font-bold mb-2">Giới tính</h1>
           <Select
             defaultValue={input.gender}
             onValueChange={selectChangeHandler}
