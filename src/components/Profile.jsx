@@ -21,6 +21,7 @@ import VerifiedBadge from "./VerifiedBadge";
 import { setSelectedPost } from "@/redux/postSlice";
 import CommentDialog from "./CommentDialog";
 import { FaBookmark } from "react-icons/fa";
+import { followOrUnfollowAPI } from "@/apis/user";
 
 const Profile = () => {
   const params = useParams();
@@ -55,9 +56,7 @@ const Profile = () => {
 
   const followOrUnfollowHandler = async () => {
     try {
-      const { data } = await authorizedAxiosInstance.post(
-        `http://localhost:3000/api/v1/user/followorunfollow/${userId}`
-      );
+      const { data } = await followOrUnfollowAPI(userId);
 
       if (data.status === 200) {
         setIsFollowing(!isFollowing);
@@ -111,7 +110,7 @@ const Profile = () => {
 
   return (
     <div className="flex max-w-5xl justify-center mx-auto pl-10">
-      <div className="flex flex-col gap-20 p-8">
+      <div className="flex flex-col gap-20 p-8 w-full">
         <div className="grid grid-cols-2">
           <section className="flex items-center justify-center">
             <Avatar
@@ -197,7 +196,7 @@ const Profile = () => {
               <div className="flex flex-col gap-1">
                 <span className="text-sm" style={{ fontWeight: "600" }}>{userProfile?.lastName} {userProfile?.firstName}</span>
                 <Badge className="w-fit" variant="secondary" style={{ fontWeight: "400" }}>
-                  <AtSign size={16}/>{" "}
+                  <AtSign size={14}/>{" "}
                   <span className="pl-1">{userProfile?.username}</span>{" "}
                 </Badge>
                 <span className="text-sm" style={{ fontWeight: "400" }}>{userProfile?.bio}</span>
@@ -227,7 +226,7 @@ const Profile = () => {
               <ContactRound size={18} /> ĐƯỢC GẮN THẺ
             </span>
           </div>
-          <div className="grid grid-cols-3 gap-1">
+          <div className="grid grid-cols-3 gap-1 min-h-[200px]">
             {displayedPost?.map((post) => {
               return (
                 <div
@@ -257,6 +256,11 @@ const Profile = () => {
                 </div>
               );
             })}
+            {!displayedPost?.length && (
+              <div className="col-span-3 flex items-center justify-center text-gray-500">
+                Không có bài viết nào
+              </div>
+            )}
           </div>
         </div>
       </div>

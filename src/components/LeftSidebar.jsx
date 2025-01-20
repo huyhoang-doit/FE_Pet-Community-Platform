@@ -75,18 +75,18 @@ const LeftSidebar = () => {
       ),
       text: "Trang cá nhân",
       textType: "Profile",
-    },
-    { icon: <LogOut />, text: "Đăng xuất", textType: "Logout" },
+    }
   ];
+
   return (
-    <div className="fixed top-0 z-10 left-0 px-4 border-r border-gray-300 w-[16%] h-screen">
-      <div className="flex flex-col">
+    <div className="fixed top-0 z-10 left-0 px-4 border-r border-gray-300 w-[240px] h-screen">
+      <div className="flex flex-col h-full">
         <Link to="/">
           <h1 className="my-8 pl-3 font-bold text-xl">
             <img src="/assets/images/logo.png" alt="logo" className="w-[70%]" />
           </h1>
         </Link>
-        <div>
+        <div className="flex-grow">
           {sidebarItems.map((item, index) => {
             return (
               <div
@@ -143,6 +143,14 @@ const LeftSidebar = () => {
               </div>
             );
           })}
+        </div>
+        
+        <div 
+          onClick={() => sidebarHandler("Logout")}
+          className="flex items-center gap-3 hover:bg-gray-100 cursor-pointer rounded-lg p-3 my-3 mb-8"
+        >
+          <LogOut />
+          <span>Đăng xuất</span>
         </div>
       </div>
 

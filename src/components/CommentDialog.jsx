@@ -6,17 +6,18 @@ import { Link } from "react-router-dom";
 import { Heart, MessageCircle, MoreHorizontal } from "lucide-react";
 import { Button } from "./ui/button";
 import { useDispatch, useSelector } from "react-redux";
-import axios from "axios";
 import { toast } from "sonner";
 import { setPosts } from "@/redux/postSlice";
 import VerifiedBadge from "./VerifiedBadge";
+import Carousel from "./ui/carousel";
+import { addCommentAPI } from "@/apis/comment";
 
 const CommentDialog = ({ open, setOpen }) => {
   const [text, setText] = useState("");
   const { selectedPost, posts } = useSelector((store) => store.post);
   const [comment, setComment] = useState([]);
   const dispatch = useDispatch();
-
+  
   useEffect(() => {
     if (selectedPost) {
       setComment(selectedPost.comments);
@@ -34,16 +35,9 @@ const CommentDialog = ({ open, setOpen }) => {
 
   const sendMessageHandler = async () => {
     try {
-      const res = await axios.post(
-        `http://localhost:3000/api/v1/post/${selectedPost?._id}/comment`,
-        { text },
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-          withCredentials: true,
-        }
-      );
+      const res = await addCommentAPI(selectedPost._id, text);
+      console.log(res);
+      
 
       if (res.data.success) {
         const updatedCommentData = [...comment, res.data.comment];
@@ -65,130 +59,153 @@ const CommentDialog = ({ open, setOpen }) => {
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="max-w-[1700px] h-[100vh]">
-          <div className="flex h-full">
-            {/* Left side - Image */}
-            <div className="flex-1">
+      <DialogContent className="max-w-[1700px] h-[100vh]">
+        <div className="flex h-full">
+          {/* Left side - Image */}
+          <div className="flex-1 flex justify-center items-center">
+            {selectedPost?.image.length === 1 ? (
               <img
                 src={selectedPost?.image}
                 alt="post_img"
-                className="w-full h-full object-cover"
+                className="max-w-[90%] max-h-[90%] object-cover rounded-md"
               />
-            </div>
-
-            {/* Right side - Details */}
-            <div className="w-[400px] flex flex-col border-l">
-              {/* Post header */}
-              <div className="flex justify-between items-center gap-2 p-4 border-b">
-                <div className="flex gap-3 items-center">
-                  <Link>
-                    <Avatar className="h-8 w-8" style={{border: "1px solid #e0e0e0"}}>
-                      <AvatarImage src={selectedPost?.author.profilePicture} />
-                      <AvatarFallback>UN</AvatarFallback>
-                    </Avatar>
-                  </Link>
-                  <div className="flex flex-col">
-                    <div className="flex text-sm items-center gap-2">
-                      <span className="font-semibold">
-                        {selectedPost?.author.username}
-                      </span>
-                      {selectedPost?.author.isVerified && <VerifiedBadge size={14} />}
-                    </div>{" "}
-                    <span className="text-sm text-gray-500">Hồ Chí Minh</span>
-                  </div>
-                </div>
-                <Dialog>
-                  <DialogTrigger asChild>
-                    <MoreHorizontal className="cursor-pointer" />
-                  </DialogTrigger>
-                  <DialogContent className="flex flex-col items-center text-sm text-center">
-                    <div className="cursor-pointer w-full text-[#ED4956] font-bold">
-                      Unfollow
-                    </div>
-                    <div className="cursor-pointer w-full">
-                      Add to favorites
-                    </div>
-                  </DialogContent>
-                </Dialog>
-              </div>
-
-              {/* Post details */}
-              <div className="flex-1 overflow-y-auto">
-                {/* Post caption */}
-                <div className="flex gap-3 px-4 pt-5">
-                  <Avatar className="h-8 w-8" style={{border: "1px solid #e0e0e0"}}>
+            ) : (
+              <Carousel autoSlide={false}>
+                {selectedPost?.image.map((s) => (
+                  <img
+                    key={s}
+                    src={s}
+                    alt="post_img"
+                    className="w-full h-full object-cover rounded-md"
+                  />
+                ))}
+              </Carousel>
+            )}
+          </div>
+          {/* Right side - Details */}
+          <div className="w-[400px] flex flex-col border-l">
+            {/* Post header */}
+            <div className="flex justify-between items-center gap-2 p-4 border-b">
+              <div className="flex gap-3 items-center">
+                <Link>
+                  <Avatar
+                    className="h-8 w-8"
+                    style={{ border: "1px solid #e0e0e0" }}
+                  >
                     <AvatarImage src={selectedPost?.author.profilePicture} />
                     <AvatarFallback>UN</AvatarFallback>
                   </Avatar>
-                  <span className="text-sm flex flex-col">
-                    <div className="flex items-center gap-2">
-                      <span className="font-semibold">
-                        {selectedPost?.author.username}
-                      </span>
-                      {selectedPost?.author.isVerified && <VerifiedBadge size={14} />}
-                    </div>
-                    <span className="text-sm whitespace-normal break-words">
-                      {selectedPost?.caption}
+                </Link>
+                <div className="flex flex-col">
+                  <div className="flex text-sm items-center gap-2">
+                    <span className="font-semibold">
+                      {selectedPost?.author.username}
                     </span>
-                  </span>
-                </div>
-                <div className="px-4 py-5 space-y-5">
-                  {comment.map((comment) => (
-                    <div key={comment._id} className="flex gap-3">
-                      <Avatar className="h-8 w-8" style={{border: "1px solid #e0e0e0"}}>
-                        <AvatarImage src={comment.author.profilePicture} />
-                        <AvatarFallback>UN</AvatarFallback>
-                      </Avatar>
-                      <span className="text-sm flex flex-col">
-                        <div className="flex items-center gap-2">
-                          <span className="font-semibold">
-                            {comment.author.username}
-                          </span>
-                          {comment.author.isVerified && (
-                            <VerifiedBadge size={14} />
-                          )}
-                        </div>
-                        <span className="text-sm whitespace-normal break-all overflow-wrap-anywhere max-w-full">
-                          {comment.text}
-                        </span>
-                      </span>
-                    </div>
-                  ))}
+                    {selectedPost?.author.isVerified && (
+                      <VerifiedBadge size={14} />
+                    )}
+                  </div>{" "}
+                  <span className="text-sm text-gray-500">Hồ Chí Minh</span>
                 </div>
               </div>
+              <Dialog>
+                <DialogTrigger asChild>
+                  <MoreHorizontal className="cursor-pointer" />
+                </DialogTrigger>
+                <DialogContent className="flex flex-col items-center text-sm text-center">
+                  <div className="cursor-pointer w-full text-[#ED4956] font-bold">
+                    Unfollow
+                  </div>
+                  <div className="cursor-pointer w-full">Add to favorites</div>
+                </DialogContent>
+              </Dialog>
+            </div>
 
-              {/* Post actions */}
-              <div className="p-4 border-t">
-                <div className="flex items-center gap-4">
-                  <Heart className="w-6 h-6 cursor-pointer" />
-                  <MessageCircle className="w-6 h-6 cursor-pointer" />
-                </div>
-                <p className="font-semibold mt-2">
-                  {selectedPost?.likes?.length} likes
-                </p>
-              </div>
-
-              <div className="p-4 border-t flex items-center gap-3">
-                <textarea
-                  placeholder="Add a comment..."
-                  className="flex-1 resize-none outline-none h-[18px] max-h-[80px] text-sm"
-                  rows={1}
-                  style={{ height: "18px" }}
-                  value={text}
-                  onChange={changeEventHandler}
-                />
-                <Button
-                  disabled={!text.trim()}
-                  onClick={sendMessageHandler}
-                  variant="outline"
+            {/* Post details */}
+            <div className="flex-1 overflow-y-auto">
+              {/* Post caption */}
+              <div className="flex gap-3 px-4 pt-5">
+                <Avatar
+                  className="h-8 w-8"
+                  style={{ border: "1px solid #e0e0e0" }}
                 >
-                  Send
-                </Button>
+                  <AvatarImage src={selectedPost?.author.profilePicture} />
+                  <AvatarFallback>UN</AvatarFallback>
+                </Avatar>
+                <span className="text-sm flex flex-col">
+                  <div className="flex items-center gap-2">
+                    <span className="font-semibold">
+                      {selectedPost?.author.username}
+                    </span>
+                    {selectedPost?.author.isVerified && (
+                      <VerifiedBadge size={14} />
+                    )}
+                  </div>
+                  <span className="text-sm whitespace-normal break-words">
+                    {selectedPost?.caption}
+                  </span>
+                </span>
+              </div>
+              <div className="px-4 py-5 space-y-5">
+                {comment.length > 0 && comment.map((comment) => (
+                  <div key={comment._id} className="flex gap-3">
+                    <Avatar
+                      className="h-8 w-8"
+                      style={{ border: "1px solid #e0e0e0" }}
+                    >
+                      <AvatarImage src={comment.author.profilePicture} />
+                      <AvatarFallback>UN</AvatarFallback>
+                    </Avatar>
+                    <span className="text-sm flex flex-col">
+                      <div className="flex items-center gap-2">
+                        <span className="font-semibold">
+                          {comment.author.username}
+                        </span>
+                        {comment.author.isVerified && (
+                          <VerifiedBadge size={14} />
+                        )}
+                      </div>
+                      <span className="text-sm whitespace-normal break-all overflow-wrap-anywhere max-w-full">
+                        {comment.text}
+                      </span>
+                    </span>
+                  </div>
+                ))}
               </div>
             </div>
+
+            {/* Post actions */}
+            <div className="p-4 border-t">
+              <div className="flex items-center gap-4">
+                <Heart className="w-6 h-6 cursor-pointer" />
+                <MessageCircle className="w-6 h-6 cursor-pointer" />
+              </div>
+              <p className="font-semibold mt-2">
+                {selectedPost?.likes?.length} likes
+              </p>
+            </div>
+
+            <div className="p-4 border-t flex items-center gap-3">
+              <textarea
+                placeholder="Add a comment..."
+                className="flex-1 resize-none outline-none h-[18px] max-h-[80px] text-sm"
+                rows={1}
+                style={{ height: "18px" }}
+                value={text}
+                onChange={changeEventHandler}
+              />
+              <Button
+                disabled={!text.trim()}
+                onClick={sendMessageHandler}
+                variant="outline"
+              >
+                Send
+              </Button>
+            </div>
           </div>
-        </DialogContent>
-      </Dialog>
+        </div>
+      </DialogContent>
+    </Dialog>
   );
 };
 
