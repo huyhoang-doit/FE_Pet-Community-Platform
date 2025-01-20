@@ -32,7 +32,7 @@ const Carousel = ({
         {slides.map((slide, index) => (
           <div
             key={index}
-            className="flex-shrink-0 w-full flex justify-center items-center"
+            className="flex-shrink-0 w-full h-full flex justify-center items-center"
           >
             {slide}
           </div>

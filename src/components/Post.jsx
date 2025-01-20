@@ -49,7 +49,6 @@ const Post = ({ post }) => {
     try {
       const action = liked ? "dislike" : "like";
       const res = await likeOrDislikeAPI(post._id, action);
-      console.log(res.data);
       if (res.data.success) {
         const updatedLikes = liked ? postLike - 1 : postLike + 1;
         setPostLike(updatedLikes);
@@ -128,7 +127,6 @@ const Post = ({ post }) => {
       console.log(error);
     }
   };
-  console.log(post);
 
   return (
     <div className="my-8 w-full max-w-[450px] mx-auto">

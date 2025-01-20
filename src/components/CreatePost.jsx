@@ -22,6 +22,15 @@ const CreatePost = ({ open, setOpen }) => {
   const { posts } = useSelector((store) => store.post);
   const dispatch = useDispatch();
 
+  const [chosenEmoji, setChosenEmoji] = useState(null);
+
+  const onEmojiClick = (emojiData, e) => {
+    setChosenEmoji(emojiData); // Save the selected emoji object
+    setCaption((prevCaption) => prevCaption + emojiData.emoji); // Append emoji string to the caption
+    console.log("Selected emoji:", emojiData.emoji); // Log the emoji string
+    console.log("Captioon emoji:", caption); // Log the emoji string
+  };
+  console.log("🚀 ~ onEmojiClick ~ chosenEmoji:", chosenEmoji);
   const fileChangeHandler = async (e) => {
     const files = e.target.files;
     if (files.length > 0) {
@@ -77,13 +86,14 @@ const CreatePost = ({ open, setOpen }) => {
             <span className="text-gray-600 text-xs">{user?.bio}</span>
           </div>
         </div>
+        <EmojiPicker open={open} onEmojiClick={onEmojiClick} />
         <Textarea
           value={caption}
           onChange={(e) => setCaption(e.target.value)}
           className="focus-visible:ring-transparent border-none"
           placeholder="Write a caption..."
         />
-        <EmojiPicker open={false} />
+
         {imagePreview && imagePreview.length > 0 && (
           <div className="w-full h-64 flex flex-wrap items-center justify-center space-x-4">
             {imagePreview.map((preview, index) => (
