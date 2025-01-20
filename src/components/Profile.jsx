@@ -236,7 +236,6 @@ const Profile = () => {
           </div>
           <div className="grid grid-cols-3 gap-1 min-h-[200px]">
             {displayedPost?.map((post) => {
-              console.log("🚀 ~ {displayedPost?.map ~ post:", post);
               return (
                 <div
                   key={post?._id}
