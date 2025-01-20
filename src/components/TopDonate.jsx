@@ -21,7 +21,7 @@ const TopDonate = ({ topDonate }) => {
             }`}
           >
             <div className="flex items-center gap-2">
-              <Link to={`/profile/${donate.user?._id}`}>
+              <Link to={`/profile/${donate.user?.username}`}>
                 <Avatar
                   className={`w-10 h-101 ${
                     user?._id === donate.user?._id ? "ring-2 ring-blue-500" : ""
@@ -38,7 +38,7 @@ const TopDonate = ({ topDonate }) => {
               <div>
                 <h1 className="font-semibold text-sm flex items-center gap-2">
                   <Link
-                    to={`/profile/${donate.user?._id}`}
+                    to={`/profile/${donate.user?.username}`}
                     className={`
                                                 ${
                                                   index === 0 &&
@@ -65,7 +65,7 @@ const TopDonate = ({ topDonate }) => {
             </div>
             {
               user?._id !== donate.user?._id && (
-                <Link to={`/profile/${donate.user?._id}`}>
+                <Link to={`/profile/${donate.user?.username}`}>
                   <span className="text-emerald-500 text-xs font-bold cursor-pointer hover:text-emerald-600">
                     Xem hồ sơ
                   </span>

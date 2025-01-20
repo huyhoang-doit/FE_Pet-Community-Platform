@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { Link } from "react-router-dom";
 import VerifiedBadge from "./VerifiedBadge";
-import authorizedAxiosInstance from "@/utils/authorizedAxios";
+import { getProfileByIdAPI } from "@/apis/user";
 
 const UserListItem = ({ userId, onClose }) => {
   const [userData, setUserData] = useState(null);
@@ -11,9 +11,9 @@ const UserListItem = ({ userId, onClose }) => {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const { data } = await authorizedAxiosInstance.get(
-          `http://localhost:3000/api/v1/user/${userId}/profile`
-        );
+        const { data } = await getProfileByIdAPI(userId)
+        console.log(data);
+        
         if (data.status === 200) {
           setUserData(data.data);
         }
@@ -37,7 +37,7 @@ const UserListItem = ({ userId, onClose }) => {
         </Avatar>
         <div className="flex flex-col">
           <Link
-            to={`/profile/${userData._id}`}
+            to={`/profile/${userData.username}`}
             className="font-semibold text-sm hover:underline flex items-center gap-1"
             onClick={handleClick}
           >

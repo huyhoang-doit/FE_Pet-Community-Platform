@@ -35,7 +35,7 @@ const browserRouter = createBrowserRouter([
         ),
       },
       {
-        path: "/profile/:id",
+        path: "/profile/:username",
         element: (
           <ProtectedRoutes>
             <Profile />
@@ -58,6 +58,14 @@ const browserRouter = createBrowserRouter([
           </ProtectedRoutes>
         ),
       },
+      {
+        path: "/chat/:id",
+        element: (
+          <ProtectedRoutes>
+            <ChatPage />
+          </ProtectedRoutes>
+        ),
+      }
     ],
   },
   {

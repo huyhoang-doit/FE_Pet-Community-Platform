@@ -133,13 +133,13 @@ const Post = ({ post }) => {
     <div className="my-8 w-full max-w-[450px] mx-auto">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <Link to={`/profile/${post.author?._id}`}>
+          <Link to={`/profile/${post.author?.username}`}>
             <Avatar style={{ border: "1px solid #e0e0e0" }}>
               <AvatarImage src={post.author?.profilePicture} alt="post_image" />
               <AvatarFallback>CN</AvatarFallback>
             </Avatar>
           </Link>
-          <Link to={`/profile/${post.author?._id}`}>
+          <Link to={`/profile/${post.author?.username}`}>
             <div className="flex items-center gap-2">
               <span className="font-medium text-sm">
                 {post.author?.username}
@@ -258,7 +258,7 @@ const Post = ({ post }) => {
       <span className="font-medium block mb-2">{postLike} likes</span>
       <p className="text-sm">
         <Link
-          to={`/profile/${post.author?._id}`}
+          to={`/profile/${post.author?.username}`}
           className="flex items-center gap-1"
         >
           <span className="font-medium">{post.author?.username}</span>
