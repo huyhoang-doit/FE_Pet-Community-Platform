@@ -186,9 +186,11 @@ const Post = ({ post }) => {
           alt="post_img"
         />
       ) : (
-        <Carousel autoSlide={false}>
-          {[...post.image.map((s) => <img key={s} src={s} />)]}
-        </Carousel>
+        <div className=" my-2">
+          <Carousel autoSlide={false}>
+            {[...post.image.map((s) => <img key={s} src={s} />)]}
+          </Carousel>
+        </div>
       )}
 
       <div className="flex items-center justify-between my-2">

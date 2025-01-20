@@ -70,25 +70,25 @@ const CommentDialog = ({ open, setOpen }) => {
         <div className="flex h-full">
           {/* Left side - Image */}
           <div className="flex-1 flex justify-center items-center">
-            {selectedPost.image.length === 1 ? (
+            {selectedPost?.image.length === 1 ? (
               <img
-                src={selectedPost?.image}
+                src={selectedPost?.image[0]}
                 alt="post_img"
-                className="max-w-[90%] max-h-[90%] object-cover rounded-md"
+                className="w-auto h-full object-cover rounded-md"
               />
             ) : (
-              <Carousel autoSlide={false}>
-                {selectedPost.image.map((s) => (
-                  <img
-                    key={s}
-                    src={s}
-                    alt="post_img"
-                    className="w-full h-full object-cover rounded-md"
-                  />
+              <Carousel
+                autoSlide={false}
+                containerClass="carousel-container"
+                itemClass="carousel-item"
+              >
+                {selectedPost?.image.map((image, index) => (
+                  <img key={index} src={image} alt={`post_img_${index}`} />
                 ))}
               </Carousel>
             )}
           </div>
+
           {/* Right side - Details */}
           <div className="w-[400px] flex flex-col border-l">
             {/* Post header */}
@@ -111,7 +111,7 @@ const CommentDialog = ({ open, setOpen }) => {
                     {selectedPost?.author.isVerified && (
                       <VerifiedBadge size={14} />
                     )}
-                  </div>{" "}
+                  </div>
                   <span className="text-sm text-gray-500">Hồ Chí Minh</span>
                 </div>
               </div>

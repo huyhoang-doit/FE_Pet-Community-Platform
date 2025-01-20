@@ -25,9 +25,18 @@ const Carousel = ({
     <div className="relative overflow-hidden">
       <div
         className="flex transition-transform ease-out duration-500"
-        style={{ transform: `translateX(-${curr * 100}%)` }}
+        style={{
+          transform: `translateX(-${curr * 100}%)`,
+        }}
       >
-        {slides}
+        {slides.map((slide, index) => (
+          <div
+            key={index}
+            className="flex-shrink-0 w-full h-full flex justify-center items-center"
+          >
+            {slide}
+          </div>
+        ))}
       </div>
       <div className="absolute inset-0 flex items-center justify-between p-4">
         <button
