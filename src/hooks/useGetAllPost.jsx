@@ -11,6 +11,8 @@ const useGetAllPost = () => {
             try {
                 const res = await authorizedAxiosInstance.get('http://localhost:3000/api/v1/post/all');
                 if (res.data.success) { 
+                    console.log(res.data.posts);
+                    
                     dispatch(setPosts(res.data.posts));
                 }
             } catch (error) {

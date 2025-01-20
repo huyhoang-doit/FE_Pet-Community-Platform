@@ -23,18 +23,20 @@ import {
 import { setAuthUser } from "@/redux/authSlice";
 
 const Post = ({ post }) => {
+  console.log(post);
+  
   const [text, setText] = useState("");
   const [open, setOpen] = useState(false);
   const { user } = useSelector((store) => store.auth);
   const { posts } = useSelector((store) => store.post);
-  const [liked, setLiked] = useState(post.likes?.includes(user?._id) || false);
+  const [liked, setLiked] = useState(post.likes.includes(user?._id) || false);
   const [bookmarked, setBookmarked] = useState(
-    user.bookmarks?.includes(post?._id) || false
+    user.bookmarks.includes(post?._id) || false
   );
   const [postLike, setPostLike] = useState(post.likes.length);
   const [comment, setComment] = useState(post.comments);
   const dispatch = useDispatch();
-
+  
   const changeEventHandler = (e) => {
     const inputText = e.target.value;
     if (inputText.trim()) {
@@ -127,6 +129,8 @@ const Post = ({ post }) => {
       console.log(error);
     }
   };
+  console.log(post);
+  
   return (
     <div className="my-8 w-full max-w-[450px] mx-auto">
       <div className="flex items-center justify-between">

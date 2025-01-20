@@ -5,7 +5,13 @@ import { Link, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { Button } from "./ui/button";
 import { Badge } from "./ui/badge";
-import { AtSign, Heart, MessageCircle } from "lucide-react";
+import {
+  AtSign,
+  ContactRound,
+  Grid3x3,
+  Heart,
+  MessageCircle,
+} from "lucide-react";
 import { setUserProfile } from "@/redux/authSlice";
 import { toast } from "sonner";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "./ui/dialog";
@@ -14,6 +20,7 @@ import authorizedAxiosInstance from "@/utils/authorizedAxios";
 import VerifiedBadge from "./VerifiedBadge";
 import { setSelectedPost } from "@/redux/postSlice";
 import CommentDialog from "./CommentDialog";
+import { FaBookmark } from "react-icons/fa";
 
 const Profile = () => {
   const params = useParams();
@@ -51,7 +58,7 @@ const Profile = () => {
       const { data } = await authorizedAxiosInstance.post(
         `http://localhost:3000/api/v1/user/followorunfollow/${userId}`
       );
-      
+
       if (data.status === 200) {
         setIsFollowing(!isFollowing);
         setNumberFollowers(
@@ -107,7 +114,10 @@ const Profile = () => {
       <div className="flex flex-col gap-20 p-8">
         <div className="grid grid-cols-2">
           <section className="flex items-center justify-center">
-            <Avatar className="h-40 w-40 rounded-full" style={{border: "1px solid #e0e0e0"}}>
+            <Avatar
+              className="h-40 w-40 rounded-full"
+              style={{ border: "1px solid #e0e0e0" }}
+            >
               <AvatarImage
                 src={userProfile?.profilePicture}
                 alt="profilephoto"
@@ -118,7 +128,7 @@ const Profile = () => {
           <section>
             <div className="flex flex-col gap-5">
               <div className="flex items-center gap-2">
-                <span className="text-xl font-semibold">
+                <span className="text-xl" style={{ fontWeight: "400" }}>
                   {userProfile?.username}
                 </span>
                 {userProfile?.isVerified && <VerifiedBadge size={18} />}
@@ -185,14 +195,12 @@ const Profile = () => {
                 </p>
               </div>
               <div className="flex flex-col gap-1">
-                <span className="font-semibold">{userProfile?.bio}</span>
-                <Badge className="w-fit" variant="secondary">
-                  <AtSign />{" "}
+                <span className="text-sm" style={{ fontWeight: "600" }}>{userProfile?.lastName} {userProfile?.firstName}</span>
+                <Badge className="w-fit" variant="secondary" style={{ fontWeight: "400" }}>
+                  <AtSign size={16}/>{" "}
                   <span className="pl-1">{userProfile?.username}</span>{" "}
                 </Badge>
-                <span>🤯Learn code with patel mernstack style</span>
-                <span>🤯Turing code into fun</span>
-                <span>🤯DM for collaboration</span>
+                <span className="text-sm" style={{ fontWeight: "400" }}>{userProfile?.bio}</span>
               </div>
             </div>
           </section>
@@ -200,22 +208,24 @@ const Profile = () => {
         <div className="border-t border-t-gray-200">
           <div className="flex items-center justify-center gap-10 text-sm">
             <span
-              className={`py-3 cursor-pointer ${
-                activeTab === "posts" ? "font-bold" : ""
+              className={`py-3 cursor-pointer flex items-center gap-2 ${
+                activeTab === "posts" ? "font-bold" : "text-gray-500"
               }`}
               onClick={() => handleTabChange("posts")}
             >
-              BÀI VIẾT
+              <Grid3x3 size={18} /> BÀI VIẾT
             </span>
             <span
-              className={`py-3 cursor-pointer ${
-                activeTab === "saved" ? "font-bold" : ""
+              className={`py-3 cursor-pointer flex items-center gap-2 ${
+                activeTab === "saved" ? "font-bold" : "text-gray-500"
               }`}
               onClick={() => handleTabChange("saved")}
             >
-              ĐÃ LƯU
+              <FaBookmark size={16} /> ĐÃ LƯU
             </span>
-            <span className="py-3 cursor-pointer">ĐƯỢC GẮN THẺ</span>
+            <span className="py-3 cursor-pointer flex items-center gap-2 text-gray-500">
+              <ContactRound size={18} /> ĐƯỢC GẮN THẺ
+            </span>
           </div>
           <div className="grid grid-cols-3 gap-1">
             {displayedPost?.map((post) => {
