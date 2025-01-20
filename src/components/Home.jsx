@@ -3,10 +3,14 @@ import { Outlet } from "react-router-dom";
 import RightSidebar from "./RightSidebar";
 import useGetAllPost from "@/hooks/useGetAllPost";
 import useGetSuggestedUsers from "@/hooks/useGetSuggestedUsers";
+import useGetCampaign from "@/hooks/useGetCampaign";
+import useGetTopDonate from "@/hooks/useGetTopDonate";
 
 const Home = () => {
   useGetAllPost();
   useGetSuggestedUsers();
+  useGetCampaign();
+  useGetTopDonate();
 
   return (
     <div className="flex">
