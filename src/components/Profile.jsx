@@ -194,12 +194,20 @@ const Profile = () => {
                 </p>
               </div>
               <div className="flex flex-col gap-1">
-                <span className="text-sm" style={{ fontWeight: "600" }}>{userProfile?.lastName} {userProfile?.firstName}</span>
-                <Badge className="w-fit" variant="secondary" style={{ fontWeight: "400" }}>
-                  <AtSign size={14}/>{" "}
+                <span className="text-sm" style={{ fontWeight: "600" }}>
+                  {userProfile?.lastName} {userProfile?.firstName}
+                </span>
+                <Badge
+                  className="w-fit"
+                  variant="secondary"
+                  style={{ fontWeight: "400" }}
+                >
+                  <AtSign size={14} />{" "}
                   <span className="pl-1">{userProfile?.username}</span>{" "}
                 </Badge>
-                <span className="text-sm" style={{ fontWeight: "400" }}>{userProfile?.bio}</span>
+                <span className="text-sm" style={{ fontWeight: "400" }}>
+                  {userProfile?.bio}
+                </span>
               </div>
             </div>
           </section>
@@ -236,11 +244,24 @@ const Profile = () => {
                     handlePostClick(post);
                   }}
                 >
-                  <img
-                    src={post.image}
-                    alt="postimage"
-                    className="rounded-sm w-full aspect-square object-cover"
-                  />
+                  {post.image?.[0] ? (
+                    <img
+                      src={post.image[0]}
+                      alt="postimage"
+                      className="rounded-sm w-full aspect-square object-cover"
+                    />
+                  ) : (
+                    post.video?.[0] && (
+                      <video
+                        src={post.video[0]}
+                        autoPlay
+                        muted
+                        loop
+                        className="rounded-sm w-full aspect-square object-cover"
+                      />
+                    )
+                  )}
+
                   <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                     <div className="flex items-center text-white space-x-4">
                       <button className="flex items-center gap-2 hover:text-gray-300">

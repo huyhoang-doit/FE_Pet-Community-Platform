@@ -17,7 +17,7 @@ const CommentDialog = ({ open, setOpen }) => {
   const { selectedPost, posts } = useSelector((store) => store.post);
   const [comment, setComment] = useState([]);
   const dispatch = useDispatch();
-  
+
   useEffect(() => {
     if (selectedPost) {
       setComment(selectedPost.comments);
@@ -37,7 +37,6 @@ const CommentDialog = ({ open, setOpen }) => {
     try {
       const res = await addCommentAPI(selectedPost._id, text);
       console.log(res);
-      
 
       if (res.data.success) {
         const updatedCommentData = [...comment, res.data.comment];
@@ -63,25 +62,54 @@ const CommentDialog = ({ open, setOpen }) => {
         <div className="flex h-full">
           {/* Left side - Image */}
           <div className="flex-1 flex justify-center items-center">
-            {selectedPost?.image.length === 1 ? (
-              <img
-                src={selectedPost?.image}
-                alt="post_img"
-                className="max-w-[90%] max-h-[90%] object-cover rounded-md"
-              />
+            {selectedPost &&
+            (selectedPost.image?.length || 0) +
+              (selectedPost.video?.length || 0) ===
+              1 ? (
+              selectedPost.image?.length === 1 ? (
+                <img
+                  src={selectedPost.image[0]}
+                  alt="post_img"
+                  className="w-auto h-full object-cover rounded-md"
+                />
+              ) : (
+                <video
+                  src={selectedPost.video[0]}
+                  className="w-auto h-full object-cover rounded-md"
+                  autoPlay
+                  muted
+                  loop
+                />
+              )
             ) : (
-              <Carousel autoSlide={false}>
-                {selectedPost?.image.map((s) => (
-                  <img
-                    key={s}
-                    src={s}
-                    alt="post_img"
-                    className="w-full h-full object-cover rounded-md"
-                  />
-                ))}
+              <Carousel
+                autoSlide={false}
+                containerClass="carousel-container"
+                itemClass="carousel-item"
+              >
+                {[
+                  ...(selectedPost?.image || []).map((image, index) => (
+                    <img
+                      key={`img-${index}`}
+                      src={image}
+                      alt={`post_img_${index}`}
+                    />
+                  )),
+                  ...(selectedPost?.video || []).map((video, index) => (
+                    <video
+                      key={`vid-${index}`}
+                      src={video}
+                      className="object-cover rounded-md"
+                      autoPlay
+                      muted
+                      loop
+                    />
+                  )),
+                ]}
               </Carousel>
             )}
           </div>
+
           {/* Right side - Details */}
           <div className="w-[400px] flex flex-col border-l">
             {/* Post header */}
@@ -104,7 +132,7 @@ const CommentDialog = ({ open, setOpen }) => {
                     {selectedPost?.author.isVerified && (
                       <VerifiedBadge size={14} />
                     )}
-                  </div>{" "}
+                  </div>
                   <span className="text-sm text-gray-500">Hồ Chí Minh</span>
                 </div>
               </div>
@@ -147,30 +175,31 @@ const CommentDialog = ({ open, setOpen }) => {
                 </span>
               </div>
               <div className="px-4 py-5 space-y-5">
-                {comment.length > 0 && comment.map((comment) => (
-                  <div key={comment._id} className="flex gap-3">
-                    <Avatar
-                      className="h-8 w-8"
-                      style={{ border: "1px solid #e0e0e0" }}
-                    >
-                      <AvatarImage src={comment.author.profilePicture} />
-                      <AvatarFallback>UN</AvatarFallback>
-                    </Avatar>
-                    <span className="text-sm flex flex-col">
-                      <div className="flex items-center gap-2">
-                        <span className="font-semibold">
-                          {comment.author.username}
+                {comment.length > 0 &&
+                  comment.map((comment) => (
+                    <div key={comment._id} className="flex gap-3">
+                      <Avatar
+                        className="h-8 w-8"
+                        style={{ border: "1px solid #e0e0e0" }}
+                      >
+                        <AvatarImage src={comment.author.profilePicture} />
+                        <AvatarFallback>UN</AvatarFallback>
+                      </Avatar>
+                      <span className="text-sm flex flex-col">
+                        <div className="flex items-center gap-2">
+                          <span className="font-semibold">
+                            {comment.author.username}
+                          </span>
+                          {comment.author.isVerified && (
+                            <VerifiedBadge size={14} />
+                          )}
+                        </div>
+                        <span className="text-sm whitespace-normal break-all overflow-wrap-anywhere max-w-full">
+                          {comment.text}
                         </span>
-                        {comment.author.isVerified && (
-                          <VerifiedBadge size={14} />
-                        )}
-                      </div>
-                      <span className="text-sm whitespace-normal break-all overflow-wrap-anywhere max-w-full">
-                        {comment.text}
                       </span>
-                    </span>
-                  </div>
-                ))}
+                    </div>
+                  ))}
               </div>
             </div>
 
