@@ -16,3 +16,19 @@ export const deletePostAPI = async (postId) => {
 export const bookmarkAPI = async (postId) => {
   return await authorizedAxiosInstance.get(`${BASE_URL}/post/${postId}/bookmark`)
 }
+
+export const fetchAllPostsAPI = async () => {
+  return await authorizedAxiosInstance.get(`${BASE_URL}/post/all`)
+}
+
+export const addPostsAPI = async (formData) => {
+  return await authorizedAxiosInstance.post(
+    `${BASE_URL}/post/addpost`,
+    formData,
+    {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    }
+  );
+}
