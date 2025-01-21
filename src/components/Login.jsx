@@ -22,19 +22,17 @@ const Login = () => {
     setInput({ ...input, [e.target.name]: e.target.value });
   };
 
-  const signupHandler = async (e) => {
+  const loginHandler = async (e) => {
     e.preventDefault();
     try {
       setLoading(true);
       const res = await loginAPI(input);
-      console.log(res);
-      
+
       if (res.status === 200) {
         const { access_token, refresh_token, user } = res.data.data;
-        localStorage.setItem('access_token', access_token);
-        localStorage.setItem('refresh_token', refresh_token);
+        localStorage.setItem("access_token", access_token);
+        localStorage.setItem("refresh_token", refresh_token);
         dispatch(setAuthUser(user));
-        console.log(res);
         navigate("/");
         toast.success(res.data.message);
         setInput({
@@ -52,11 +50,11 @@ const Login = () => {
 
   useEffect(() => {
     const checkAuth = () => {
-      const access_token = localStorage.getItem('access_token');
+      const access_token = localStorage.getItem("access_token");
 
       if (!access_token) {
-        localStorage.removeItem('access_token');
-        localStorage.removeItem('refresh_token');
+        localStorage.removeItem("access_token");
+        localStorage.removeItem("refresh_token");
         dispatch(setAuthUser(null));
         dispatch(setSelectedPost(null));
         dispatch(setPosts([]));
@@ -71,7 +69,7 @@ const Login = () => {
   return (
     <div className="flex items-center w-screen h-screen justify-center">
       <form
-        onSubmit={signupHandler}
+        onSubmit={loginHandler}
         className="shadow-lg flex flex-col gap-5 p-8"
       >
         <div className="my-4">

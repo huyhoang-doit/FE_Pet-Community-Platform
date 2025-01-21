@@ -6,7 +6,7 @@ const Comment = ({ comment }) => {
   return (
     <div className="my-2">
       <div className="flex gap-3 items-center">
-        <Avatar>
+        <Avatar style={{border: "1px solid #e0e0e0"}}>
           <AvatarImage src={comment?.author?.profilePicture} />
           <AvatarFallback>CN</AvatarFallback>
         </Avatar>
