@@ -9,6 +9,7 @@ import useGetRTM from "@/hooks/useGetRTM";
 const Messages = ({ selectedUser }) => {
   useGetRTM();
   useGetAllMessage();
+  
   const { messages } = useSelector((store) => store.chat);
   const { user } = useSelector((store) => store.auth);
   return (
@@ -19,10 +20,20 @@ const Messages = ({ selectedUser }) => {
             <AvatarImage src={selectedUser?.profilePicture} alt="profile" />
             <AvatarFallback>CN</AvatarFallback>
           </Avatar>
-          <span>{selectedUser?.username}</span>
-          <Link to={`/profile/${selectedUser?._id}`}>
+          {(selectedUser.firstName && selectedUser.lastName) ? (
+            <>
+              <span className="font-bold">{selectedUser?.lastName} {selectedUser?.firstName}</span>
+              <span className="text-sm text-gray-500">{selectedUser?.username} · Outstagram</span>
+            </>
+          ) : (
+            <>
+              <span className="font-bold">{selectedUser?.username}</span>
+              <span className="text-sm text-gray-500">Outstagram</span>
+            </>
+          )}
+          <Link to={`/profile/${selectedUser?.username}`}>
             <Button className="h-8 my-2" variant="secondary">
-              View profile
+              Xem trang cá nhân
             </Button>
           </Link>
         </div>

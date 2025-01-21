@@ -115,7 +115,7 @@ const CommentDialog = ({ open, setOpen }) => {
             {/* Post header */}
             <div className="flex justify-between items-center gap-2 p-4 border-b">
               <div className="flex gap-3 items-center">
-                <Link>
+                <Link to={`/profile/${selectedPost?.author?.username}`} target="_blank">
                   <Avatar
                     className="h-8 w-8"
                     style={{ border: "1px solid #e0e0e0" }}
@@ -126,9 +126,9 @@ const CommentDialog = ({ open, setOpen }) => {
                 </Link>
                 <div className="flex flex-col">
                   <div className="flex text-sm items-center gap-2">
-                    <span className="font-semibold">
+                    <Link to={`/profile/${selectedPost?.author?.username}`} target="_blank" className="font-semibold">
                       {selectedPost?.author.username}
-                    </span>
+                    </Link>
                     {selectedPost?.author.isVerified && (
                       <VerifiedBadge size={14} />
                     )}
@@ -153,18 +153,20 @@ const CommentDialog = ({ open, setOpen }) => {
             <div className="flex-1 overflow-y-auto">
               {/* Post caption */}
               <div className="flex gap-3 px-4 pt-5">
-                <Avatar
-                  className="h-8 w-8"
-                  style={{ border: "1px solid #e0e0e0" }}
-                >
-                  <AvatarImage src={selectedPost?.author.profilePicture} />
-                  <AvatarFallback>UN</AvatarFallback>
-                </Avatar>
+                <Link to={`/profile/${selectedPost?.author?.username}`} target="_blank">
+                  <Avatar
+                    className="h-8 w-8"
+                    style={{ border: "1px solid #e0e0e0" }}
+                  >
+                    <AvatarImage src={selectedPost?.author.profilePicture} />
+                    <AvatarFallback>UN</AvatarFallback>
+                  </Avatar>
+                </Link>
                 <span className="text-sm flex flex-col">
                   <div className="flex items-center gap-2">
-                    <span className="font-semibold">
-                      {selectedPost?.author.username}
-                    </span>
+                    <Link to={`/profile/${selectedPost?.author?.username}`} target="_blank" className="font-semibold">
+                        {selectedPost?.author.username}
+                    </Link>
                     {selectedPost?.author.isVerified && (
                       <VerifiedBadge size={14} />
                     )}
@@ -178,18 +180,20 @@ const CommentDialog = ({ open, setOpen }) => {
                 {comment.length > 0 &&
                   comment.map((comment) => (
                     <div key={comment._id} className="flex gap-3">
-                      <Avatar
-                        className="h-8 w-8"
-                        style={{ border: "1px solid #e0e0e0" }}
+                      <Link to={`/profile/${comment.author.username}`} target="_blank">
+                        <Avatar
+                          className="h-8 w-8"
+                          style={{ border: "1px solid #e0e0e0" }}
                       >
                         <AvatarImage src={comment.author.profilePicture} />
-                        <AvatarFallback>UN</AvatarFallback>
-                      </Avatar>
+                          <AvatarFallback>UN</AvatarFallback>
+                        </Avatar>
+                      </Link>
                       <span className="text-sm flex flex-col">
                         <div className="flex items-center gap-2">
-                          <span className="font-semibold">
+                          <Link to={`/profile/${comment.author.username}`} target="_blank" className="font-semibold">
                             {comment.author.username}
-                          </span>
+                          </Link>
                           {comment.author.isVerified && (
                             <VerifiedBadge size={14} />
                           )}

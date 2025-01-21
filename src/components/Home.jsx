@@ -5,12 +5,14 @@ import useGetAllPost from "@/hooks/useGetAllPost";
 import useGetSuggestedUsers from "@/hooks/useGetSuggestedUsers";
 import useGetCampaign from "@/hooks/useGetCampaign";
 import useGetTopDonate from "@/hooks/useGetTopDonate";
+import useGetChatUser from "@/hooks/userGetChatUser";
 
 const Home = () => {
   useGetAllPost();
   useGetSuggestedUsers();
   useGetCampaign();
   useGetTopDonate();
+  useGetChatUser();
 
   return (
     <div className="flex">
