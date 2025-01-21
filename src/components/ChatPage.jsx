@@ -72,7 +72,7 @@ const ChatPage = () => {
                 <div className="flex flex-col">
                   {(suggestedUser.firstName && suggestedUser.lastName) ? (
                     <span className="text-sm">
-                      {suggestedUser?.firstName} {suggestedUser?.lastName}
+                      {suggestedUser?.lastName} {suggestedUser?.firstName}
                     </span>
                   ) : (
                     <span className="text-sm">{suggestedUser?.username}</span>
@@ -101,7 +101,7 @@ const ChatPage = () => {
               <span className="font-medium text-sm">
                 {(selectedUser.firstName && selectedUser.lastName) ? (
                   <span className="text-sm">
-                    {selectedUser?.firstName} {selectedUser?.lastName}
+                    {selectedUser?.lastName} {selectedUser?.firstName}
                   </span>
                 ) : (
                   <span className="text-sm">{selectedUser?.username}</span>
