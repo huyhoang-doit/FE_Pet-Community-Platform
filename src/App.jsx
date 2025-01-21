@@ -14,6 +14,7 @@ import { setOnlineUsers } from "./redux/chatSlice";
 import { setLikeNotification } from "./redux/rtnSlice";
 import ProtectedRoutes from "./components/ProtectedRoutes";
 import "./App.css";
+import LandingPage from "./components/LandingPage";
 const browserRouter = createBrowserRouter([
   {
     path: "/",
@@ -65,6 +66,10 @@ const browserRouter = createBrowserRouter([
   {
     path: "/signup",
     element: <Signup />,
+  },
+  {
+    path: "/landing-page",
+    element: <LandingPage />,
   },
 ]);
 
