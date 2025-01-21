@@ -6,31 +6,33 @@ import { Input } from "./ui/input";
 import { Button } from "./ui/button";
 import { MessageCircleCode } from "lucide-react";
 import Messages from "./Messages";
-import axios from "axios";
 import { setMessages } from "@/redux/chatSlice";
+import { useParams } from "react-router-dom";
+import { getProfileByIdAPI } from "@/apis/user";
+import { sendMessageAPI } from "@/apis/message";
 
 const ChatPage = () => {
+  const { id } = useParams();
   const [textMessage, setTextMessage] = useState("");
-  const { user, suggestedUsers, selectedUser } = useSelector(
-    (store) => store.auth
-  );
+  const { user, selectedUser, chatUsers } = useSelector((store) => store.auth);
   const { onlineUsers, messages } = useSelector((store) => store.chat);
   const dispatch = useDispatch();
 
+  useEffect(() => {
+    if (id) {
+      const getProfileChat = async () => {
+        const { data } = await getProfileByIdAPI(id);
+        dispatch(setSelectedUser(data.data));
+      };
+      getProfileChat();
+    }
+  }, [id]);
+
   const sendMessageHandler = async (receiverId) => {
     try {
-      const res = await axios.post(
-        `http://localhost:3000/api/v1/message/send/${receiverId}`,
-        { textMessage },
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-          withCredentials: true,
-        }
-      );
-      if (res.data.success) {
-        dispatch(setMessages([...messages, res.data.newMessage]));
+      const { data } = await sendMessageAPI(receiverId, textMessage);
+      if (data.success) {
+        dispatch(setMessages([...messages, data.newMessage]));
         setTextMessage("");
       }
     } catch (error) {
@@ -45,25 +47,36 @@ const ChatPage = () => {
   }, []);
 
   return (
-    <div className="flex ml-[16%] h-screen">
-      <section className="w-full md:w-1/4 my-8">
-        <h1 className="font-bold mb-4 px-3 text-xl">{user?.username}</h1>
-        <hr className="mb-4 border-gray-300" />
+    <div className="flex ml-[5%] h-screen">
+      <section className="w-full md:w-1/5 border-r border-r-gray-300">
+        <h1 className="font-bold my-8 text-xl">{user?.username}</h1>
+        <div className="flex items-center justify-between mb-4 pr-4">
+          <span className="text-md font-bold">Tin nhắn</span>
+          <span className="text-sm font-bold text-gray-500">
+            Tin nhắn đang chờ
+          </span>
+        </div>
         <div className="overflow-y-auto h-[80vh]">
-          {suggestedUsers.map((suggestedUser) => {
+          {chatUsers.map((suggestedUser) => {
             const isOnline = onlineUsers.includes(suggestedUser?._id);
             return (
               <div
                 key={suggestedUser.id}
                 onClick={() => dispatch(setSelectedUser(suggestedUser))}
-                className="flex gap-3 items-center p-3 hover:bg-gray-50 cursor-pointer"
+                className="flex gap-3 items-center hover:bg-gray-50 cursor-pointer pb-4"
               >
                 <Avatar className="w-14 h-14">
                   <AvatarImage src={suggestedUser?.profilePicture} />
                   <AvatarFallback>CN</AvatarFallback>
                 </Avatar>
                 <div className="flex flex-col">
-                  <span className="font-medium">{suggestedUser?.username}</span>
+                  {(suggestedUser.firstName && suggestedUser.lastName) ? (
+                    <span className="text-sm">
+                      {suggestedUser?.firstName} {suggestedUser?.lastName}
+                    </span>
+                  ) : (
+                    <span className="text-sm">{suggestedUser?.username}</span>
+                  )}
                   <span
                     className={`text-xs font-bold ${
                       isOnline ? "text-green-600" : "text-red-600"
@@ -85,16 +98,25 @@ const ChatPage = () => {
               <AvatarFallback>CN</AvatarFallback>
             </Avatar>
             <div className="flex flex-col">
-              <span>{selectedUser?.username}</span>
+              <span className="font-medium text-sm">
+                {(selectedUser.firstName && selectedUser.lastName) ? (
+                  <span className="text-sm">
+                    {selectedUser?.firstName} {selectedUser?.lastName}
+                  </span>
+                ) : (
+                  <span className="text-sm">{selectedUser?.username}</span>
+                )}
+              </span>
             </div>
           </div>
           <Messages selectedUser={selectedUser} />
           <div className="flex items-center p-4 border-t border-t-gray-300">
             <Input
+              onChange={(e) => setTextMessage(e.target.value)}
               value={textMessage}
               type="text"
               className="flex-1 mr-2 focus-visible:ring-transparent"
-              placeholder="Messages..."
+              placeholder="Nhắn tin..."
             />
             <Button onClick={() => sendMessageHandler(selectedUser?._id)}>
               Send

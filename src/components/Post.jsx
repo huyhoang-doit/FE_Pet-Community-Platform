@@ -2,16 +2,26 @@
 import { useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { Dialog, DialogContent, DialogTrigger } from "./ui/dialog";
-import { Bookmark, MessageCircle, MoreHorizontal, Send } from "lucide-react";
+import { MessageCircle, MoreHorizontal, Send } from "lucide-react";
+import { LuBookmark } from "react-icons/lu";
+import { FaBookmark } from "react-icons/fa";
 import { Button } from "./ui/button";
 import { FaHeart, FaRegHeart } from "react-icons/fa";
 import CommentDialog from "./CommentDialog";
 import { useDispatch, useSelector } from "react-redux";
-import axios from "axios";
 import { toast } from "sonner";
 import { setPosts, setSelectedPost } from "@/redux/postSlice";
 import { Badge } from "./ui/badge";
 import { Link } from "react-router-dom";
+import VerifiedBadge from "./VerifiedBadge";
+import {
+  bookmarkAPI,
+  commentAPI,
+  deletePostAPI,
+  likeOrDislikeAPI,
+} from "@/apis/post";
+import { setAuthUser } from "@/redux/authSlice";
+import Carousel from "./ui/carousel";
 
 const Post = ({ post }) => {
   const [text, setText] = useState("");
@@ -19,6 +29,9 @@ const Post = ({ post }) => {
   const { user } = useSelector((store) => store.auth);
   const { posts } = useSelector((store) => store.post);
   const [liked, setLiked] = useState(post.likes.includes(user?._id) || false);
+  const [bookmarked, setBookmarked] = useState(
+    user.bookmarks.includes(post?._id) || false
+  );
   const [postLike, setPostLike] = useState(post.likes.length);
   const [comment, setComment] = useState(post.comments);
   const dispatch = useDispatch();
@@ -35,10 +48,7 @@ const Post = ({ post }) => {
   const likeOrDislikeHandler = async () => {
     try {
       const action = liked ? "dislike" : "like";
-      const res = await axios.get(
-        `http://localhost:3000/api/v1/post/${post._id}/${action}`,
-        { withCredentials: true }
-      );
+      const res = await likeOrDislikeAPI(post._id, action);
       console.log(res.data);
       if (res.data.success) {
         const updatedLikes = liked ? postLike - 1 : postLike + 1;
@@ -66,17 +76,7 @@ const Post = ({ post }) => {
 
   const commentHandler = async () => {
     try {
-      const res = await axios.post(
-        `http://localhost:3000/api/v1/post/${post._id}/comment`,
-        { text },
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-          withCredentials: true,
-        }
-      );
-      console.log(res.data);
+      const res = await commentAPI(post._id, text);
       if (res.data.success) {
         const updatedCommentData = [...comment, res.data.comment];
         setComment(updatedCommentData);
@@ -96,10 +96,7 @@ const Post = ({ post }) => {
 
   const deletePostHandler = async () => {
     try {
-      const res = await axios.delete(
-        `http://localhost:3000/api/v1/post/delete/${post?._id}`,
-        { withCredentials: true }
-      );
+      const res = await deletePostAPI(post._id);
       if (res.data.success) {
         const updatedPostData = posts.filter(
           (postItem) => postItem?._id !== post?._id
@@ -115,30 +112,39 @@ const Post = ({ post }) => {
 
   const bookmarkHandler = async () => {
     try {
-      const res = await axios.get(
-        `http://localhost:3000/api/v1/post/${post?._id}/bookmark`,
-        { withCredentials: true }
-      );
+      const res = await bookmarkAPI(post._id);
       if (res.data.success) {
+        setBookmarked(!bookmarked);
+        const updatedUser = {
+          ...user,
+          bookmarks: bookmarked
+            ? user.bookmarks.filter((id) => id !== post._id)
+            : [...user.bookmarks, post._id],
+        };
+        dispatch(setAuthUser(updatedUser));
         toast.success(res.data.message);
       }
     } catch (error) {
       console.log(error);
     }
   };
+
   return (
-    <div className="my-8 w-full max-w-sm mx-auto">
+    <div className="my-8 w-full max-w-[450px] mx-auto">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <Link to={`/profile/${post.author?._id}`}>
-            <Avatar>
+          <Link to={`/profile/${post.author?.username}`}>
+            <Avatar style={{ border: "1px solid #e0e0e0" }}>
               <AvatarImage src={post.author?.profilePicture} alt="post_image" />
               <AvatarFallback>CN</AvatarFallback>
             </Avatar>
           </Link>
-          <Link to={`/profile/${post.author?._id}`}>
-            <div className="flex items-center gap-3">
-              <h1>{post.author?.username}</h1>
+          <Link to={`/profile/${post.author?.username}`}>
+            <div className="flex items-center gap-2">
+              <span className="font-medium text-sm">
+                {post.author?.username}
+              </span>
+              {post.author.isVerified && <VerifiedBadge size={14} />}
               {user?._id === post.author._id && (
                 <Badge variant="secondary">Author</Badge>
               )}
@@ -174,11 +180,41 @@ const Post = ({ post }) => {
           </DialogContent>
         </Dialog>
       </div>
-      <img
-        className="rounded-sm my-2 w-full aspect-[4/5] object-cover"
-        src={post.image}
-        alt="post_img"
-      />
+
+      {post.image.length + post.video.length === 1 ? (
+        post.image.length === 1 ? (
+          <div className="border border-gray-200 rounded-sm p-1 my-2 bg-black">
+            <img
+              className="w-full aspect-[4/5] object-cover"
+              src={post.image[0]}
+              alt="post_img"
+            />
+          </div>
+        ) : (
+          <div className="border border-gray-200 rounded-sm p-1 my-2 bg-black">
+            <video
+              className="w-full aspect-[4/5] object-cover"
+              src={post.video[0]}
+              autoPlay
+              muted
+              loop
+            />
+          </div>
+        )
+      ) : (
+        <div className="border border-gray-200 rounded-sm p-1 my-2 bg-black">
+          <Carousel autoSlide={false}>
+            {[
+              ...post.image.map((image) => (
+                <img key={image} src={image} alt="carousel_img" />
+              )),
+              ...post.video.map((video) => (
+                <video key={video} src={video} autoPlay muted loop />
+              )),
+            ]}
+          </Carousel>
+        </div>
+      )}
 
       <div className="flex items-center justify-between my-2">
         <div className="flex items-center gap-3">
@@ -205,15 +241,30 @@ const Post = ({ post }) => {
           />
           <Send className="cursor-pointer hover:text-gray-600" />
         </div>
-        <Bookmark
-          onClick={bookmarkHandler}
-          className="cursor-pointer hover:text-gray-600"
-        />
+        {bookmarked ? (
+          <FaBookmark
+            onClick={bookmarkHandler}
+            className="cursor-pointer hover:text-gray-600"
+            size={24}
+          />
+        ) : (
+          <LuBookmark
+            onClick={bookmarkHandler}
+            className="cursor-pointer hover:text-gray-600"
+            size={24}
+          />
+        )}
       </div>
       <span className="font-medium block mb-2">{postLike} likes</span>
-      <p>
-        <span className="font-medium mr-2">{post.author?.username}</span>
-        {post.caption}
+      <p className="text-sm">
+        <Link
+          to={`/profile/${post.author?.username}`}
+          className="flex items-center gap-1"
+        >
+          <span className="font-medium">{post.author?.username}</span>
+          {post.author.isVerified && <VerifiedBadge size={14} />}
+          {post.caption}
+        </Link>
       </p>
       {comment.length > 0 && (
         <span

@@ -1,72 +1,82 @@
-import { Link } from 'react-router-dom';
-import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
-import { formatVND } from '@/utils/formatVND';
+/* eslint-disable react/prop-types */
+import { Link } from "react-router-dom";
+import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
+import { formatVND } from "@/utils/formatVND";
+import { useSelector } from "react-redux";
+import VerifiedBadge from "./VerifiedBadge";
 
-const TopDonate = () => {
-    const topDonate = [
-        {
-            username: 'John Doe',
-            profilePicture: 'https://via.placeholder.com/150',
-            amount: 1000000
-        },
-        {
-            username: 'Nguyen Van A',
-            profilePicture: 'https://via.placeholder.com/150',
-            amount: 1000000
-        },
-        {
-            username: 'Nguyen Van B',
-            profilePicture: 'https://via.placeholder.com/150',
-            amount: 1000000
-        },
-        {
-            username: 'Nguyen Van C',
-            profilePicture: 'https://via.placeholder.com/150',
-            amount: 1000000
-        },
-        {
-            username: 'John Doe',
-            profilePicture: 'https://via.placeholder.com/150',
-            amount: 1000000
-        },
-    ]
-    return (
-        <div className='my-10'>
-            <div className='flex items-center justify-between text-sm'>
-                <h1 className='font-bold text-gray-600'>Top ủng hộ</h1>
+const TopDonate = ({ topDonate }) => {
+  const { user } = useSelector((store) => store.auth);
+  return (
+    <div className="my-10">
+      <div className="flex items-center justify-between text-sm mb-5">
+        <h1 className="font-bold text-gray-600">Top ủng hộ</h1>
+      </div>
+      {topDonate.map((donate, index) => {
+        return (
+          <div
+            key={index}
+            className={`flex items-center justify-between p-2 rounded-md ${
+              user?._id === donate.user?._id ? "bg-blue-50" : ""
+            }`}
+          >
+            <div className="flex items-center gap-2">
+              <Link to={`/profile/${donate.user?.username}`}>
+                <Avatar
+                  className={`w-10 h-101 ${
+                    user?._id === donate.user?._id ? "ring-2 ring-blue-500" : ""
+                  }`}
+                  style={{ border: "1px solid #e0e0e0" }}
+                >
+                  <AvatarImage
+                    src={donate.user?.profilePicture}
+                    alt="post_image"
+                  />
+                  <AvatarFallback>CN</AvatarFallback>
+                </Avatar>
+              </Link>
+              <div>
+                <h1 className="font-semibold text-sm flex items-center gap-2">
+                  <Link
+                    to={`/profile/${donate.user?.username}`}
+                    className={`
+                                                ${
+                                                  index === 0 &&
+                                                  "username--style1"
+                                                } 
+                                                ${
+                                                  index === 1 &&
+                                                  "username--style2"
+                                                } 
+                                                ${
+                                                  index === 2 &&
+                                                  "username--style3"
+                                                }
+                                            `}
+                  >
+                    {donate.user?.username}
+                  </Link>
+                  {donate.user?.isVerified && <VerifiedBadge size={14} />}
+                </h1>
+                <span className="text-gray-600 text-sm">
+                  {formatVND(donate?.totalAmount)}
+                </span>
+              </div>
             </div>
             {
-                topDonate.map((user, index) => {
-                    return (
-                        <div key={user._id} className='flex items-center justify-between my-5'>
-                            <div className='flex items-center gap-2'>
-                                <Link to={`/profile/${user?._id}`}>
-                                    <Avatar>
-                                        <AvatarImage src={user?.profilePicture} alt="post_image" />
-                                        <AvatarFallback>CN</AvatarFallback>
-                                    </Avatar>
-                                </Link>
-                                <div>
-                                    <h1 className='font-semibold text-sm'>
-                                        <Link to={`/profile/${user?._id}`} 
-                                            className={`
-                                                ${index === 0 && 'username--style1'} 
-                                                ${index === 1 && 'username--style2'} 
-                                                ${index === 2 && 'username--style3'}
-                                            `}>
-                                            {user?.username}
-                                        </Link>
-                                    </h1>
-                                    <span className='text-gray-600 text-sm'>{formatVND(user?.amount)}</span>
-                                </div>
-                            </div>
-                        </div>
-                    )
-                })
+              user?._id !== donate.user?._id && (
+                <Link to={`/profile/${donate.user?.username}`}>
+                  <span className="text-emerald-500 text-xs font-bold cursor-pointer hover:text-emerald-600">
+                    Xem hồ sơ
+                  </span>
+                </Link>
+              )
             }
+          </div>
+        );
+      })}
+    </div>
+  );
+};
 
-        </div>
-    )
-}
-
-export default TopDonate
+export default TopDonate;

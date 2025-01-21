@@ -1,25 +1,26 @@
 import { setUserProfile } from "@/redux/authSlice";
-import axios from "axios";
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
+import { getProfileAPI } from "@/apis/user";
 
+const useGetUserProfile = (username) => {
+  const dispatch = useDispatch();
 
-const useGetUserProfile = (userId) => {
-    const dispatch = useDispatch();
-    // const [userProfile, setUserProfile] = useState(null);
-    useEffect(() => {
-        const fetchUserProfile = async () => {
-            try {
-                const res = await axios.get(`http://localhost:3000/api/v1/user/${userId}/profile`, { withCredentials: true });
-                
-                if (res.data.success) {
-                    dispatch(setUserProfile(res.data.user));
-                }
-            } catch (error) {
-                console.log(error);
-            }
+  useEffect(() => {
+    const fetchUserProfile = async () => {
+      try {
+        const { data } = await getProfileAPI(username);
+
+        if (data.status === 200) {  
+          dispatch(setUserProfile(data.data));
         }
-        fetchUserProfile();
-    }, [userId, dispatch]);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    if (username) {
+      fetchUserProfile();
+    }
+  }, [username, dispatch]);
 };
 export default useGetUserProfile;

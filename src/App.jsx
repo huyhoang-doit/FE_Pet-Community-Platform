@@ -13,7 +13,10 @@ import { setSocket } from "./redux/socketSlice";
 import { setOnlineUsers } from "./redux/chatSlice";
 import { setLikeNotification } from "./redux/rtnSlice";
 import ProtectedRoutes from "./components/ProtectedRoutes";
-import './App.css';
+import "./App.css";
+import { BASE_WS } from "./configs/globalVariables";
+import LoadingSpinner from "./components/LoadingSpinner";
+
 const browserRouter = createBrowserRouter([
   {
     path: "/",
@@ -32,10 +35,9 @@ const browserRouter = createBrowserRouter([
         ),
       },
       {
-        path: "/profile/:id",
+        path: "/profile/:username",
         element: (
           <ProtectedRoutes>
-            {" "}
             <Profile />
           </ProtectedRoutes>
         ),
@@ -56,6 +58,14 @@ const browserRouter = createBrowserRouter([
           </ProtectedRoutes>
         ),
       },
+      {
+        path: "/chat/:id",
+        element: (
+          <ProtectedRoutes>
+            <ChatPage />
+          </ProtectedRoutes>
+        ),
+      }
     ],
   },
   {
@@ -77,7 +87,7 @@ function App() {
 
   useEffect(() => {
     if (user) {
-      const socketio = io("http://localhost:3000", {
+      const socketio = io(BASE_WS, {
         query: {
           userId: user?._id,
         },
@@ -106,6 +116,7 @@ function App() {
 
   return (
     <>
+      <LoadingSpinner />
       <RouterProvider router={browserRouter} />
     </>
   );
