@@ -1,11 +1,11 @@
 /* eslint-disable react/prop-types */
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Dialog, DialogContent, DialogHeader } from "./ui/dialog";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { Textarea } from "./ui/textarea";
 import { Button } from "./ui/button";
 import { readFileAsDataURL } from "@/lib/utils";
-import { Loader2 } from "lucide-react";
+import { Loader2, SmilePlus } from "lucide-react";
 import { toast } from "sonner";
 import { useDispatch, useSelector } from "react-redux";
 import { setPosts } from "@/redux/postSlice";
@@ -22,13 +22,25 @@ const CreatePost = ({ open, setOpen }) => {
   const { posts } = useSelector((store) => store.post);
   const dispatch = useDispatch();
 
-  const [chosenEmoji, setChosenEmoji] = useState(null);
+  const [emojiPicker, setOpenEmojiPicker] = useState(false);
+  const emojiPickerRef = useRef(null);
+  const textareaRef = useRef(null);
 
-  const onEmojiClick = (emojiData, e) => {
-    setChosenEmoji(emojiData); // Save the selected emoji object
-    setCaption((prevCaption) => prevCaption + emojiData.emoji); // Append emoji string to the caption
-    console.log("Selected emoji:", emojiData.emoji); // Log the emoji string
-    console.log("Captioon emoji:", caption); // Log the emoji string
+  const onEmojiClick = (emoji) => {
+    if (textareaRef.current) {
+      const textarea = textareaRef.current;
+      const cursorPosition = textarea.selectionStart;
+      const textBefore = caption.substring(0, cursorPosition);
+      const textAfter = caption.substring(cursorPosition);
+      const newCaption = `${textBefore}${emoji.emoji}${textAfter}`;
+      setCaption(newCaption);
+
+      setTimeout(() => {
+        textarea.selectionStart = textarea.selectionEnd =
+          cursorPosition + emoji.emoji.length;
+        textarea.focus();
+      }, 0);
+    }
   };
   const fileChangeHandler = async (e) => {
     const files = e.target.files;
@@ -69,6 +81,23 @@ const CreatePost = ({ open, setOpen }) => {
     }
   };
 
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        emojiPickerRef.current &&
+        !emojiPickerRef.current.contains(event.target)
+      ) {
+        setOpenEmojiPicker(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
   return (
     <Dialog open={open}>
       <DialogContent onInteractOutside={() => setOpen(false)}>
@@ -85,13 +114,35 @@ const CreatePost = ({ open, setOpen }) => {
             <span className="text-gray-600 text-xs">{user?.bio}</span>
           </div>
         </div>
-        <EmojiPicker open={open} onEmojiClick={onEmojiClick} />
-        <Textarea
-          value={caption}
-          onChange={(e) => setCaption(e.target.value)}
-          className="focus-visible:ring-transparent border-none"
-          placeholder="Write a caption..."
-        />
+        <div className="relative">
+          <div
+            className={`absolute z-10 transition-all duration-300 ease-in-out ${
+              emojiPicker
+                ? "opacity-100 scale-100"
+                : "opacity-0 scale-95 pointer-events-none"
+            }`}
+            style={{ top: "100%", left: "0" }}
+            ref={emojiPickerRef}
+          >
+            <EmojiPicker open={emojiPicker} onEmojiClick={onEmojiClick} />
+          </div>
+
+          <div className="flex items-center gap-2 border p-2 rounded-md shadow-sm">
+            <Textarea
+              value={caption}
+              ref={textareaRef}
+              onChange={(e) => setCaption(e.target.value)}
+              className="focus-visible:ring-2 focus-visible:ring-blue-500 border-none flex-grow"
+              placeholder="Write a caption..."
+            />
+            <div
+              className="cursor-pointer p-2 rounded-full hover:bg-gray-200 transition-colors"
+              onClick={() => setOpenEmojiPicker(!emojiPicker)}
+            >
+              <SmilePlus size={18} strokeWidth={1} />
+            </div>
+          </div>
+        </div>
 
         {imagePreview && imagePreview.length > 0 && (
           <div className="w-full h-64 flex flex-wrap items-center justify-center space-x-4">

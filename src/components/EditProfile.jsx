@@ -60,8 +60,8 @@ const EditProfile = () => {
     formData.append("gender", input.gender);
     if (input.profilePicture) {
       formData.append("profilePicture", input.profilePicture);
+      return formData;
     }
-    return formData;
   };
 
   const editProfileHandler = async () => {
@@ -144,7 +144,9 @@ const EditProfile = () => {
             <input
               type="text"
               value={input.firstName}
-              onChange={(e) => setInput({ ...input, firstName: e.target.value })}
+              onChange={(e) =>
+                setInput({ ...input, firstName: e.target.value })
+              }
               name="firstName"
               className="w-full rounded-md border border-input px-3 py-2 text-sm focus-visible:outline-none"
             />
