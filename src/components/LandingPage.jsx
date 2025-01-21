@@ -29,7 +29,7 @@ function LandingPage() {
             }`}
           >
             <div className="flex items-center">
-              <p>FREE SHIPPING ON ORDERS $49+</p>
+              <p>Furry friends, endless joy!</p>
             </div>
           </div>
           <div
@@ -39,7 +39,7 @@ function LandingPage() {
             }`}
           >
             <div className="flex items-center">
-              <p>SUBSCRIBE & SAVE 35% OFF YOUR FIRST ORDER!</p>
+              <p>Unconditional love, one paw at a time!</p>
             </div>
           </div>
         </div>
@@ -75,7 +75,7 @@ function LandingPage() {
         </div>
         <div>
           <ul className="flex flex-row justify-center mt-8 gap-7">
-            <li className="w-40 h-40 bg-slate-100 text-center">1</li>
+            <li className="w-40 h-40 bg-slate-100 text-center"></li>
             <li className="w-40 h-40 bg-slate-100 text-center">2</li>
             <li className="w-40 h-40 bg-slate-100 text-center">3</li>
           </ul>
