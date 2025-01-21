@@ -19,15 +19,15 @@ const SuggestedUsers = () => {
   }
   return (
     <div className="my-10">
-      <div className="flex items-center justify-between text-sm">
-        <h1 className="font-semibold text-gray-600">Gợi ý cho bạn</h1>
-        <span className="font-medium cursor-pointer">Xem tất cả</span>
+      <div className="flex items-center justify-between text-sm mb-5">
+        <h1 className="font-bold text-gray-600">Gợi ý cho bạn</h1>
+        <span className="font-semibold cursor-pointer">Xem tất cả</span>
       </div>
       {suggestedUsers.map((user) => {
         return (
           <div
             key={user._id}
-            className="flex items-center justify-between my-5"
+            className="flex items-center justify-between p-2"
           >
             <div className="flex items-center gap-2">
               <Link to={`/profile/${user?._id}`}>

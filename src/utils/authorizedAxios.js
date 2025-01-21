@@ -1,20 +1,25 @@
 import { handleLogoutAPI, refreshTokenAPI } from '@/apis/auth'
 import axios from 'axios'
 import { toast } from 'sonner'
+import { setLoading } from '@/redux/loadingSlice'
+import store from '@/redux/store'
 
 let authorizedAxiosInstance = axios.create()
 
-// Thời gian chờ tối đa của 1 request là 10p
+// Thời gian chờ tối đa của 1 request là 10p
 authorizedAxiosInstance.defaults.timeout = 10 * 60 * 1000
 authorizedAxiosInstance.defaults.withCredentials = true
+
+// Add request interceptor
 authorizedAxiosInstance.interceptors.request.use((config) => {
+    store.dispatch(setLoading(true)); // Show loading when request starts
     const token = localStorage.getItem("access_token");
     if (token) {
         config.headers.Authorization = `Bearer ${token}`;
     }
     return config;
 }, (error) => {
-    // Do something with request error
+    store.dispatch(setLoading(false)); // Hide loading on request error
     return Promise.reject(error)
 })
 
@@ -33,7 +38,10 @@ const onTokenRefreshed = () => {
 }
 
 authorizedAxiosInstance.interceptors.response.use(
-    (response) => response,
+    (response) => {
+        store.dispatch(setLoading(false)); // Hide loading on successful response
+        return response;
+    },
     async (error) => {
         const originalRequest = error.config
 
@@ -54,7 +62,7 @@ authorizedAxiosInstance.interceptors.response.use(
             try {
                 const res = await refreshTokenAPI()
                 const newToken = res.data.data
-                
+
                 localStorage.setItem('access_token', newToken);
 
                 // Notify all subscribers that token has been refreshed
@@ -65,6 +73,7 @@ authorizedAxiosInstance.interceptors.response.use(
                 return authorizedAxiosInstance(originalRequest)
             } catch (_error) {
                 isRefreshing = false
+                store.dispatch(setLoading(false)); // Hide loading on refresh token error
                 // If refresh token fails, logout and redirect to login
                 await handleLogoutAPI()
                 location.href = '/login'
@@ -74,13 +83,15 @@ authorizedAxiosInstance.interceptors.response.use(
 
         // Handle already logged out state
         if (error.response?.status === 401) {
+            store.dispatch(setLoading(false)); // Hide loading on 401 error
             await handleLogoutAPI()
-            // location.href = '/login'
+            location.href = '/login'
             return Promise.reject(error)
         }
 
         // Handle other errors
         if (error.response?.status !== 410) {
+            store.dispatch(setLoading(false)); // Hide loading on other errors
             toast.error(error.response?.data?.message || error?.message)
         }
 

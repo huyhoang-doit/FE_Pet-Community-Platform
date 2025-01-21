@@ -8,3 +8,7 @@ export const donateAPI = async (amount, message, isAnonymous) => {
     isAnonymous
   })
 }
+
+export const getTop5DonateAPI = async () => {
+  return await authorizedAxiosInstance.get(`${BASE_URL}/donation/top-5`)
+}

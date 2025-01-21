@@ -182,22 +182,26 @@ const Post = ({ post }) => {
 
       {post.image.length + post.video.length === 1 ? (
         post.image.length === 1 ? (
-          <img
-            className="rounded-sm my-2 w-full aspect-[4/5] object-cover"
-            src={post.image[0]}
-            alt="post_img"
-          />
+          <div className="border border-gray-200 rounded-sm p-1 my-2 bg-black">
+            <img
+              className="w-full aspect-[4/5] object-cover"
+              src={post.image[0]}
+              alt="post_img"
+            />
+          </div>
         ) : (
-          <video
-            className="rounded-sm my-2 w-full aspect-[4/5] object-cover"
-            src={post.video[0]}
-            autoPlay
-            muted
-            loop
-          />
+          <div className="border border-gray-200 rounded-sm p-1 my-2 bg-black">
+            <video
+              className="w-full aspect-[4/5] object-cover"
+              src={post.video[0]}
+              autoPlay
+              muted
+              loop
+            />
+          </div>
         )
       ) : (
-        <div className="my-2">
+        <div className="border border-gray-200 rounded-sm p-1 my-2 bg-black">
           <Carousel autoSlide={false}>
             {[
               ...post.image.map((image) => (

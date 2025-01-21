@@ -30,7 +30,6 @@ const CreatePost = ({ open, setOpen }) => {
     console.log("Selected emoji:", emojiData.emoji); // Log the emoji string
     console.log("Captioon emoji:", caption); // Log the emoji string
   };
-  console.log("🚀 ~ onEmojiClick ~ chosenEmoji:", chosenEmoji);
   const fileChangeHandler = async (e) => {
     const files = e.target.files;
     if (files.length > 0) {

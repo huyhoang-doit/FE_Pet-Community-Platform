@@ -15,6 +15,8 @@ import { setLikeNotification } from "./redux/rtnSlice";
 import ProtectedRoutes from "./components/ProtectedRoutes";
 import "./App.css";
 import { BASE_WS } from "./configs/globalVariables";
+import LoadingSpinner from "./components/LoadingSpinner";
+
 const browserRouter = createBrowserRouter([
   {
     path: "/",
@@ -104,6 +106,7 @@ function App() {
 
   return (
     <>
+      <LoadingSpinner />
       <RouterProvider router={browserRouter} />
     </>
   );
