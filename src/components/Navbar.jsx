@@ -4,8 +4,8 @@ import { NavLink } from "react-router-dom";
 function Navbar() {
   const navBar = [
     {
-      path: "#",
-      name: "About",
+      path: "/",
+      name: "Home",
       isArrow: false,
     },
     {

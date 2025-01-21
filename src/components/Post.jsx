@@ -255,16 +255,38 @@ const Post = ({ post }) => {
         )}
       </div>
       <span className="font-medium block mb-2">{postLike} likes</span>
-      <p className="text-sm">
-        <Link
-          to={`/profile/${post.author?.username}`}
-          className="flex items-center gap-1"
-        >
-          <span className="font-medium">{post.author?.username}</span>
-          {post.author.isVerified && <VerifiedBadge size={14} />}
-          {post.caption}
-        </Link>
-      </p>
+      <span className="text-sm">
+        <div className="inline-flex mr-1">
+          <Link
+            to={`/profile/${post.author?.username}`}
+            className="font-medium inline-flex items-center gap-1"
+          >
+            {post.author?.username}
+            {post.author.isVerified && (
+              <svg
+                style={{ display: "inline-block" }}
+                aria-label="Đã xác minh"
+                className="x1lliihq x1n2onr6"
+                fill="rgb(0, 149, 246)"
+                height={14}
+                role="img"
+                viewBox="0 0 40 40"
+                width={14}
+              >
+                <title>Đã xác minh</title>
+                <path
+                  d="M19.998 3.094 14.638 0l-2.972 5.15H5.432v6.354L0 14.64 3.094 20 0 25.359l5.432 3.137v5.905h5.975L14.638 40l5.36-3.094L25.358 40l3.232-5.6h6.162v-6.01L40 25.359 36.905 20 40 14.641l-5.248-3.03v-6.46h-6.419L25.358 0l-5.36 3.094Zm7.415 11.225 2.254 2.287-11.43 11.5-6.835-6.93 2.244-2.258 4.587 4.581 9.18-9.18Z"
+                  fillRule="evenodd"
+                />
+              </svg>
+            )}
+          </Link>
+        </div>
+        <span className="text-sm whitespace-normal break-all overflow-wrap-anywhere max-w-full">
+          {post?.caption}
+        </span>
+      </span>
+      <br />
       {comment.length > 0 && (
         <span
           onClick={() => {
@@ -277,7 +299,7 @@ const Post = ({ post }) => {
         </span>
       )}
       <CommentDialog open={open} setOpen={setOpen} />
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between mt-1">
         <input
           type="text"
           placeholder="Add a comment..."

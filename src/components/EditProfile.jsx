@@ -80,7 +80,7 @@ const EditProfile = () => {
           gender: data.data.gender,
         };
         dispatch(setAuthUser(updatedUserData));
-        navigate(`/profile/${user?.username}`);
+        navigate(`/profile/${data.data?.username}`);
         toast.success(data.message);
       }
     } catch (error) {

@@ -16,6 +16,7 @@ import ProtectedRoutes from "./components/ProtectedRoutes";
 import "./App.css";
 import { BASE_WS } from "./configs/globalVariables";
 import LoadingSpinner from "./components/LoadingSpinner";
+import LandingPage from "./components/LandingPage";
 
 const browserRouter = createBrowserRouter([
   {
@@ -75,6 +76,10 @@ const browserRouter = createBrowserRouter([
   {
     path: "/signup",
     element: <Signup />,
+  },
+  {
+    path: "/landing-page",
+    element: <LandingPage />,
   },
 ]);
 
