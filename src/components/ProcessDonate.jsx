@@ -15,7 +15,7 @@ const ProcessDonate = ({ campaign }) => {
   const [isAnonymous, setIsAnonymous] = useState(false);
 
   const handleDonate = async () => {
-    const returnUrl = `${FE_URL}`;
+    const returnUrl = `${FE_URL}/forum`;
     const cancelUrl = `${FE_URL}/donate/cancel`;
     const response = await donateAPI(
       amount,
