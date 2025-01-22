@@ -1,5 +1,5 @@
 /* eslint-disable react/prop-types */
-const VerifiedBadge = ({ size }) => {
+const VerifiedBadge = ({ size, style }) => {
   return (
     <svg
       aria-label="Đã xác minh"
@@ -9,6 +9,7 @@ const VerifiedBadge = ({ size }) => {
       role="img"
       viewBox="0 0 40 40"
       width={size}
+      style={style}
     >
       <title>Đã xác minh</title>
       <path
