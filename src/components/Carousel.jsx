@@ -4,6 +4,7 @@ import { FaAngleLeft, FaAngleRight } from "react-icons/fa";
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
+
 function SimpleSlider() {
   const data = [
     {
@@ -32,23 +33,29 @@ function SimpleSlider() {
     },
   ];
 
-  const NextArrow = ({ onClick }) => (
-    <div
-      className="absolute top-1/2 -right-16 z-10 transform -translate-y-1/2 bg-white text-blue-500 w-10 h-10 flex items-center justify-center rounded-full cursor-pointer"
-      onClick={onClick}
-    >
-      <FaAngleRight />
-    </div>
-  );
+  const NextArrow = (props) => {
+    const { onClick } = props; // Ensure onClick is destructured
+    return (
+      <div
+        className="absolute top-1/2 -right-16 z-10 transform -translate-y-1/2 bg-white text-blue-500 w-10 h-10 flex items-center justify-center rounded-full cursor-pointer"
+        onClick={onClick}
+      >
+        <FaAngleRight />
+      </div>
+    );
+  };
 
-  const PrevArrow = ({ onClick }) => (
-    <div
-      className="absolute top-1/2 -left-16 z-10 transform -translate-y-1/2 bg-white text-blue-500  w-10 h-10 flex items-center justify-center rounded-full cursor-pointer"
-      onClick={onClick}
-    >
-      <FaAngleLeft />
-    </div>
-  );
+  const PrevArrow = (props) => {
+    const { onClick } = props; // Ensure onClick is destructured
+    return (
+      <div
+        className="absolute top-1/2 -left-16 z-10 transform -translate-y-1/2 bg-white text-blue-500  w-10 h-10 flex items-center justify-center rounded-full cursor-pointer"
+        onClick={onClick}
+      >
+        <FaAngleLeft />
+      </div>
+    );
+  };
 
   NextArrow.propTypes = {
     onClick: PropTypes.func.isRequired,
@@ -70,12 +77,12 @@ function SimpleSlider() {
     dots: true,
     infinite: true,
     speed: 500,
-    // autoplay: true,
-    // autoplaySpeed: 3000,
+    autoplay: true,
+    autoplaySpeed: 3000,
     slidesToShow: 1,
     slidesToScroll: 1,
-    nextArrow: <NextArrow />,
-    prevArrow: <PrevArrow />,
+    nextArrow: <NextArrow onClick={() => sliderRef.current.slickNext()} />,
+    prevArrow: <PrevArrow onClick={() => sliderRef.current.slickPrev()} />,
   };
 
   return (

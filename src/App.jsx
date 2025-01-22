@@ -31,6 +31,14 @@ const browserRouter = createBrowserRouter([
         path: "/",
         element: (
           <ProtectedRoutes>
+            <LandingPage />
+          </ProtectedRoutes>
+        ),
+      },
+      {
+        path: "/forum",
+        element: (
+          <ProtectedRoutes>
             <Home />
           </ProtectedRoutes>
         ),
@@ -66,7 +74,7 @@ const browserRouter = createBrowserRouter([
             <ChatPage />
           </ProtectedRoutes>
         ),
-      }
+      },
     ],
   },
   {
@@ -76,10 +84,6 @@ const browserRouter = createBrowserRouter([
   {
     path: "/signup",
     element: <Signup />,
-  },
-  {
-    path: "/landing-page",
-    element: <LandingPage />,
   },
 ]);
 

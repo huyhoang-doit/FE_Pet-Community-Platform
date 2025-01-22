@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import Header from "./Header";
 import SimpleSlider from "./Carousel";
+import Footer from "./Footer";
 // import { SimpleSlider } from "./Carousel";
 // import { CenterMode, SimpleSlider } from "./Carousel";
 
@@ -75,15 +76,21 @@ function LandingPage() {
         </div>
         <div>
           <ul className="flex flex-row justify-center mt-8 gap-7">
-            <li className="w-40 h-40 bg-slate-100 text-center"></li>
-            <li className="w-40 h-40 bg-slate-100 text-center">2</li>
-            <li className="w-40 h-40 bg-slate-100 text-center">3</li>
+            <li className="w-40 h-40 text-center">
+              <img src="/assets/images/content-1.png" alt="" />
+            </li>
+            <li className="w-40 h-40 text-center">
+              <img src="/assets/images/content-2.png" alt="" />
+            </li>
+            <li className="w-40 h-40 text-center">
+              <img src="/assets/images/content-3.png" alt="" />
+            </li>
           </ul>
         </div>
       </div>
 
       {/* Feedback */}
-      <div className="bg-[#f1b434] text-center">
+      <div className="bg-[#f1b434] text-center mb-5">
         <h2 className="text-2xl font-bold text-black pt-5">
           CUSTOMERS ARE SAYING
         </h2>
@@ -91,6 +98,9 @@ function LandingPage() {
           <SimpleSlider />
         </div>
       </div>
+
+      {/* Footer */}
+      <Footer />
     </div>
   );
 }
