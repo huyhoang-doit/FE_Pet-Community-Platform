@@ -5,8 +5,9 @@ import {
   MessageCircle,
   PlusSquare,
   Search,
-  TrendingUp,
+  TrendingUp
 } from "lucide-react";
+import { MdOutlineForum  } from "react-icons/md";
 import { useState, useEffect } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { toast } from "sonner";
@@ -47,7 +48,7 @@ const LeftSidebar = () => {
         dispatch(setPosts([]));
         localStorage.removeItem("access_token");
         localStorage.removeItem("refresh_token");
-        navigate("/login");
+        navigate("/");
         toast.success(res.data.message);
       }
     } catch (error) {
@@ -62,15 +63,18 @@ const LeftSidebar = () => {
       setOpen(true);
     } else if (textType === "Profile") {
       navigate(`/profile/${user?.username}`);
-    } else if (textType === "Home") {
-      navigate("/");
+    } else if (textType === "Forum") {
+      navigate("/forum");
     } else if (textType === "Messages") {
       navigate("/chat");
+    } else if (textType === "Home") {
+      navigate("/");
     }
   };
 
   const sidebarItems = [
-    { icon: <Home />, text: "Trang chủ", textType: "Home" },
+    { icon: <Home  />, text: "Trang chủ", textType: "Home" },
+    { icon: <MdOutlineForum  size={24} />, text: "Diễn đàn", textType: "Forum" },
     { icon: <Search />, text: "Tìm kiếm", textType: "Search" },
     { icon: <TrendingUp />, text: "Khám phá", textType: "Explore" },
     { icon: <MessageCircle />, text: "Tin nhắn", textType: "Messages" },
