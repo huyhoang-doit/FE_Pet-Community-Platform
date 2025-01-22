@@ -1,7 +1,21 @@
 import { Link, NavLink } from "react-router-dom";
 import Navbar from "./Navbar";
 import { FaCartShopping, FaHeart } from "react-icons/fa6";
+import { FaUser } from "react-icons/fa";
+import { jwtDecode } from "jwt-decode";
+import { useState } from "react";
 function Header() {
+  const [token, setToken] = useState(localStorage.getItem("access_token"));
+  let decoded;
+  if (token) {
+    decoded = jwtDecode(token);
+  }
+
+  const handleLogout = () => {
+    setToken(null);
+    localStorage.removeItem("access_token");
+    localStorage.removeItem("refresh_token");
+  };
   return (
     <header className="flex justify-between items-center h-20 bg-white px-10">
       <div id="logo" className="w-16">
@@ -114,17 +128,20 @@ function Header() {
         <Navbar />
       </div>
       <div className="flex gap-10 items-center">
-        {/* {!token || token === null ? ( */}
-        <div className="relative group py-7">
-          <NavLink to="/signin">Signin</NavLink>
-          {" / "}
-          <NavLink to="/signup">Signup</NavLink>
-        </div>
-        {/* ) : (
+        {!token || token === null ? (
+          <div className="relative group py-7">
+            <NavLink to="/login">Signin</NavLink>
+            {" / "}
+            <NavLink to="/signup">Signup</NavLink>
+          </div>
+        ) : (
           <div className="relative group py-7">
             <FaUser className="cursor-pointer text-xl" />
             <div className="absolute top-[4.85rem] border right-[-2.5rem] bg-white p-2  opacity-0 invisible transform translate-y-4 transition-all duration-150 ease-in-out group-hover:opacity-100 group-hover:visible group-hover:translate-y-0">
-              <NavLink className="block px-4 py-2 text-gray-700 hover:bg-gray-100">
+              <NavLink
+                to={`/profile/${decoded.username}`}
+                className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
+              >
                 Profile
               </NavLink>
               <NavLink
@@ -135,19 +152,23 @@ function Header() {
               </NavLink>
             </div>
           </div>
-        )} */}
+        )}
 
         <div className="relative">
-          <FaHeart className="cursor-pointer text-xl" />
-          <p className="absolute top-[-0.5rem] right-[-0.5rem] bg-red-600 text-white w-4 h-4 flex items-center justify-center rounded-full">
-            0
-          </p>
+          <Link to="/wishlist">
+            <FaHeart className="cursor-pointer text-xl" />
+            <p className="absolute top-[-0.5rem] right-[-0.5rem] bg-red-600 text-white w-4 h-4 flex items-center justify-center rounded-full">
+              0
+            </p>
+          </Link>
         </div>
         <div className="relative">
-          <FaCartShopping className="cursor-pointer text-xl" />
-          <p className="absolute top-[-0.5rem] right-[-0.5rem] bg-red-600 text-white w-4 h-4 flex items-center justify-center rounded-full">
-            0
-          </p>
+          <Link to="/cart">
+            <FaCartShopping className="cursor-pointer text-xl" />
+            <p className="absolute top-[-0.5rem] right-[-0.5rem] bg-red-600 text-white w-4 h-4 flex items-center justify-center rounded-full">
+              0
+            </p>
+          </Link>
         </div>
       </div>
     </header>
