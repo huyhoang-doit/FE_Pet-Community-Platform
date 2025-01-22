@@ -17,6 +17,7 @@ import "./App.css";
 import { BASE_WS } from "./configs/globalVariables";
 import LoadingSpinner from "./components/LoadingSpinner";
 import LandingPage from "./components/LandingPage";
+import DonateCancel from "./components/DonateCancel";
 
 const browserRouter = createBrowserRouter([
   {
@@ -66,6 +67,16 @@ const browserRouter = createBrowserRouter([
             <ChatPage />
           </ProtectedRoutes>
         ),
+      },
+      {
+        path: "/donate/cancel",
+        element: (
+          <ProtectedRoutes>
+            <DonateCancel >
+              <Home />
+            </DonateCancel>
+          </ProtectedRoutes>
+        ),
       }
     ],
   },
@@ -104,6 +115,8 @@ function App() {
       });
 
       socketio.on("notification", (notification) => {
+        console.log(notification);
+        
         dispatch(setLikeNotification(notification));
       });
 
