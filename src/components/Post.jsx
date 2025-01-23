@@ -29,7 +29,7 @@ const Post = ({ post }) => {
   const [open, setOpen] = useState(false);
   const { user } = useSelector((store) => store.auth);
   const { posts } = useSelector((store) => store.post);
-  const [liked, setLiked] = useState(post.likes.includes(user?._id) || false);
+  const [liked, setLiked] = useState(post.likes.includes(user?.id) || false);
   const [bookmarked, setBookmarked] = useState(
     user.bookmarks.includes(post?._id) || false
   );
@@ -61,8 +61,8 @@ const Post = ({ post }) => {
             ? {
                 ...p,
                 likes: liked
-                  ? p.likes.filter((id) => id !== user._id)
-                  : [...p.likes, user._id],
+                  ? p.likes.filter((id) => id !== user.id)
+                  : [...p.likes, user.id],
               }
             : p
         );
@@ -150,7 +150,7 @@ const Post = ({ post }) => {
           <span className="text-sm text-gray-500">
             •  {calculateTimeAgo(post.createdAt)}
           </span>
-          {user?._id === post.author._id && (
+          {user?.id === post.author.id && (
             <Badge variant="secondary">Author</Badge>
           )}
         </div>
@@ -159,7 +159,7 @@ const Post = ({ post }) => {
             <MoreHorizontal className="cursor-pointer" />
           </DialogTrigger>
           <DialogContent className="flex flex-col items-center text-sm text-center">
-            {post?.author?._id !== user?._id && (
+            {post?.author?.id !== user?.id && (
               <Button
                 variant="ghost"
                 className="cursor-pointer w-fit text-[#ED4956] font-bold"
@@ -171,7 +171,7 @@ const Post = ({ post }) => {
             <Button variant="ghost" className="cursor-pointer w-fit">
               Add to favorites
             </Button>
-            {user && user?._id === post?.author._id && (
+            {user && user?.id === post?.author.id && (
               <Button
                 onClick={deletePostHandler}
                 variant="ghost"

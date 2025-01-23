@@ -29,7 +29,7 @@ const CommentDialog = ({ open, setOpen }) => {
   useEffect(() => {
     if (selectedPost) {
       setComment(selectedPost.comments);
-      setLiked(selectedPost.likes.includes(user?._id) || false);
+      setLiked(selectedPost.likes.includes(user?.id) || false);
       setPostLike(selectedPost.likes.length);
       setBookmarked(user.bookmarks.includes(selectedPost?._id) || false);
     }
@@ -82,8 +82,8 @@ const CommentDialog = ({ open, setOpen }) => {
             ? {
                 ...p,
                 likes: liked
-                  ? p.likes.filter((id) => id !== user._id)
-                  : [...p.likes, user._id],
+                  ? p.likes.filter((id) => id !== user.id)
+                  : [...p.likes, user.id],
               }
             : p
         );
