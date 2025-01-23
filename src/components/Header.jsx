@@ -5,7 +5,7 @@ import { FaUser } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
 import { handleLogoutAPI } from "@/apis/auth";
 import { setAuthUser } from "@/redux/authSlice";
-import { setPosts, setSelectedPost } from "@/redux/postSlice";
+import { setPostPage, setPosts, setSelectedPost } from "@/redux/postSlice";
 import { toast } from "sonner";
 
 function Header() {
@@ -20,6 +20,7 @@ function Header() {
         dispatch(setAuthUser(null));
         dispatch(setSelectedPost(null));
         dispatch(setPosts([]));
+        dispatch(setPostPage(1));
         localStorage.removeItem("access_token");
         localStorage.removeItem("refresh_token");
         navigate("/");

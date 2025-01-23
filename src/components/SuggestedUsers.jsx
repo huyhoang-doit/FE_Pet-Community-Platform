@@ -13,7 +13,7 @@ const SuggestedUsers = () => {
     const { data } = await followOrUnfollowAPI(userId);
 
     if (data.status === 200) {
-      dispatch(setSuggestedUsers(suggestedUsers.filter((user) => user._id !== userId)));
+      dispatch(setSuggestedUsers(suggestedUsers.filter((user) => user.id !== userId)));
       toast.success(data.message);
     }
   }
@@ -26,7 +26,7 @@ const SuggestedUsers = () => {
       {suggestedUsers.map((user) => {
         return (
           <div
-            key={user._id}
+            key={user.id}
             className="flex items-center justify-between p-2"
           >
             <div className="flex items-center gap-2">
@@ -46,7 +46,7 @@ const SuggestedUsers = () => {
                 </span>
               </div>
             </div>
-            <span className="text-[#3BADF8] text-xs font-bold cursor-pointer hover:text-[#3495d6]" onClick={() => handleFollow(user._id)}>
+            <span className="text-[#3BADF8] text-xs font-bold cursor-pointer hover:text-[#3495d6]" onClick={() => handleFollow(user.id)}>
               Theo dõi
             </span>
           </div>

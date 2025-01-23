@@ -108,7 +108,7 @@ function App() {
     if (user) {
       const socketio = io(BASE_WS, {
         query: {
-          userId: user?._id,
+          userId: user?.id,
         },
         transports: ["websocket"],
       });

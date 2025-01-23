@@ -9,8 +9,9 @@ const useGetSuggestedUsers = () => {
     const fetchSuggestedUsers = async () => {
       try {
         const { data } = await suggestedAPI();
+        
         if (data.status === 200) {
-          dispatch(setSuggestedUsers(data.data));
+          dispatch(setSuggestedUsers(data.data.results));
         }
       } catch (error) {
         console.log(error);

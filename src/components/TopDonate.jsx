@@ -17,14 +17,14 @@ const TopDonate = ({ topDonate }) => {
           <div
             key={index}
             className={`flex items-center justify-between p-2 rounded-md ${
-              user?._id === donate.user?._id ? "bg-blue-50" : ""
+              user?.id === donate.user?.id ? "bg-blue-50" : ""
             }`}
           >
             <div className="flex items-center gap-2">
               <Link to={`/profile/${donate.user?.username}`}>
                 <Avatar
                   className={`w-10 h-101 ${
-                    user?._id === donate.user?._id ? "ring-2 ring-blue-500" : ""
+                    user?.id === donate.user?.id ? "ring-2 ring-blue-500" : ""
                   }`}
                   style={{ border: "1px solid #e0e0e0" }}
                 >
@@ -64,7 +64,7 @@ const TopDonate = ({ topDonate }) => {
               </div>
             </div>
             {
-              user?._id !== donate.user?._id && (
+              user?.id !== donate.user?.id && (
                 <Link to={`/profile/${donate.user?.username}`}>
                   <span className="text-emerald-500 text-xs font-bold cursor-pointer hover:text-emerald-600">
                     Xem hồ sơ

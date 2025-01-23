@@ -31,9 +31,9 @@ const Profile = () => {
   useGetUserProfile(username);
   const [activeTab, setActiveTab] = useState("posts");
   const { userProfile, user } = useSelector((store) => store.auth);
-  const isLoggedInUserProfile = user?._id === userProfile?._id;
+  const isLoggedInUserProfile = user?.id === userProfile?.id;
   const [isFollowing, setIsFollowing] = useState(
-    userProfile?.followers.includes(user?._id)
+    userProfile?.followers.includes(user?.id)
   );
   const [numberFollowers, setNumberFollowers] = useState(
     userProfile?.followers?.length
@@ -52,12 +52,12 @@ const Profile = () => {
   useEffect(() => {
     setNumberFollowers(userProfile?.followers.length);
     setNumberFollowing(userProfile?.following.length);
-    setIsFollowing(userProfile?.followers.includes(user?._id));
+    setIsFollowing(userProfile?.followers.includes(user?.id));
   }, [userProfile, user]);
 
   const followOrUnfollowHandler = async () => {
     try {
-      const { data } = await followOrUnfollowAPI(userProfile._id);
+      const { data } = await followOrUnfollowAPI(userProfile.id);
 
       if (data.status === 200) {
         setIsFollowing(!isFollowing);
@@ -69,8 +69,8 @@ const Profile = () => {
           setUserProfile({
             ...userProfile,
             followers: isFollowing
-              ? userProfile.followers.filter((id) => id !== user._id)
-              : [...userProfile.followers, user._id],
+              ? userProfile.followers.filter((id) => id !== user.id)
+              : [...userProfile.followers, user.id],
           })
         );
         toast.success(data.message);
@@ -115,7 +115,7 @@ const Profile = () => {
         <div className="grid grid-cols-2">
           <section className="flex items-center justify-center">
             <Avatar
-              className="h-40 w-40 rounded-full"
+              className="h-40 w-40 rounded-full object-cover"
               style={{ border: "1px solid #e0e0e0" }}
             >
               <AvatarImage
@@ -168,7 +168,7 @@ const Profile = () => {
                   </Button>
                 )}
                 <Button variant="secondary" className="h-8" onClick={() => {
-                  navigate(`/chat/${userProfile?._id}`)
+                  navigate(`/chat/${userProfile?.id}`)
                 }}>
                   Nhắn tin
                 </Button>
@@ -241,7 +241,7 @@ const Profile = () => {
             {displayedPost?.map((post) => {
               return (
                 <div
-                  key={post?._id}
+                  key={post?.id}
                   className="relative group cursor-pointer"
                   onClick={() => {
                     handlePostClick(post);

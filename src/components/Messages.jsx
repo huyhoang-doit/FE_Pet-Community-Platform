@@ -44,14 +44,14 @@ const Messages = ({ selectedUser }) => {
             const nextMsg =
               index < messages.length - 1 ? messages[index + 1] : null;
             const showAvatar =
-              msg.senderId !== user?._id &&
+              msg.senderId !== user?.id &&
               (!nextMsg || nextMsg.senderId !== msg.senderId);
 
             return (
               <div
                 key={msg._id}
                 className={`flex items-center gap-2 ${
-                  msg.senderId === user?._id ? "justify-end" : "justify-start"
+                  msg.senderId === user?.id ? "justify-end" : "justify-start"
                 }`}
               >
                 {showAvatar ? (
@@ -66,7 +66,7 @@ const Messages = ({ selectedUser }) => {
                 )}
                 <div
                   className={`p-2 rounded-lg max-w-xs break-words ${
-                    msg.senderId === user?._id
+                    msg.senderId === user?.id
                       ? "bg-blue-500 text-white"
                       : "bg-gray-200 text-black"
                   }`}

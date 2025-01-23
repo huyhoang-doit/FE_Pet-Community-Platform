@@ -37,10 +37,23 @@ const ChatPage = () => {
         setTextMessage("");
 
         const isExistingChat = chatUsers.some(
-          (user) => user._id === receiverId
+          (user) => user.id === receiverId
         );
+        console.log(chatUsers);
+        console.log(receiverId);
+        
+        
+        console.log(isExistingChat);
+        
         if (!isExistingChat) {
-          dispatch(setChatUsers([selectedUser, ...chatUsers]));
+          dispatch(setChatUsers([{ 
+            ...selectedUser,
+            lastMessage: {
+              content: textMessage,
+              time: new Date().toISOString(),
+              from: user.id,
+            },
+          }, ...chatUsers]));
         }
       }
     } catch (error) {
@@ -53,12 +66,13 @@ const ChatPage = () => {
       dispatch(setSelectedUser(null));
     };
   }, []);
-
+  console.log(chatUsers);
+  
   return (
-    <div className="flex ml-[5%] h-screen">
+    <div className="flex ml-[80px] h-screen">
       <section className="w-full md:w-1/5 border-r border-r-gray-300">
-        <h1 className="font-bold my-8 text-xl">{user?.username}</h1>
-        <div className="flex items-center justify-between mb-4 pr-4">
+        <h1 className="font-bold my-8 text-xl pl-[20px]">{user?.username}</h1>
+        <div className="pl-[20px] flex items-center justify-between mb-4 pr-4">
           <span className="text-md font-bold">Tin nhắn</span>
           <span className="text-sm font-bold text-gray-500">
             Tin nhắn đang chờ
@@ -66,12 +80,16 @@ const ChatPage = () => {
         </div>
         <div className="overflow-y-auto h-[80vh]">
           {chatUsers.map((suggestedUser) => {
-            const isOnline = onlineUsers.includes(suggestedUser?._id);
+            const isOnline = onlineUsers.includes(suggestedUser?.id);
+            const isSelected = selectedUser?.id === suggestedUser?.id;
             return (
               <div
                 key={suggestedUser.id}
                 onClick={() => dispatch(setSelectedUser(suggestedUser))}
-                className="flex gap-3 items-center hover:bg-gray-50 cursor-pointer pb-4"
+                className=
+                {`pl-[20px] flex gap-3 items-center cursor-pointer py-2 ${
+                  isSelected ? 'bg-gray-100' : 'hover:bg-gray-50'
+                }`}
               >
                 <div className="relative">
                   <Avatar
@@ -99,11 +117,11 @@ const ChatPage = () => {
                     </span>
                   ) : (
                     <span className={`text-xs text-gray-500 `}>
-                      {suggestedUser?.lastMessage.from === user?._id
+                      {suggestedUser?.lastMessage?.from === user?.id
                         ? "Bạn: "
                         : ""}
-                      {suggestedUser?.lastMessage.content} •{" "}
-                      {calculateTimeAgo(suggestedUser?.lastMessage.time)}
+                      {suggestedUser?.lastMessage?.content} •{" "}
+                      {calculateTimeAgo(suggestedUser?.lastMessage?.time)}
                     </span>
                   )}
                 </div>
@@ -140,7 +158,7 @@ const ChatPage = () => {
               className="flex-1 mr-2 focus-visible:ring-transparent"
               placeholder="Nhắn tin..."
             />
-            <Button onClick={() => sendMessageHandler(selectedUser?._id)}>
+            <Button onClick={() => sendMessageHandler(selectedUser?.id)}>
               Send
             </Button>
           </div>

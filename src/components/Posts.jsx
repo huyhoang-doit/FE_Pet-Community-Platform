@@ -1,9 +1,56 @@
-import { Fragment } from "react";
+import { Fragment, useEffect, useRef, useState } from "react";
 import Post from "./Post";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { setPostPage, setPosts } from "@/redux/postSlice";
+import { fetchAllPostsAPI } from "@/apis/post";
+import { toast } from "sonner";
 
 const Posts = () => {
-  const { posts } = useSelector((store) => store.post);
+  const { posts, page } = useSelector((store) => store.post);
+  const dispatch = useDispatch();
+  const [hasMorePosts, setHasMorePosts] = useState(true);
+  const loaderRef = useRef(null);
+  const isInitialLoad = useRef(true);
+
+  useEffect(() => {
+    const originalScrollRestoration = history.scrollRestoration;
+    history.scrollRestoration = "manual";
+    window.scrollTo(0, 0);
+
+    return () => {
+      history.scrollRestoration = originalScrollRestoration;
+    };
+  }, [])
+
+  useEffect(() => {
+    if (isInitialLoad.current) {
+      isInitialLoad.current = false;
+      return;
+    }
+    const observer = new IntersectionObserver(
+      ([entry]) => entry.isIntersecting && hasMorePosts && handleLoadMore(),
+      { threshold: 0.5 }
+    );
+  
+    loaderRef.current && observer.observe(loaderRef.current);
+    
+    return () => observer.disconnect();
+  }, [hasMorePosts, posts]);
+
+  const handleLoadMore = async () => {
+    try {
+      const nextPage = page + 1;
+      dispatch(setPostPage(nextPage));
+      const { data } = await fetchAllPostsAPI(nextPage);
+      if (data.data.results.length === 0) {
+        setHasMorePosts(false);
+        return;
+      }
+      dispatch(setPosts([...posts, ...data.data.results]));
+    } catch (error) {
+      toast.error("Failed to load more posts");
+    }
+  };
 
   return (
     <div>
@@ -13,6 +60,10 @@ const Posts = () => {
           {index !== posts.length - 1 && <hr />}
         </Fragment>
       ))}
+      {hasMorePosts && (
+        <div ref={loaderRef} style={{ height: "50px", background: "transparent" }}>
+        </div>
+      )}
     </div>
   );
 };

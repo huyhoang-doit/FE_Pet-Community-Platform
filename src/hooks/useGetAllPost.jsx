@@ -1,5 +1,5 @@
 import { fetchAllPostsAPI } from "@/apis/post";
-import { setPosts } from "@/redux/postSlice";
+import { setPostPage, setPosts } from "@/redux/postSlice";
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 
@@ -8,10 +8,11 @@ const useGetAllPost = () => {
   useEffect(() => {
     const fetchAllPost = async () => {
       try {
-        const { data } = await fetchAllPostsAPI();
+        const { data } = await fetchAllPostsAPI(1);
 
         if (data.status === 200) {
-          dispatch(setPosts(data.data));
+          dispatch(setPosts(data.data.results));
+          dispatch(setPostPage(1));
         }
       } catch (error) {
         console.log(error);

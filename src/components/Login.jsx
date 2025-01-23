@@ -6,7 +6,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { Loader2 } from "lucide-react";
 import { useDispatch } from "react-redux";
 import { setAuthUser } from "@/redux/authSlice";
-import { setPosts, setSelectedPost } from "@/redux/postSlice";
+import { setPostPage, setPosts, setSelectedPost } from "@/redux/postSlice";
 import { loginAPI } from "@/apis/auth";
 
 const Login = () => {
@@ -58,6 +58,7 @@ const Login = () => {
         dispatch(setAuthUser(null));
         dispatch(setSelectedPost(null));
         dispatch(setPosts([]));
+        dispatch(setPostPage(1));
       } else {
         navigate("/");
       }
