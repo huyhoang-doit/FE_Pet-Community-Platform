@@ -9,80 +9,48 @@ function Navbar() {
       isArrow: false,
     },
     {
-      path: "#",
-      name: "Men",
-      isArrow: true,
-      dropdown: [
-        {
-          path: "#",
-          name: "About",
-        },
-        {
-          path: "#",
-          name: "Contact",
-        },
-      ],
+      path: "/forum",
+      name: "Forum",
+      isArrow: false,
     },
     {
-      path: "#",
-      name: "Woman",
-      isArrow: true,
-      dropdown: [
-        {
-          path: "#",
-          name: "About",
-        },
-        {
-          path: "#",
-          name: "Contact",
-        },
-      ],
+      path: "/blog",
+      name: "Blog",
     },
     {
-      path: "#",
-      name: "Boy",
-      isArrow: true,
-      dropdown: [
-        {
-          path: "#",
-          name: "About",
-        },
-        {
-          path: "#",
-          name: "Contact",
-        },
-      ],
+      path: "/adopt",
+      name: "Adopt",
     },
-    {
-      path: "#",
-      name: "Girl",
-      isArrow: true,
-      dropdown: [
-        {
-          path: "#",
-          name: "About",
-        },
-        {
-          path: "#",
-          name: "Contact",
-        },
-      ],
-    },
-    {
-      path: "#",
-      name: "Accessories",
-      isArrow: true,
-      dropdown: [
-        {
-          path: "#",
-          name: "About",
-        },
-        {
-          path: "#",
-          name: "Contact",
-        },
-      ],
-    },
+    // {
+    //   path: "#",
+    //   name: "Girl",
+    //   isArrow: true,
+    //   dropdown: [
+    //     {
+    //       path: "#",
+    //       name: "About",
+    //     },
+    //     {
+    //       path: "#",
+    //       name: "Contact",
+    //     },
+    //   ],
+    // },
+    // {
+    //   path: "#",
+    //   name: "Accessories",
+    //   isArrow: true,
+    //   dropdown: [
+    //     {
+    //       path: "#",
+    //       name: "About",
+    //     },
+    //     {
+    //       path: "#",
+    //       name: "Contact",
+    //     },
+    //   ],
+    // },
   ];
   return (
     <>
@@ -91,7 +59,7 @@ function Navbar() {
           <div className="flex items-center" key={item.name}>
             <div className="relative group">
               <NavLink
-                href={item.path}
+                to={item.path}
                 className="flex py-7 items-center gap-2 text-lg font-medium text-gray-500 hover:text-gray-900 h-full"
               >
                 {item.name}

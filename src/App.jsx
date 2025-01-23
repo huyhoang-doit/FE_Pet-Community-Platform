@@ -17,6 +17,7 @@ import "./App.css";
 import { BASE_WS } from "./configs/globalVariables";
 import LoadingSpinner from "./components/LoadingSpinner";
 import LandingPage from "./components/LandingPage";
+import DonateCancel from "./components/DonateCancel";
 
 const browserRouter = createBrowserRouter([
   {
@@ -29,6 +30,14 @@ const browserRouter = createBrowserRouter([
     children: [
       {
         path: "/",
+        element: (
+          <ProtectedRoutes>
+            <LandingPage />
+          </ProtectedRoutes>
+        ),
+      },
+      {
+        path: "/forum",
         element: (
           <ProtectedRoutes>
             <Home />
@@ -66,7 +75,18 @@ const browserRouter = createBrowserRouter([
             <ChatPage />
           </ProtectedRoutes>
         ),
+      },
+      {
+        path: "/donate/cancel",
+        element: (
+          <ProtectedRoutes>
+            <DonateCancel >
+              <Home />
+            </DonateCancel>
+          </ProtectedRoutes>
+        ),
       }
+
     ],
   },
   {
@@ -76,10 +96,6 @@ const browserRouter = createBrowserRouter([
   {
     path: "/signup",
     element: <Signup />,
-  },
-  {
-    path: "/landing-page",
-    element: <LandingPage />,
   },
 ]);
 
@@ -104,6 +120,8 @@ function App() {
       });
 
       socketio.on("notification", (notification) => {
+        console.log(notification);
+        
         dispatch(setLikeNotification(notification));
       });
 

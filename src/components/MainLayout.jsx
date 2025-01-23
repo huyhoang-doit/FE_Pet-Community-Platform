@@ -1,15 +1,18 @@
-import { Outlet } from 'react-router-dom'
-import LeftSidebar from './LeftSidebar'
+import { Outlet, useLocation } from "react-router-dom";
+import LeftSidebar from "./LeftSidebar";
 
 const MainLayout = () => {
+  const location = useLocation();
+  const isRootRoute = location.pathname === "/";
+
   return (
     <div>
-         <LeftSidebar/>
-        <div>
-            <Outlet/>
-        </div>
+      {!isRootRoute && <LeftSidebar />}
+      <div>
+        <Outlet />
+      </div>
     </div>
-  )
-}
+  );
+};
 
-export default MainLayout
+export default MainLayout;
