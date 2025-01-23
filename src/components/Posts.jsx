@@ -10,6 +10,7 @@ const Posts = () => {
   const dispatch = useDispatch();
   const [hasMorePosts, setHasMorePosts] = useState(true);
   const loaderRef = useRef(null);
+  const isInitialLoad = useRef(true);
 
   useEffect(() => {
     const originalScrollRestoration = history.scrollRestoration;
@@ -22,21 +23,25 @@ const Posts = () => {
   }, [])
 
   useEffect(() => {
+    if (isInitialLoad.current) {
+      isInitialLoad.current = false;
+      return;
+    }
     const observer = new IntersectionObserver(
-      ([entry]) => entry.isIntersecting && handleLoadMore(),
+      ([entry]) => entry.isIntersecting && hasMorePosts && handleLoadMore(),
       { threshold: 0.5 }
     );
   
     loaderRef.current && observer.observe(loaderRef.current);
     
     return () => observer.disconnect();
-  }, [loaderRef, posts]);
+  }, [hasMorePosts, posts]);
 
   const handleLoadMore = async () => {
     try {
       const nextPage = page + 1;
       dispatch(setPostPage(nextPage));
-      const { data } = await fetchAllPostsAPI(nextPage, 4);
+      const { data } = await fetchAllPostsAPI(nextPage);
       if (data.data.results.length === 0) {
         setHasMorePosts(false);
         return;
@@ -56,7 +61,7 @@ const Posts = () => {
         </Fragment>
       ))}
       {hasMorePosts && (
-        <div ref={loaderRef} style={{ height: "5  0px", background: "transparent" }}>
+        <div ref={loaderRef} style={{ height: "50px", background: "transparent" }}>
         </div>
       )}
     </div>
