@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
-import { setSelectedUser } from "@/redux/authSlice";
+import { setChatUsers, setSelectedUser } from "@/redux/authSlice";
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
 import { MessageCircleCode } from "lucide-react";
@@ -10,6 +10,7 @@ import { setMessages } from "@/redux/chatSlice";
 import { useParams } from "react-router-dom";
 import { getProfileByIdAPI } from "@/apis/user";
 import { sendMessageAPI } from "@/apis/message";
+import { calculateTimeAgo } from "@/utils/calculateTimeAgo";
 
 const ChatPage = () => {
   const { id } = useParams();
@@ -34,6 +35,13 @@ const ChatPage = () => {
       if (data.success) {
         dispatch(setMessages([...messages, data.newMessage]));
         setTextMessage("");
+
+        const isExistingChat = chatUsers.some(
+          (user) => user._id === receiverId
+        );
+        if (!isExistingChat) {
+          dispatch(setChatUsers([selectedUser, ...chatUsers]));
+        }
       }
     } catch (error) {
       console.log(error);
@@ -65,25 +73,39 @@ const ChatPage = () => {
                 onClick={() => dispatch(setSelectedUser(suggestedUser))}
                 className="flex gap-3 items-center hover:bg-gray-50 cursor-pointer pb-4"
               >
-                <Avatar className="w-14 h-14">
-                  <AvatarImage src={suggestedUser?.profilePicture} />
-                  <AvatarFallback>CN</AvatarFallback>
-                </Avatar>
+                <div className="relative">
+                  <Avatar
+                    className="w-14 h-14"
+                    style={{ border: "1px solid #e0e0e0" }}
+                  >
+                    <AvatarImage src={suggestedUser?.profilePicture} />
+                    <AvatarFallback>CN</AvatarFallback>
+                  </Avatar>
+                  {isOnline && (
+                    <span className="absolute bottom-0 right-0 w-4 h-4 bg-green-500 border-2 border-white rounded-full"></span>
+                  )}
+                </div>
                 <div className="flex flex-col">
-                  {(suggestedUser.firstName && suggestedUser.lastName) ? (
+                  {suggestedUser.firstName && suggestedUser.lastName ? (
                     <span className="text-sm">
                       {suggestedUser?.lastName} {suggestedUser?.firstName}
                     </span>
                   ) : (
                     <span className="text-sm">{suggestedUser?.username}</span>
                   )}
-                  <span
-                    className={`text-xs font-bold ${
-                      isOnline ? "text-green-600" : "text-red-600"
-                    } `}
-                  >
-                    {isOnline ? "Online" : "Offline"}
-                  </span>
+                  {isOnline ? (
+                    <span className="text-xs text-gray-500">
+                      Đang hoạt động
+                    </span>
+                  ) : (
+                    <span className={`text-xs text-gray-500 `}>
+                      {suggestedUser?.lastMessage.from === user?._id
+                        ? "Bạn: "
+                        : ""}
+                      {suggestedUser?.lastMessage.content} •{" "}
+                      {calculateTimeAgo(suggestedUser?.lastMessage.time)}
+                    </span>
+                  )}
                 </div>
               </div>
             );
@@ -93,13 +115,13 @@ const ChatPage = () => {
       {selectedUser ? (
         <section className="flex-1 border-l border-l-gray-300 flex flex-col h-full">
           <div className="flex gap-3 items-center px-3 py-2 border-b border-gray-300 sticky top-0 bg-white z-10">
-            <Avatar>
+            <Avatar style={{ border: "1px solid #e0e0e0" }}>
               <AvatarImage src={selectedUser?.profilePicture} alt="profile" />
               <AvatarFallback>CN</AvatarFallback>
             </Avatar>
             <div className="flex flex-col">
               <span className="font-medium text-sm">
-                {(selectedUser.firstName && selectedUser.lastName) ? (
+                {selectedUser.firstName && selectedUser.lastName ? (
                   <span className="text-sm">
                     {selectedUser?.lastName} {selectedUser?.firstName}
                   </span>

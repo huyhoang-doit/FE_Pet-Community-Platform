@@ -158,11 +158,6 @@ const Profile = () => {
                     >
                       Bỏ theo dõi
                     </Button>
-                    <Button variant="secondary" className="h-8" onClick={() => {
-                      navigate(`/chat/${userProfile?._id}`)
-                    }}>
-                      Nhắn tin
-                    </Button>
                   </>
                 ) : (
                   <Button
@@ -172,6 +167,11 @@ const Profile = () => {
                     Theo dõi
                   </Button>
                 )}
+                <Button variant="secondary" className="h-8" onClick={() => {
+                  navigate(`/chat/${userProfile?._id}`)
+                }}>
+                  Nhắn tin
+                </Button>
               </div>
               <div className="flex items-center gap-8">
                 <p>

@@ -2,12 +2,11 @@ import {
   Heart,
   Home,
   LogOut,
-  MessageCircle,
   PlusSquare,
   Search,
-  TrendingUp
+  TrendingUp,
 } from "lucide-react";
-import { MdOutlineForum  } from "react-icons/md";
+import { MdForum, MdOutlineForum } from "react-icons/md";
 import { useState, useEffect } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { toast } from "sonner";
@@ -19,6 +18,7 @@ import { setPosts, setSelectedPost } from "@/redux/postSlice";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import { Button } from "./ui/button";
 import { handleLogoutAPI } from "@/apis/auth";
+import { RiMessengerLine, RiMessengerFill } from "react-icons/ri";
 
 const LeftSidebar = () => {
   const navigate = useNavigate();
@@ -72,16 +72,42 @@ const LeftSidebar = () => {
     }
   };
 
+  const isActiveTab = (path) => {
+    if (path === "Home") return location.pathname === "/";
+    if (path === "Forum") return location.pathname.includes("/forum");
+    if (path === "Messages") return location.pathname.includes("/chat");
+    if (path === "Profile") return location.pathname.includes("/profile");
+    return false;
+  };
+
   const sidebarItems = [
-    { icon: <Home  />, text: "Trang chủ", textType: "Home" },
-    { icon: <MdOutlineForum  size={24} />, text: "Diễn đàn", textType: "Forum" },
+    { icon: <Home />, text: "Trang chủ", textType: "Home" },
+    {
+      icon: isActiveTab("Forum") ? (
+        <MdForum size={24} />
+      ) : (
+        <MdOutlineForum size={24} />
+      ),
+      text: "Diễn đàn",
+      textType: "Forum",
+      isActive: isActiveTab("Forum"),
+    },
     { icon: <Search />, text: "Tìm kiếm", textType: "Search" },
     { icon: <TrendingUp />, text: "Khám phá", textType: "Explore" },
-    { icon: <MessageCircle />, text: "Tin nhắn", textType: "Messages" },
+    {
+      icon: isActiveTab("Messages") ? <RiMessengerFill size={24}/> : <RiMessengerLine size={24}/>,
+      text: "Tin nhắn",
+      textType: "Messages",
+    },
     { icon: <Heart />, text: "Thông báo", textType: "Notifications" },
     { icon: <PlusSquare />, text: "Tạo", textType: "Create" },
     {
-      icon: (
+      icon: isActiveTab("Profile") ? (
+        <Avatar className="w-6 h-6" style={{ border: "2px solid black" }}>
+          <AvatarImage src={user?.profilePicture} alt="@shadcn" />
+          <AvatarFallback>CN</AvatarFallback>
+        </Avatar>
+      ) : (
         <Avatar className="w-6 h-6" style={{ border: "1px solid #e0e0e0" }}>
           <AvatarImage src={user?.profilePicture} alt="@shadcn" />
           <AvatarFallback>CN</AvatarFallback>
@@ -89,8 +115,12 @@ const LeftSidebar = () => {
       ),
       text: "Trang cá nhân",
       textType: "Profile",
+      isActive: isActiveTab("Profile"),
     },
-  ];
+  ].map((item) => ({
+    ...item,
+    className: item.isActive ? "font-bold" : "",
+  }));
 
   return (
     <div
@@ -101,7 +131,7 @@ const LeftSidebar = () => {
       }}
     >
       <div className="flex flex-col h-full">
-        <Link to="/" style={{height: "120px"}}>
+        <Link to="/" style={{ height: "120px" }}>
           <h1 className="my-8 pl-3 font-bold text-xl">
             {sidebarWidth === "340px" ? (
               <img
@@ -128,7 +158,9 @@ const LeftSidebar = () => {
                   className="flex items-center gap-3 relative hover:bg-gray-100 cursor-pointer rounded-lg p-3 my-3"
                 >
                   {item.icon}
-                  {sidebarWidth === "340px" && <span>{item.text}</span>}
+                  {sidebarWidth === "340px" && (
+                    <span className={item.className}>{item.text}</span>
+                  )}
                   {item.text === "Notifications" &&
                     likeNotification.length > 0 && (
                       <Popover>
