@@ -115,7 +115,7 @@ const Profile = () => {
         <div className="grid grid-cols-2">
           <section className="flex items-center justify-center">
             <Avatar
-              className="h-40 w-40 rounded-full"
+              className="h-40 w-40 rounded-full object-cover"
               style={{ border: "1px solid #e0e0e0" }}
             >
               <AvatarImage

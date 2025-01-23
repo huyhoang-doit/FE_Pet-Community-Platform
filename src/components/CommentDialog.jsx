@@ -119,7 +119,6 @@ const CommentDialog = ({ open, setOpen }) => {
                   src={selectedPost.video[0]}
                   className="max-h-screen w-auto object-contain"
                   autoPlay
-                  muted
                   loop
                 />
               )
@@ -214,6 +213,7 @@ const CommentDialog = ({ open, setOpen }) => {
                     <AvatarFallback>UN</AvatarFallback>
                   </Avatar>
                 </Link>
+
                 <span className="text-sm">
                   <div className="inline-flex mr-1">
                     <Link

@@ -62,7 +62,7 @@ authorizedAxiosInstance.interceptors.response.use(
             try {
                 const res = await refreshTokenAPI()
                 const newToken = res.data.data
-                
+
                 localStorage.setItem('access_token', newToken);
 
                 // Notify all subscribers that token has been refreshed
@@ -85,7 +85,7 @@ authorizedAxiosInstance.interceptors.response.use(
         if (error.response?.status === 401) {
             store.dispatch(setLoading(false)); // Hide loading on 401 error
             await handleLogoutAPI()
-            // location.href = '/login'
+            location.href = '/login'
             return Promise.reject(error)
         }
 

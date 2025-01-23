@@ -50,7 +50,6 @@ const Post = ({ post }) => {
     try {
       const action = liked ? "dislike" : "like";
       const res = await likeOrDislikeAPI(post._id, action);
-      console.log(res.data);
       if (res.data.success) {
         const updatedLikes = liked ? postLike - 1 : postLike + 1;
         setPostLike(updatedLikes);
