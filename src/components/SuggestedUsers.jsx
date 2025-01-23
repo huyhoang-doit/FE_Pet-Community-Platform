@@ -42,7 +42,7 @@ const SuggestedUsers = () => {
                   {user?.isVerified && <VerifiedBadge size={14} />}
                 </h1>
                 <span className="text-gray-600 text-sm">
-                  {user?.bio || "Bio here..."}
+                  {user?.bio || "Gợi ý cho bạn"}
                 </span>
               </div>
             </div>

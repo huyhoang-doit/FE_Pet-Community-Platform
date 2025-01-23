@@ -16,7 +16,7 @@ const Messages = ({ selectedUser }) => {
     <div className="overflow-y-auto flex-1 p-4">
       <div className="flex justify-center">
         <div className="flex flex-col items-center justify-center">
-          <Avatar className="h-20 w-20">
+          <Avatar className="h-20 w-20"  style={{ border: "1px solid #e0e0e0" }}>
             <AvatarImage src={selectedUser?.profilePicture} alt="profile" />
             <AvatarFallback>CN</AvatarFallback>
           </Avatar>
@@ -59,6 +59,7 @@ const Messages = ({ selectedUser }) => {
                     className="w-8 h-8 rounded-full"
                     src={selectedUser?.profilePicture}
                     alt="profile"
+                    style={{ border: "1px solid #e0e0e0" }}
                   />
                 ) : (
                   <div className="w-8 h-8" /> // Placeholder to maintain spacing
