@@ -1,9 +1,8 @@
 /* eslint-disable react/prop-types */
 import { useEffect, useRef, useState } from "react";
-import { Dialog, DialogContent, DialogHeader } from "./ui/dialog";
-import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
-import { Textarea } from "./ui/textarea";
-import { Button } from "./ui/button";
+import { Dialog, DialogContent, DialogHeader } from "@/components//ui/dialog";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components//ui/avatar";
+import { Textarea } from "@/components/ui/textarea";
 import { readFileAsDataURL } from "@/lib/utils";
 import { Loader2, SmilePlus } from "lucide-react";
 import { toast } from "sonner";
@@ -11,6 +10,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { setPosts } from "@/redux/postSlice";
 import { addPostsAPI } from "@/apis/post";
 import EmojiPicker from "emoji-picker-react";
+import { Button } from "@/components/ui/button";
 
 const CreatePost = ({ open, setOpen }) => {
   const imageRef = useRef();

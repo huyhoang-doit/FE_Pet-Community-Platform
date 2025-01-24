@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
-import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import useGetUserProfile from "@/hooks/useGetUserProfile";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { Button } from "./ui/button";
-import { Badge } from "./ui/badge";
+import { Button } from "../ui/button";
+import { Badge } from "../ui/badge";
 import {
   AtSign,
   ContactRound,
@@ -14,16 +14,18 @@ import {
 } from "lucide-react";
 import { setUserProfile } from "@/redux/authSlice";
 import { toast } from "sonner";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "./ui/dialog";
-import UserListItem from "./UserListItem";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../ui/dialog";
 import authorizedAxiosInstance from "@/utils/authorizedAxios";
-import VerifiedBadge from "./VerifiedBadge";
 import { setSelectedPost } from "@/redux/postSlice";
-import CommentDialog from "./CommentDialog";
+import CommentDialog from "../features/posts/CommentDialog";
 import { FaBookmark } from "react-icons/fa";
 import { followOrUnfollowAPI } from "@/apis/user";
+import VerifiedBadge from "../core/VerifiedBadge";
+import UserListItem from "../features/users/UserListItem";
+import useFetchData from "@/hooks/useFetchData";
 
 const Profile = () => {
+  useFetchData()
   const params = useParams();
   const username = params.username;
   const dispatch = useDispatch();
@@ -167,11 +169,17 @@ const Profile = () => {
                     Theo dõi
                   </Button>
                 )}
-                <Button variant="secondary" className="h-8" onClick={() => {
-                  navigate(`/chat/${userProfile?.id}`)
-                }}>
-                  Nhắn tin
-                </Button>
+                {!isLoggedInUserProfile && (
+                  <Button
+                    variant="secondary"
+                    className="h-8"
+                    onClick={() => {
+                      navigate(`/chat/${userProfile?.id}`);
+                    }}
+                  >
+                    Nhắn tin
+                  </Button>
+                )}
               </div>
               <div className="flex items-center gap-8">
                 <p>
@@ -241,7 +249,7 @@ const Profile = () => {
             {displayedPost?.map((post) => {
               return (
                 <div
-                  key={post?.id}
+                  key={post._id}
                   className="relative group cursor-pointer"
                   onClick={() => {
                     handlePostClick(post);

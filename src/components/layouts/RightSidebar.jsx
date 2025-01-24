@@ -1,10 +1,10 @@
-import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
-import SuggestedUsers from "./SuggestedUsers";
-import TopDonate from "./TopDonate";
-import ProcessDonate from "./ProcessDonate";
-import VerifiedBadge from "./VerifiedBadge";
+import VerifiedBadge from "../core/VerifiedBadge";
+import ProcessDonate from "../features/donate/ProcessDonate";
+import TopDonate from "../features/donate/TopDonate";
+import SuggestedUsers from "../features/users/SuggestedUsers";
 
 const RightSidebar = () => {
   const { user } = useSelector((store) => store.auth);

@@ -1,16 +1,16 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { setChatUsers, setSelectedUser } from "@/redux/authSlice";
-import { Input } from "./ui/input";
-import { Button } from "./ui/button";
+import { Input } from "../ui/input";
 import { MessageCircleCode } from "lucide-react";
-import Messages from "./Messages";
 import { setMessages } from "@/redux/chatSlice";
 import { useParams } from "react-router-dom";
 import { getProfileByIdAPI } from "@/apis/user";
 import { sendMessageAPI } from "@/apis/message";
 import { calculateTimeAgo } from "@/utils/calculateTimeAgo";
+import { Button } from "../ui/button";
+import Messages from "../features/messages/Messages";
 
 const ChatPage = () => {
   const { id } = useParams();

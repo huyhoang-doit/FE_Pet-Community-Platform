@@ -1,41 +1,36 @@
 import { useEffect, useState } from "react";
-import { Input } from "./ui/input";
-import { Button } from "./ui/button";
 import { toast } from "sonner";
 import { Link, useNavigate } from "react-router-dom";
 import { Loader2 } from "lucide-react";
-import { useDispatch } from "react-redux";
-import { setAuthUser } from "@/redux/authSlice";
-import { setPostPage, setPosts, setSelectedPost } from "@/redux/postSlice";
-import { loginAPI } from "@/apis/auth";
+import { useSelector } from "react-redux";
+import { signupAPI } from "@/apis/auth";
+import { Input } from "../ui/input";
+import { Button } from "../ui/button";
 
-const Login = () => {
+const Signup = () => {
   const [input, setInput] = useState({
+    username: "",
     email: "",
     password: "",
   });
   const [loading, setLoading] = useState(false);
+  const { user } = useSelector((store) => store.auth);
   const navigate = useNavigate();
-  const dispatch = useDispatch();
 
   const changeEventHandler = (e) => {
     setInput({ ...input, [e.target.name]: e.target.value });
   };
 
-  const loginHandler = async (e) => {
+  const signupHandler = async (e) => {
     e.preventDefault();
     try {
       setLoading(true);
-      const res = await loginAPI(input);
-
-      if (res.status === 200) {
-        const { access_token, refresh_token, user } = res.data.data;
-        localStorage.setItem("access_token", access_token);
-        localStorage.setItem("refresh_token", refresh_token);
-        dispatch(setAuthUser(user));
-        navigate("/");
-        toast.success(res.data.message);
+      const { data } = await signupAPI(input);
+      if (data.status === 201) {
+        navigate("/login");
+        toast.success(data.message);
         setInput({
+          username: "",
           email: "",
           password: "",
         });
@@ -49,35 +44,31 @@ const Login = () => {
   };
 
   useEffect(() => {
-    const checkAuth = () => {
-      const access_token = localStorage.getItem("access_token");
-
-      if (!access_token) {
-        localStorage.removeItem("access_token");
-        localStorage.removeItem("refresh_token");
-        dispatch(setAuthUser(null));
-        dispatch(setSelectedPost(null));
-        dispatch(setPosts([]));
-        dispatch(setPostPage(1));
-      } else {
-        navigate("/");
-      }
-    };
-
-    checkAuth();
+    if (user) {
+      navigate("/");
+    }
   }, []);
-
   return (
     <div className="flex items-center w-screen h-screen justify-center">
       <form
-        onSubmit={loginHandler}
+        onSubmit={signupHandler}
         className="shadow-lg flex flex-col gap-5 p-8"
       >
         <div className="my-4">
           <h1 className="text-center font-bold text-xl">LOGO</h1>
           <p className="text-sm text-center">
-            Login to see photos & videos from your friends
+            Signup to see photos & videos from your friends
           </p>
+        </div>
+        <div>
+          <span className="font-medium">Username</span>
+          <Input
+            type="text"
+            name="username"
+            value={input.username}
+            onChange={changeEventHandler}
+            className="focus-visible:ring-transparent my-2"
+          />
         </div>
         <div>
           <span className="font-medium">Email</span>
@@ -105,13 +96,12 @@ const Login = () => {
             Please wait
           </Button>
         ) : (
-          <Button type="submit">Login</Button>
+          <Button type="submit">Signup</Button>
         )}
-
         <span className="text-center">
-          Dosent have an account?{" "}
-          <Link to="/signup" className="text-blue-600">
-            Signup
+          Already have an account?{" "}
+          <Link to="/login" className="text-blue-600">
+            Login
           </Link>
         </span>
       </form>
@@ -119,4 +109,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default Signup;

@@ -1,12 +1,12 @@
 /* eslint-disable react/prop-types */
 import { Link } from "react-router-dom";
-import { Button } from "./ui/button";
 import { useState } from "react";
-import { Dialog, DialogContent, DialogTrigger } from "./ui/dialog";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { Wallet } from "lucide-react";
 import { donateAPI } from "@/apis/donate";
 import { formatVND } from "@/utils/formatVND";
 import { FE_URL } from "@/configs/globalVariables";
+import { Button } from "@/components/ui/button";
 
 const ProcessDonate = ({ campaign }) => {
   const [open, setOpen] = useState(false);
