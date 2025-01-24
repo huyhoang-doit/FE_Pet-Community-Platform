@@ -7,7 +7,7 @@ import {
   TrendingUp,
 } from "lucide-react";
 import { MdForum, MdOutlineForum } from "react-icons/md";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { toast } from "sonner";
 import { Link, useNavigate, useLocation } from "react-router-dom";
@@ -19,6 +19,16 @@ import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import { Button } from "./ui/button";
 import { handleLogoutAPI } from "@/apis/auth";
 import { RiMessengerLine, RiMessengerFill } from "react-icons/ri";
+import { FaHeart, FaSearch } from "react-icons/fa";
+
+const getInitialActiveTab = () => {
+  const pathname = window.location.pathname;
+  if (pathname === "/") return "Home";
+  if (pathname.includes("/profile")) return "Profile";
+  if (pathname.includes("/forum")) return "Forum";
+  if (pathname.includes("/chat")) return "Messages";
+  return "Home"; // fallback
+};
 
 const LeftSidebar = () => {
   const navigate = useNavigate();
@@ -30,14 +40,13 @@ const LeftSidebar = () => {
   const dispatch = useDispatch();
   const [open, setOpen] = useState(false);
   const [sidebarWidth, setSidebarWidth] = useState("340px");
+  const [isDisplayText, setIsDisplayText] = useState(true);
+  const [showNotifications, setShowNotifications] = useState(false);
+  const [showSearch, setShowSearch] = useState(false);
+  const [activeTab, setActiveTab] = useState(getInitialActiveTab());
 
-  useEffect(() => {
-    if (location.pathname.includes("/chat")) {
-      setSidebarWidth("80px");
-    } else {
-      setSidebarWidth("340px");
-    }
-  }, [location.pathname]);
+  const notificationRef = useRef(null);
+  const searchRef = useRef(null);
 
   const logoutHandler = async () => {
     try {
@@ -57,29 +66,86 @@ const LeftSidebar = () => {
     }
   };
 
-  const sidebarHandler = (textType) => {
-    if (textType === "Logout") {
-      logoutHandler();
-    } else if (textType === "Create") {
-      setOpen(true);
-    } else if (textType === "Profile") {
-      navigate(`/profile/${user?.username}`);
-    } else if (textType === "Forum") {
-      navigate("/forum");
-    } else if (textType === "Messages") {
-      navigate("/chat");
-    } else if (textType === "Home") {
-      navigate("/");
-    }
-  };
-
   const isActiveTab = (path) => {
     if (path === "Home") return location.pathname === "/";
-    if (path === "Forum") return location.pathname.includes("/forum");
-    if (path === "Messages") return location.pathname.includes("/chat");
-    if (path === "Profile") return location.pathname.includes("/profile");
-    return false;
+    return activeTab === path;
   };
+
+  const handleClickOutside = (event) => {
+    // Kiểm tra click trong notification area
+    const notificationArea = document.querySelector(".notification-area");
+    const searchArea = document.querySelector(".search-area");
+    if (
+      (notificationArea && notificationArea.contains(event.target)) ||
+      (searchArea && searchArea.contains(event.target))
+    )
+      return;
+
+    if (
+      notificationRef.current &&
+      !notificationRef.current.contains(event.target)
+    ) {
+      setShowNotifications(false);
+      if (isActiveTab("Messages")) setActiveTab("Messages");
+      else if (isActiveTab("Forum")) setActiveTab("Forum");
+      else if (isActiveTab("Profile")) setActiveTab("Profile");
+      else if (isActiveTab("Notifications")) setActiveTab("Notifications");
+      else if (isActiveTab("Search")) setActiveTab("Search");
+    }
+
+    // Xử lý click outside cho search
+    if (searchRef.current && !searchRef.current.contains(event.target)) {
+      setShowSearch(false);
+      if (isActiveTab("Messages")) setActiveTab("Messages");
+      else if (isActiveTab("Forum")) setActiveTab("Forum");
+      else if (isActiveTab("Profile")) setActiveTab("Profile");
+      else if (isActiveTab("Notifications")) setActiveTab("Notifications");
+      else if (isActiveTab("Search")) setActiveTab("Search");
+    }
+    const shouldDisplayText = !["Messages", "Notifications", "Search"].includes(
+      activeTab
+    );
+    setIsDisplayText(shouldDisplayText);
+  };
+
+  const updateSidebarState = () => {
+    const isChatPage = location.pathname.includes("/chat");
+    setSidebarWidth(isChatPage ? "80px" : "340px");
+    setIsDisplayText(!isChatPage);
+    setShowNotifications(false);
+  };
+
+  const sidebarHandler = (textType) => {
+    setActiveTab(textType);
+    setShowNotifications(false);
+    setShowSearch(false);
+
+    const actions = {
+      Logout: logoutHandler,
+      Create: () => setOpen(true),
+      Profile: () => navigate(`/profile/${user?.username}`),
+      Forum: () => navigate("/forum"),
+      Messages: () => navigate("/chat"),
+      Home: () => navigate("/"),
+      Notifications: () => {
+        setShowNotifications(true);
+        setIsDisplayText(false);
+      },
+      Search: () => {
+        setShowSearch(true);
+        setIsDisplayText(false);
+      },
+    };
+
+    actions[textType]?.();
+  };
+
+  useEffect(updateSidebarState, [location.pathname]);
+
+  useEffect(() => {
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [location.pathname]);
 
   const sidebarItems = [
     { icon: <Home />, text: "Trang chủ", textType: "Home" },
@@ -91,16 +157,27 @@ const LeftSidebar = () => {
       ),
       text: "Diễn đàn",
       textType: "Forum",
-      isActive: isActiveTab("Forum"),
     },
-    { icon: <Search />, text: "Tìm kiếm", textType: "Search" },
+    {
+      icon: isActiveTab("Search") ? <FaSearch size={24} /> : <Search />,
+      text: "Tìm kiếm",
+      textType: "Search",
+    },
     { icon: <TrendingUp />, text: "Khám phá", textType: "Explore" },
     {
-      icon: isActiveTab("Messages") ? <RiMessengerFill size={24}/> : <RiMessengerLine size={24}/>,
+      icon: isActiveTab("Messages") ? (
+        <RiMessengerFill size={24} />
+      ) : (
+        <RiMessengerLine size={24} />
+      ),
       text: "Tin nhắn",
       textType: "Messages",
     },
-    { icon: <Heart />, text: "Thông báo", textType: "Notifications" },
+    {
+      icon: showNotifications ? <FaHeart size={24} /> : <Heart />,
+      text: "Thông báo",
+      textType: "Notifications",
+    },
     { icon: <PlusSquare />, text: "Tạo", textType: "Create" },
     {
       icon: isActiveTab("Profile") ? (
@@ -116,12 +193,8 @@ const LeftSidebar = () => {
       ),
       text: "Trang cá nhân",
       textType: "Profile",
-      isActive: isActiveTab("Profile"),
     },
-  ].map((item) => ({
-    ...item,
-    className: item.isActive ? "font-bold" : "",
-  }));
+  ];
 
   return (
     <div
@@ -134,7 +207,7 @@ const LeftSidebar = () => {
       <div className="flex flex-col h-full">
         <Link to="/" style={{ height: "120px" }}>
           <h1 className="my-8 pl-3 font-bold text-xl">
-            {sidebarWidth === "340px" ? (
+            {sidebarWidth === "340px" && isDisplayText ? (
               <img
                 src="/assets/images/logo.png"
                 alt="logo"
@@ -144,7 +217,7 @@ const LeftSidebar = () => {
               <img
                 src="/assets/images/favicon.png"
                 alt="full logo"
-                className="w-[50%]"
+                className="w-[24px]"
               />
             )}
           </h1>
@@ -156,11 +229,17 @@ const LeftSidebar = () => {
                 <div
                   onClick={() => sidebarHandler(item.textType)}
                   key={index}
-                  className="flex items-center gap-3 relative hover:bg-gray-100 cursor-pointer rounded-lg p-3 my-3"
+                  className={`flex items-center gap-3 relative hover:bg-gray-100 cursor-pointer rounded-lg p-3 my-3`}
                 >
                   {item.icon}
-                  {sidebarWidth === "340px" && (
-                    <span className={item.className}>{item.text}</span>
+                  {isDisplayText && (
+                    <span
+                      className={`${
+                        isActiveTab(item.textType) ? "font-bold" : ""
+                      }`}
+                    >
+                      {item.text}
+                    </span>
                   )}
                   {item.text === "Notifications" &&
                     likeNotification.length > 0 && (
@@ -218,7 +297,189 @@ const LeftSidebar = () => {
           className="flex items-center gap-3 hover:bg-gray-100 cursor-pointer rounded-lg p-3 my-3 mb-8"
         >
           <LogOut />
-          {sidebarWidth === "340px" && <span>Đăng xuất</span>}
+          {isDisplayText && <span>Đăng xuất</span>}
+        </div>
+      </div>
+      <div
+        ref={notificationRef}
+        className={`notification-area fixed top-0 left-[80px] h-screen border-l-gray-300 bg-white z-20 overflow-y-auto transition-width duration-300 ease-in-out ${
+          showNotifications ? "w-[370px] border-x" : "w-0"
+        }`}
+      >
+        <div className="h-full w-full">
+          {showNotifications && (
+            <>
+              <h1 className="font-bold my-8 text-xl pl-[20px]">Thông báo</h1>
+              <div style={{ borderRadius: "4px" }}>
+                <div
+                  style={{
+                    alignItems: "stretch",
+                    border: "0",
+                    boxSizing: "border-box",
+                    display: "block",
+                    flexDirection: "column",
+                    flexShrink: "0",
+                    font: "inherit",
+                    fontSize: "100%",
+                    margin: "0",
+                    padding: "0",
+                    position: "relative",
+                    verticalAlign: "baseline",
+                  }}
+                >
+                  <div className="px-8 d-flex flex-column align-items-center justify-items-center">
+                    <div>
+                      <svg
+                        aria-label="Hoạt động trên bài viết của bạn"
+                        className="x1lliihq x1n2onr6 x5n08af"
+                        fill="currentColor"
+                        height="62"
+                        role="img"
+                        viewBox="0 0 96 96"
+                        width="62"
+                      >
+                        <title>Hoạt động trên bài viết của bạn</title>
+                        <circle
+                          cx="48"
+                          cy="48"
+                          fill="none"
+                          r="47"
+                          stroke="currentColor"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth="2"
+                        ></circle>
+                        <path
+                          d="M48 34.4A13.185 13.185 0 0 0 37.473 29a12.717 12.717 0 0 0-6.72 1.939c-6.46 3.995-8.669 12.844-4.942 19.766 3.037 5.642 16.115 15.6 20.813 19.07a2.312 2.312 0 0 0 2.75 0c4.7-3.47 17.778-13.428 20.815-19.07 3.728-6.922 1.517-15.771-4.943-19.766A12.704 12.704 0 0 0 58.527 29 13.193 13.193 0 0 0 48 34.4Z"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth="2"
+                        ></path>
+                      </svg>
+                    </div>
+                    <div className="mt-2">
+                      <span style={{ textAlign: "center", fontSize: "14px" }}>
+                        Hoạt động trên bài viết của bạn
+                      </span>
+                    </div>
+                    <div className="mt-2 mb-8 flex">
+                      <span style={{ textAlign: "center", fontSize: "14px" }}>
+                        Khi có người thích hoặc bình luận về một trong những bài
+                        viết của bạn, bạn sẽ nhìn thấy nó ở đây.
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="pl-[20px] flex items-center justify-between mb-4 pr-4">
+                <span className="text-md font-bold">Gợi ý cho bạn</span>
+              </div>
+              <div className="overflow-y-auto h-[80vh]">
+                {likeNotification.map((notification) => (
+                  <div
+                    key={notification.userId}
+                    className="pl-[20px] flex gap-3 items-center cursor-pointer py-2 hover:bg-gray-50"
+                  >
+                    <div className="relative">
+                      <Avatar
+                        className="w-14 h-14"
+                        style={{ border: "1px solid #e0e0e0" }}
+                      >
+                        <AvatarImage
+                          src={notification.userDetails?.profilePicture}
+                        />
+                        <AvatarFallback>CN</AvatarFallback>
+                      </Avatar>
+                    </div>
+                    <div className="flex flex-col">
+                      <span className="text-sm font-semibold">
+                        {notification.userDetails?.username}
+                      </span>
+                      <span className="text-xs text-gray-500">
+                        đã thích bài viết của bạn
+                      </span>
+                      <span className="text-xs text-gray-400">
+                        {/* {calculateTimeAgo(notification.createdAt)} */}
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </>
+          )}
+        </div>
+      </div>
+      <div
+        ref={searchRef}
+        className={`search-area fixed top-0 left-[80px] h-screen border-l-gray-300 bg-white z-20 overflow-y-auto transition-width duration-300 ease-in-out ${
+          showSearch ? "w-[370px] border-x" : "w-0"
+        }`}
+      >
+        <div className="h-full w-full">
+          {showSearch && (
+            <>
+              <h1 className="font-bold my-8 text-xl pl-[20px]">Tìm kiếm</h1>
+              <div className="pl-[20px] pr-[20px] mb-6">
+                <div className="relative">
+                  <input
+                    type="text"
+                    placeholder="Tìm kiếm..."
+                    className="w-full bg-gray-100 border border-gray-300 rounded-full py-2 px-4 pl-10 text-sm placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  />
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M15 15l5.5 5.5M10 18a8 8 0 100-16 8 8 0 000 16z"
+                    />
+                  </svg>
+                </div>
+              </div>
+              <div className="pl-[20px] flex items-center justify-between mb-4 pr-4 border-t">
+                <span className="text-md font-bold mt-6">Mới đây</span>
+              </div>
+              <div className="overflow-y-auto h-[80vh]">
+                {likeNotification.map((notification) => (
+                  <div
+                    key={notification.userId}
+                    className="pl-[20px] flex gap-3 items-center cursor-pointer py-2 hover:bg-gray-50"
+                  >
+                    <div className="relative">
+                      <Avatar
+                        className="w-14 h-14"
+                        style={{ border: "1px solid #e0e0e0" }}
+                      >
+                        <AvatarImage
+                          src={notification.userDetails?.profilePicture}
+                        />
+                        <AvatarFallback>CN</AvatarFallback>
+                      </Avatar>
+                    </div>
+                    <div className="flex flex-col">
+                      <span className="text-sm font-semibold">
+                        {notification.userDetails?.username}
+                      </span>
+                      <span className="text-xs text-gray-500">
+                        đã thích bài viết của bạn
+                      </span>
+                      <span className="text-xs text-gray-400">
+                        {/* {calculateTimeAgo(notification.createdAt)} */}
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </>
+          )}
         </div>
       </div>
 
