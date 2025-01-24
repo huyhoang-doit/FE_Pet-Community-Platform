@@ -39,11 +39,6 @@ const ChatPage = () => {
         const isExistingChat = chatUsers.some(
           (user) => user.id === receiverId
         );
-        console.log(chatUsers);
-        console.log(receiverId);
-        
-        
-        console.log(isExistingChat);
         
         if (!isExistingChat) {
           dispatch(setChatUsers([{ 
@@ -66,7 +61,6 @@ const ChatPage = () => {
       dispatch(setSelectedUser(null));
     };
   }, []);
-  console.log(chatUsers);
   
   return (
     <div className="flex ml-[80px] h-screen">
