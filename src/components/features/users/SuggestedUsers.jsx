@@ -1,10 +1,10 @@
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
-import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
-import VerifiedBadge from "./VerifiedBadge";
 import { followOrUnfollowAPI } from "@/apis/user";
 import { toast } from "sonner";
 import { setSuggestedUsers } from "@/redux/authSlice";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import VerifiedBadge from "@/components/core/VerifiedBadge";
 
 const SuggestedUsers = () => {
   const { suggestedUsers } = useSelector((store) => store.auth);

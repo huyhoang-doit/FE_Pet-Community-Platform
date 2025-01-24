@@ -1,20 +1,20 @@
 /* eslint-disable react/prop-types */
 import { useEffect, useState } from "react";
-import { Dialog, DialogContent, DialogTrigger } from "./ui/dialog";
-import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { Link } from "react-router-dom";
 import { MessageCircle, MoreHorizontal } from "lucide-react";
-import { Button } from "./ui/button";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "sonner";
 import { setPosts } from "@/redux/postSlice";
-import VerifiedBadge from "./VerifiedBadge";
-import Carousel from "./ui/carousel";
 import { addCommentAPI } from "@/apis/comment";
 import { FaBookmark, FaHeart, FaRegHeart } from "react-icons/fa";
 import { likeOrDislikeAPI } from "@/apis/post";
 import { LuBookmark } from "react-icons/lu";
 import { calculateTimeAgo } from "@/utils/calculateTimeAgo";
+import VerifiedBadge from "@/components/core/VerifiedBadge";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import Carousel from "@/components/ui/carousel";
+import { Button } from "@/components/ui/button";
 
 const CommentDialog = ({ open, setOpen }) => {
   const [text, setText] = useState("");

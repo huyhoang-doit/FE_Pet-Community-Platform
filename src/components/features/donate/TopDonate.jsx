@@ -1,9 +1,9 @@
 /* eslint-disable react/prop-types */
 import { Link } from "react-router-dom";
-import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { formatVND } from "@/utils/formatVND";
 import { useSelector } from "react-redux";
-import VerifiedBadge from "./VerifiedBadge";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import VerifiedBadge from "@/components/core/VerifiedBadge";
 
 const TopDonate = ({ topDonate }) => {
   const { user } = useSelector((store) => store.auth);

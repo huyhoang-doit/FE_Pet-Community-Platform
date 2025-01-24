@@ -1,10 +1,10 @@
 /* eslint-disable react/prop-types */
-import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
-import { Button } from "./ui/button";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
 import useGetAllMessage from "@/hooks/useGetAllMessage";
 import useGetRTM from "@/hooks/useGetRTM";
+import { Button } from "@/components/ui/button";
 
 const Messages = ({ selectedUser }) => {
   useGetRTM();

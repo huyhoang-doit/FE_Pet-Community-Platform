@@ -1,19 +1,18 @@
 /* eslint-disable react/prop-types */
 import { useState } from "react";
-import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
-import { Dialog, DialogContent, DialogTrigger } from "./ui/dialog";
+import { Avatar, AvatarFallback, AvatarImage } from "../../ui/avatar";
+import { Dialog, DialogContent, DialogTrigger } from "../../ui/dialog";
 import { MessageCircle, MoreHorizontal, Send } from "lucide-react";
 import { LuBookmark } from "react-icons/lu";
 import { FaBookmark } from "react-icons/fa";
-import { Button } from "./ui/button";
+import { Button } from "../../ui/button";
 import { FaHeart, FaRegHeart } from "react-icons/fa";
-import CommentDialog from "./CommentDialog";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "sonner";
 import { setPosts, setSelectedPost } from "@/redux/postSlice";
-import { Badge } from "./ui/badge";
+import { Badge } from "../../ui/badge";
 import { Link } from "react-router-dom";
-import VerifiedBadge from "./VerifiedBadge";
+import VerifiedBadge from "../../core/VerifiedBadge";
 import {
   bookmarkAPI,
   commentAPI,
@@ -21,8 +20,9 @@ import {
   likeOrDislikeAPI,
 } from "@/apis/post";
 import { setAuthUser } from "@/redux/authSlice";
-import Carousel from "./ui/carousel";
+import Carousel from "../../ui/carousel";
 import { calculateTimeAgo } from "@/utils/calculateTimeAgo";
+import CommentDialog from "./CommentDialog";
 
 const Post = ({ post }) => {
   const [text, setText] = useState("");
