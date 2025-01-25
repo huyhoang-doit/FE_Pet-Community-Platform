@@ -6,7 +6,7 @@ import useGetChatUser from "@/hooks/userGetChatUser";
 
 const useFetchData = () => {
   useGetAllPost();
-  useGetSuggestedUsers();
+  useGetSuggestedUsers(5);
   useGetCampaign();
   useGetTopDonate();
   useGetChatUser();

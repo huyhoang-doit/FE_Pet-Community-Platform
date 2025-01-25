@@ -1,17 +1,44 @@
-import { useSelector } from "react-redux";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components//ui/avatar";
+import { useState } from "react";
+import { getAllUsersAPI } from "@/apis/user";
+import VerifiedBadge from "../core/VerifiedBadge";
+import { Link } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { setShowSearchTab } from "@/redux/sidebarSlice";
 
 const TabSearch = () => {
-  const { likeNotification } = useSelector(
-    (store) => store.realTimeNotification
-  );
+  const dispatch = useDispatch();
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searchUsers, setSearchUsers] = useState([]);
+
+  const handleSearch = async (query) => {
+    if (query) {
+      try {
+        const { data } = await getAllUsersAPI(query);
+        setSearchUsers(data.data.results);
+      } catch (error) {
+        console.error("Error fetching search results:", error);
+        console.log(error);
+      }
+    } else {
+      setSearchUsers([]);
+    }
+  };
+  const handleInputChange = (e) => {
+    const query = e.target.value;
+    setSearchQuery(query);
+    handleSearch(query);
+  };
+
   return (
     <>
-      <h1 className="font-bold my-8 text-xl pl-[20px]">Tìm kiếm</h1>
+      <h1 className="font-semibold my-8 pl-[20px]" style={{ fontSize: "24px"}}>Tìm kiếm</h1>
       <div className="pl-[20px] pr-[20px] mb-6">
         <div className="relative">
           <input
             type="text"
+            onChange={handleInputChange}
+            value={searchQuery}
             placeholder="Tìm kiếm..."
             className="w-full bg-gray-100 border border-gray-300 rounded-full py-2 px-4 pl-10 text-sm placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
           />
@@ -31,38 +58,53 @@ const TabSearch = () => {
           </svg>
         </div>
       </div>
-      <div className="pl-[20px] flex items-center justify-between mb-4 pr-4 border-t">
-        <span className="text-md font-bold mt-6">Mới đây</span>
-      </div>
-      <div className="overflow-y-auto h-[80vh]">
-        {likeNotification.map((notification) => (
-          <div
-            key={notification.userId}
-            className="pl-[20px] flex gap-3 items-center cursor-pointer py-2 hover:bg-gray-50"
-          >
-            <div className="relative">
-              <Avatar
-                className="w-14 h-14"
-                style={{ border: "1px solid #e0e0e0" }}
+      {searchUsers.length > 0 && (
+        <>
+          <div className="pl-[20px] flex items-center justify-between mb-4 pr-4 border-t"></div>
+          <div className="overflow-y-auto h-[80vh]">
+            {searchUsers?.map((searchUser) => (
+              <Link
+                key={searchUser?.id}
+                to={`/profile/${searchUser?.username}`}
+                onClick={() => {
+                  dispatch(setShowSearchTab(false));
+                }}
               >
-                <AvatarImage src={notification.userDetails?.profilePicture} />
-                <AvatarFallback>CN</AvatarFallback>
-              </Avatar>
-            </div>
-            <div className="flex flex-col">
-              <span className="text-sm font-semibold">
-                {notification.userDetails?.username}
-              </span>
-              <span className="text-xs text-gray-500">
-                đã thích bài viết của bạn
-              </span>
-              <span className="text-xs text-gray-400">
-                {/* {calculateTimeAgo(notification.createdAt)} */}
-              </span>
-            </div>
+                <div className="pl-[20px] flex gap-3 items-center cursor-pointer py-2 hover:bg-gray-50">
+                  <div className="relative">
+                    <Avatar
+                      className="w-14 h-14"
+                      style={{ border: "1px solid #e0e0e0" }}
+                    >
+                      <AvatarImage src={searchUser?.profilePicture} />
+                      <AvatarFallback>CN</AvatarFallback>
+                    </Avatar>
+                  </div>
+                  <div className="flex flex-col">
+                    <span className="flex items-center gap-2">
+                      <span className="font-medium text-sm">
+                        {searchUser?.username}
+                      </span>
+                      {searchUser.isVerified && <VerifiedBadge size={14} />}
+                    </span>
+                    <span className="text-xs text-gray-500">
+                      {searchUser?.lastName} {searchUser?.firstName}
+                    </span>
+                    <span className="text-xs text-gray-400">
+                      {/* {calculateTimeAgo(notification.createdAt)} */}
+                    </span>
+                  </div>
+                </div>
+              </Link>
+            ))}
           </div>
-        ))}
-      </div>
+        </>
+      )}
+      {searchQuery !== "" && searchUsers.length === 0 && (
+        <div className="flex justify-center items-center h-[70%]">
+          Không tìm thấy kết quả nào.
+        </div>
+      )}
     </>
   );
 };

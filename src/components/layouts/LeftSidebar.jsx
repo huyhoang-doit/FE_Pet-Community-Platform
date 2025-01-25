@@ -14,6 +14,7 @@ import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { setAuthUser, setChatUsers } from "@/redux/authSlice";
 import { setPostPage, setPosts, setSelectedPost } from "@/redux/postSlice";
+import { setIsDisplayText, setShowNotificationTab, setShowSearchTab } from "@/redux/sidebarSlice";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { Button } from "../ui/button";
 import { handleLogoutAPI } from "@/apis/auth";
@@ -30,7 +31,7 @@ const getInitialActiveTab = () => {
   if (pathname.includes("/forum")) return "Forum";
   if (pathname.includes("/chat")) return "Messages";
   return "Home"; // fallback
-}
+};
 
 const LeftSidebar = () => {
   const navigate = useNavigate();
@@ -42,13 +43,10 @@ const LeftSidebar = () => {
   const dispatch = useDispatch();
   const [open, setOpen] = useState(false);
   const [sidebarWidth, setSidebarWidth] = useState("340px");
-  const [isDisplayText, setIsDisplayText] = useState(true);
-  const [showNotifications, setShowNotifications] = useState(false);
-  const [showSearch, setShowSearch] = useState(false);
   const [activeTab, setActiveTab] = useState(getInitialActiveTab());
-
   const notificationRef = useRef(null);
   const searchRef = useRef(null);
+  const { isDisplayText, showSearchTab, showNotificationTab } = useSelector((store) => store.sidebar);
 
   const logoutHandler = async () => {
     try {
@@ -57,7 +55,7 @@ const LeftSidebar = () => {
         dispatch(setAuthUser(null));
         dispatch(setSelectedPost(null));
         dispatch(setPosts([]));
-        dispatch(setChatUsers([]))
+        dispatch(setChatUsers([]));
         dispatch(setPostPage(1));
         localStorage.removeItem("access_token");
         localStorage.removeItem("refresh_token");
@@ -77,12 +75,12 @@ const LeftSidebar = () => {
   const handleClickOutside = (event) => {
     // Kiểm tra click trong notification area
     if (location.pathname.includes("/chat/")) {
-      setActiveTab("Messages")
-      setShowNotifications(false);
-      setShowSearch(false);
+      setActiveTab("Messages");
+      dispatch(setShowNotificationTab(false));
+      dispatch(setShowSearchTab(false));
       return;
     }
-    
+
     const notificationArea = document.querySelector(".notification-area");
     const searchArea = document.querySelector(".search-area");
     if (
@@ -95,7 +93,7 @@ const LeftSidebar = () => {
       notificationRef.current &&
       !notificationRef.current.contains(event.target)
     ) {
-      setShowNotifications(false);
+      dispatch(setShowNotificationTab(false));
       if (isActiveTab("Messages")) setActiveTab("Messages");
       else if (isActiveTab("Forum")) setActiveTab("Forum");
       else if (isActiveTab("Profile")) setActiveTab("Profile");
@@ -105,41 +103,49 @@ const LeftSidebar = () => {
 
     // Xử lý click outside cho search
     if (searchRef.current && !searchRef.current.contains(event.target)) {
-      setShowSearch(false);
+      dispatch(setShowSearchTab(false));
       if (isActiveTab("Messages")) setActiveTab("Messages");
       else if (isActiveTab("Forum")) setActiveTab("Forum");
       else if (isActiveTab("Profile")) setActiveTab("Profile");
       else if (isActiveTab("Notifications")) setActiveTab("Notifications");
       else if (isActiveTab("Search")) setActiveTab("Search");
     }
+    
+    if ((activeTab === "Search" || activeTab === "Notifications") && location.pathname.includes("/profile/")) {
+      setActiveTab("Profile")
+      dispatch(setIsDisplayText(true));
+      return
+    }
+
     const shouldDisplayText = !["Messages", "Notifications", "Search"].includes(
       activeTab
     );
-    setIsDisplayText(shouldDisplayText);
+    
+    dispatch(setIsDisplayText(shouldDisplayText));
   };
 
   const updateSidebarState = () => {
     const pathMapping = {
-      '/profile': 'Profile',
-      '/forum': 'Forum',
-      '/chat': 'Messages'
+      "/profile": "Profile",
+      "/forum": "Forum",
+      "/chat": "Messages",
     };
-    
-    const activeKey = Object.keys(pathMapping).find(key => 
+
+    const activeKey = Object.keys(pathMapping).find((key) =>
       location.pathname.includes(key)
     );
     setActiveTab(pathMapping[activeKey]);
 
     const isChatPage = location.pathname.includes("/chat");
     setSidebarWidth(isChatPage ? "80px" : "340px");
-    setIsDisplayText(!isChatPage);
-    setShowNotifications(false);
+    dispatch(setIsDisplayText(!isChatPage));
+    dispatch(setShowNotificationTab(false));
   };
 
   const sidebarHandler = (textType) => {
     setActiveTab(textType);
-    setShowNotifications(false);
-    setShowSearch(false);
+    dispatch(setShowNotificationTab(false));
+    dispatch(setShowSearchTab(false));
 
     const actions = {
       Logout: logoutHandler,
@@ -149,12 +155,12 @@ const LeftSidebar = () => {
       Messages: () => navigate("/chat"),
       Home: () => navigate("/"),
       Notifications: () => {
-        setShowNotifications(true);
-        setIsDisplayText(false);
+        dispatch(setShowNotificationTab(true));
+        dispatch(setIsDisplayText(false));
       },
       Search: () => {
-        setShowSearch(true);
-        setIsDisplayText(false);
+        dispatch(setShowSearchTab(true));
+        dispatch(setIsDisplayText(false));
       },
     };
 
@@ -195,7 +201,7 @@ const LeftSidebar = () => {
       textType: "Messages",
     },
     {
-      icon: showNotifications ? <FaHeart size={24} /> : <Heart />,
+      icon: showNotificationTab ? <FaHeart size={24} /> : <Heart />,
       text: "Thông báo",
       textType: "Notifications",
     },
@@ -324,22 +330,20 @@ const LeftSidebar = () => {
       <div
         ref={notificationRef}
         className={`notification-area fixed top-0 left-[80px] h-screen border-l-gray-300 bg-white z-20 overflow-y-auto transition-width duration-300 ease-in-out ${
-          showNotifications ? "w-[370px] border-x" : "w-0"
+          showNotificationTab ? "w-[370px] border-x" : "w-0"
         }`}
       >
         <div className="h-full w-full">
-          {showNotifications && <TabNotification />}
+          {showNotificationTab && <TabNotification />}
         </div>
       </div>
       <div
         ref={searchRef}
         className={`search-area fixed top-0 left-[80px] h-screen border-l-gray-300 bg-white z-20 overflow-y-auto transition-width duration-300 ease-in-out ${
-          showSearch ? "w-[370px] border-x" : "w-0"
+          showSearchTab ? "w-[370px] border-x" : "w-0"
         }`}
       >
-        <div className="h-full w-full">
-          {showSearch && <TabSearch/>}
-        </div>
+        <div className="h-full w-full">{showSearchTab && <TabSearch />}</div>
       </div>
 
       <CreatePost open={open} setOpen={setOpen} />

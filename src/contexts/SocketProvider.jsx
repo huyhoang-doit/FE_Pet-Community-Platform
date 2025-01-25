@@ -3,7 +3,7 @@ import { createContext, useContext, useEffect, useState } from 'react';
 import { io } from 'socket.io-client';
 import { useDispatch, useSelector } from 'react-redux';
 import { setOnlineUsers } from '../redux/chatSlice';
-import { setLikeNotification } from '../redux/rtnSlice';
+import { setNotifications } from '../redux/rtnSlice';
 import { BASE_WS } from '../configs/globalVariables';
 
 const SocketContext = createContext(null);
@@ -31,7 +31,9 @@ export const SocketProvider = ({ children }) => {
       });
 
       socketio.on("notification", (notification) => {
-        dispatch(setLikeNotification(notification));
+        console.log(notification);
+        
+        dispatch(setNotifications(notification));
       });
 
       return () => {

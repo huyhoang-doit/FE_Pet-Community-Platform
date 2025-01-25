@@ -7,7 +7,7 @@ import { toast } from "sonner";
 import { setPosts } from "@/redux/postSlice";
 import { addCommentAPI } from "@/apis/comment";
 import { FaBookmark, FaHeart, FaRegHeart } from "react-icons/fa";
-import { likeOrDislikeAPI } from "@/apis/post";
+import { bookmarkAPI, likeOrDislikeAPI } from "@/apis/post";
 import { LuBookmark } from "react-icons/lu";
 import { calculateTimeAgo } from "@/utils/calculateTimeAgo";
 import VerifiedBadge from "@/components/core/VerifiedBadge";
@@ -15,6 +15,7 @@ import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import Carousel from "@/components/ui/carousel";
 import { Button } from "@/components/ui/button";
+import { setAuthUser } from "@/redux/authSlice";
 
 const CommentDialog = ({ open, setOpen }) => {
   const [text, setText] = useState("");
@@ -88,6 +89,25 @@ const CommentDialog = ({ open, setOpen }) => {
             : p
         );
         dispatch(setPosts(updatedPostData));
+        toast.success(res.data.message);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  
+  const bookmarkHandler = async () => {
+    try {
+      const res = await bookmarkAPI(selectedPost._id);
+      if (res.data.success) {
+        setBookmarked(!bookmarked);
+        const updatedUser = {
+          ...user,
+          bookmarks: bookmarked
+            ? user.bookmarks.filter((id) => id !== selectedPost._id)
+            : [...user.bookmarks, selectedPost._id],
+        };
+        dispatch(setAuthUser(updatedUser));
         toast.success(res.data.message);
       }
     } catch (error) {
@@ -314,13 +334,13 @@ const CommentDialog = ({ open, setOpen }) => {
                 </div>
                 {bookmarked ? (
                   <FaBookmark
-                    // onClick={bookmarkHandler}
+                    onClick={bookmarkHandler}
                     className="cursor-pointer hover:text-gray-600"
                     size={24}
                   />
                 ) : (
                   <LuBookmark
-                    // onClick={bookmarkHandler}
+                    onClick={bookmarkHandler}
                     className="cursor-pointer hover:text-gray-600"
                     size={24}
                   />
