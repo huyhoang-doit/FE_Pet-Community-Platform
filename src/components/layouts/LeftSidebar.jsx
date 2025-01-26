@@ -89,9 +89,10 @@ const LeftSidebar = () => {
       return;
     }
     if ((activeTab === "Search" || activeTab === "Notifications") && location.pathname.includes("/profile/")) {
-      console.log(location.pathname);
       setActiveTab("Profile");
       dispatch(setIsDisplayText(true));
+      dispatch(setShowNotificationTab(false));
+      dispatch(setShowSearchTab(false));
       return;
     }
     if (location.pathname.includes("/p/")) {
