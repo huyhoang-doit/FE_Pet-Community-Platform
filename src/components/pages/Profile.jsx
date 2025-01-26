@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
-import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import useGetUserProfile from "@/hooks/useGetUserProfile";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { Button } from "./ui/button";
-import { Badge } from "./ui/badge";
+import { Button } from "../ui/button";
+import { Badge } from "../ui/badge";
 import {
   AtSign,
   ContactRound,
@@ -14,16 +14,18 @@ import {
 } from "lucide-react";
 import { setUserProfile } from "@/redux/authSlice";
 import { toast } from "sonner";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "./ui/dialog";
-import UserListItem from "./UserListItem";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../ui/dialog";
 import authorizedAxiosInstance from "@/utils/authorizedAxios";
-import VerifiedBadge from "./VerifiedBadge";
 import { setSelectedPost } from "@/redux/postSlice";
-import CommentDialog from "./CommentDialog";
+import CommentDialog from "../features/posts/CommentDialog";
 import { FaBookmark } from "react-icons/fa";
 import { followOrUnfollowAPI } from "@/apis/user";
+import VerifiedBadge from "../core/VerifiedBadge";
+import UserListItem from "../features/users/UserListItem";
+import useFetchData from "@/hooks/useFetchData";
 
 const Profile = () => {
+  useFetchData()
   const params = useParams();
   const username = params.username;
   const dispatch = useDispatch();
@@ -31,9 +33,9 @@ const Profile = () => {
   useGetUserProfile(username);
   const [activeTab, setActiveTab] = useState("posts");
   const { userProfile, user } = useSelector((store) => store.auth);
-  const isLoggedInUserProfile = user?._id === userProfile?._id;
+  const isLoggedInUserProfile = user?.id === userProfile?.id;
   const [isFollowing, setIsFollowing] = useState(
-    userProfile?.followers.includes(user?._id)
+    userProfile?.followers.includes(user?.id)
   );
   const [numberFollowers, setNumberFollowers] = useState(
     userProfile?.followers?.length
@@ -52,12 +54,12 @@ const Profile = () => {
   useEffect(() => {
     setNumberFollowers(userProfile?.followers.length);
     setNumberFollowing(userProfile?.following.length);
-    setIsFollowing(userProfile?.followers.includes(user?._id));
+    setIsFollowing(userProfile?.followers.includes(user?.id));
   }, [userProfile, user]);
 
   const followOrUnfollowHandler = async () => {
     try {
-      const { data } = await followOrUnfollowAPI(userProfile._id);
+      const { data } = await followOrUnfollowAPI(userProfile.id);
 
       if (data.status === 200) {
         setIsFollowing(!isFollowing);
@@ -69,8 +71,8 @@ const Profile = () => {
           setUserProfile({
             ...userProfile,
             followers: isFollowing
-              ? userProfile.followers.filter((id) => id !== user._id)
-              : [...userProfile.followers, user._id],
+              ? userProfile.followers.filter((id) => id !== user.id)
+              : [...userProfile.followers, user.id],
           })
         );
         toast.success(data.message);
@@ -167,11 +169,17 @@ const Profile = () => {
                     Theo dõi
                   </Button>
                 )}
-                <Button variant="secondary" className="h-8" onClick={() => {
-                  navigate(`/chat/${userProfile?._id}`)
-                }}>
-                  Nhắn tin
-                </Button>
+                {!isLoggedInUserProfile && (
+                  <Button
+                    variant="secondary"
+                    className="h-8"
+                    onClick={() => {
+                      navigate(`/chat/${userProfile?.id}`);
+                    }}
+                  >
+                    Nhắn tin
+                  </Button>
+                )}
               </div>
               <div className="flex items-center gap-8">
                 <p>
@@ -241,7 +249,7 @@ const Profile = () => {
             {displayedPost?.map((post) => {
               return (
                 <div
-                  key={post?._id}
+                  key={post._id}
                   className="relative group cursor-pointer"
                   onClick={() => {
                     handlePostClick(post);

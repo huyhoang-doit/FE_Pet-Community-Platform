@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-import Header from "./Header";
-import SimpleSlider from "./Carousel";
-import Footer from "./Footer";
+import SimpleSlider from "../core/Carousel";
+import Header from "../layouts/Header";
+import Footer from "../layouts/Footer";
 // import { SimpleSlider } from "./Carousel";
 // import { CenterMode, SimpleSlider } from "./Carousel";
 

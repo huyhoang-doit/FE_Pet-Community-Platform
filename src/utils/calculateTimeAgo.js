@@ -9,7 +9,9 @@ export const calculateTimeAgo = (createdAt) => {
     const days = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
     const weeks = Math.floor(days / 7);
 
-    if (minutes < 60) {
+    if (minutes < 1) {
+        return ` Vừa xong`;
+    } else if (minutes < 60) {
         return ` ${minutes} phút`;
     } else if (hours < 24) {
         return ` ${hours} giờ`;

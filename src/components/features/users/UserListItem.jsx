@@ -1,9 +1,9 @@
 /* eslint-disable react/prop-types */
 import { useEffect, useState } from "react";
-import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { Link } from "react-router-dom";
-import VerifiedBadge from "./VerifiedBadge";
 import { getProfileByIdAPI } from "@/apis/user";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import VerifiedBadge from "@/components/core/VerifiedBadge";
 
 const UserListItem = ({ userId, onClose }) => {
   const [userData, setUserData] = useState(null);

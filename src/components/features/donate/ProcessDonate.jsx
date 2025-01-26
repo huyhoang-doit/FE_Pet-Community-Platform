@@ -1,12 +1,12 @@
 /* eslint-disable react/prop-types */
 import { Link } from "react-router-dom";
-import { Button } from "./ui/button";
 import { useState } from "react";
-import { Dialog, DialogContent, DialogTrigger } from "./ui/dialog";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { Wallet } from "lucide-react";
 import { donateAPI } from "@/apis/donate";
 import { formatVND } from "@/utils/formatVND";
 import { FE_URL } from "@/configs/globalVariables";
+import { Button } from "@/components/ui/button";
 
 const ProcessDonate = ({ campaign }) => {
   const [open, setOpen] = useState(false);
@@ -32,7 +32,7 @@ const ProcessDonate = ({ campaign }) => {
   };
 
   return (
-    <div className="my-10">
+    <div className="my-5">
       <div className="block-container">
         <h3 className="block-minorHeader">
           <Link to="/donate/danh-cap-mat-troi.3/" rel="nofollow">
@@ -88,7 +88,7 @@ const ProcessDonate = ({ campaign }) => {
               <dd>{formatVND(campaign?.targetAmount)}</dd>
             </dl>
 
-            <div className="mt-6 grid grid-cols-2 gap-2 text-sm">
+            <div className="mt-2 grid grid-cols-2 gap-2 text-sm">
               <div className="flex flex-col p-3 rounded-lg bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-100 shadow-sm">
                 <span className="font-medium text-blue-800 mb-1 flex items-center gap-2">
                   <svg

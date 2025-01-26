@@ -9,7 +9,9 @@ const useGetAllMessage = () => {
   useEffect(() => {
     const fetchAllMessage = async () => {
       try {
-        const { data } = await getAllMessageAPI(selectedUser?._id);
+        console.log(selectedUser?.id);
+        
+        const { data } = await getAllMessageAPI(selectedUser?.id);
         console.log(data);
         
         if (data.status === 200) {
