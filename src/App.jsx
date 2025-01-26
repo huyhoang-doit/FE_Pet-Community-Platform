@@ -12,6 +12,7 @@ import Login from "./components/pages/Login";
 import Signup from "./components/pages/Signup";
 import Home from "./components/pages/Home";
 import { SocketProvider } from "./contexts/SocketProvider";
+import PostDetail from "./components/features/posts/PostDetail";
 
 const browserRouter = createBrowserRouter([
   {
@@ -43,6 +44,14 @@ const browserRouter = createBrowserRouter([
         element: (
           <ProtectedRoutes>
             <Profile />
+          </ProtectedRoutes>
+        ),
+      },
+      {
+        path: "/p/:id",
+        element: (
+          <ProtectedRoutes>
+            <PostDetail />
           </ProtectedRoutes>
         ),
       },

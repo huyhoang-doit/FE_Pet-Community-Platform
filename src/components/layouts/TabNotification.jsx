@@ -2,17 +2,54 @@ import { useDispatch, useSelector } from "react-redux";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components//ui/avatar";
 import useGetSuggestedUsers from "@/hooks/useGetSuggestedUsers";
 import VerifiedBadge from "../core/VerifiedBadge";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { setShowNotificationTab } from "@/redux/sidebarSlice";
 import useGetAllNotification from "@/hooks/useGetAllNotification";
 import { calculateTimeAgo } from "@/utils/calculateTimeAgo";
 
 const TabNotification = () => {
   const dispatch = useDispatch();
+  const location = useLocation();
   useGetAllNotification();
   useGetSuggestedUsers(30);
   const { notifications } = useSelector((store) => store.realTimeNotification);
   const { suggestedUsers } = useSelector((store) => store.auth);
+
+  const groupNotificationsByDate = (notifications) => {
+    return Object.entries(
+      notifications.reduce((acc, notification) => {
+        const date = new Date(notification.createdAt);
+        const today = new Date();
+        const yesterday = new Date(today);
+        yesterday.setDate(today.getDate() - 1);
+        let dateString;
+        if (date.toDateString() === today.toDateString()) {
+          dateString = "Hôm nay";
+        } else if (date.toDateString() === yesterday.toDateString()) {
+          dateString = "Hôm qua";
+        } else {
+          dateString = date.toLocaleDateString(); // Ngày/Tháng/Năm
+        }
+        if (!acc[dateString]) {
+          acc[dateString] = []; // Khởi tạo mảng cho ngày mới
+        }
+        acc[dateString].push(notification); // Thêm thông báo vào ngày tương ứng
+        return acc;
+      }, {})
+    ).sort((a, b) => {
+      if (a[0] === "Hôm nay") return -1;
+      if (b[0] === "Hôm nay") return 1;
+      if (a[0] === "Hôm qua") return -1;
+      if (b[0] === "Hôm qua") return 1;
+      return 0;
+    });
+  };
+
+  // ... existing code ...
+
+  // Usage example
+  const groupedNotifications = groupNotificationsByDate(notifications);
+
   return (
     <>
       <h1 className="font-bold my-5 pl-[20px]" style={{ fontSize: "24px" }}>
@@ -132,95 +169,101 @@ const TabNotification = () => {
       )}
       {notifications?.length > 0 && (
         <>
-          {Object.entries(
-            notifications.reduce((acc, notification) => {
-              const date = new Date(notification.createdAt);
-              const today = new Date();
-              const yesterday = new Date(today);
-              yesterday.setDate(today.getDate() - 1);
-              let dateString;
-              if (date.toDateString() === today.toDateString()) {
-                dateString = "Hôm nay";
-              } else if (date.toDateString() === yesterday.toDateString()) {
-                dateString = "Hôm qua";
-              } else {
-                dateString = date.toLocaleDateString(); // Ngày/Tháng/Năm
-              }
-              if (!acc[dateString]) {
-                acc[dateString] = []; // Khởi tạo mảng cho ngày mới
-              }
-              acc[dateString].push(notification); // Thêm thông báo vào ngày tương ứng
-              return acc;
-            }, {})
-          )
-            .sort((a, b) => {
-              if (a[0] === "Hôm nay") return -1;
-              if (b[0] === "Hôm nay") return 1;
-              if (a[0] === "Hôm qua") return -1;
-              if (b[0] === "Hôm qua") return 1;
-              return 0;
-            })
-            .map(([date, notificationsForDate]) => (
-              <>
-                <div className="pl-[20px] flex items-center justify-between pr-4 my-2">
-                  <span className="text-md font-bold">{date}</span>
-                </div>
-                <div className="overflow-y-auto">
-                  {notificationsForDate.map((notification) => (
-                    <Link
-                      key={notification?.sender?.id}
-                      to={`/profile/${notification?.sender?.username}`}
-                      onClick={() => {
-                        dispatch(setShowNotificationTab(false));
-                      }}
-                    >
-                      <div
-                        key={notification.id}
-                        className="pl-[20px] flex gap-3 justify-between items-center cursor-pointer py-2 hover:bg-gray-50"
-                      >
-                        <div className="flex gap-3">
-                          <Avatar
-                            className="w-12 h-12"
-                            style={{ border: "1px solid #e0e0e0" }}
-                          >
-                            <AvatarImage
-                              src={notification?.sender?.profilePicture}
-                            />
-                            <AvatarFallback>CN</AvatarFallback>
-                          </Avatar>
-                          <span className="text-sm">
-                            <div className="inline-flex mr-1">
-                              <Link
-                                to={`/profile/${notification?.sender?.username}`}
-                                target="_blank"
-                                className="font-semibold inline-flex items-center gap-1"
-                              >
+          {groupedNotifications.map(([date, notificationsForDate]) => (
+            <div key={date}>
+              <div className="pl-[20px] flex items-center justify-between pr-4 my-2">
+                <span className="text-md font-bold">{date}</span>
+              </div>
+              <div className="overflow-y-auto">
+                {notificationsForDate.map((notification, index) => {
+                  const isCurrentPost =
+                    location.pathname === `/p/${notification?.post?._id}`;
+                  return (
+                    <div key={index}>
+                      {isCurrentPost ? (
+                        <div
+                          className="pl-[20px] flex gap-3 justify-between items-center cursor-default py-2"
+                        >
+                          {/* Non-clickable element */}
+                          <div className="flex gap-3">
+                            <Avatar
+                              className="w-12 h-12"
+                              style={{ border: "1px solid #e0e0e0" }}
+                            >
+                              <AvatarImage
+                                src={notification?.sender?.profilePicture}
+                              />
+                              <AvatarFallback>CN</AvatarFallback>
+                            </Avatar>
+                            <span className="text-sm">
+                              <div className="inline-flex mr-1 font-semibold inline-flex items-center gap-1">
                                 {notification?.sender?.username}
                                 {notification?.sender?.isVerified && (
                                   <VerifiedBadge size={14} />
                                 )}
-                              </Link>
-                            </div>
-                            <span className="text-sm whitespace-normal break-all overflow-wrap-anywhere max-w-full">
-                              {notification?.message}.
+                              </div>
+                              <span className="text-sm whitespace-normal break-all overflow-wrap-anywhere max-w-full">
+                                {notification?.message}.
+                              </span>
+                              <span className="text-xs text-gray-400 block">
+                                {calculateTimeAgo(notification.createdAt)}
+                              </span>
                             </span>
-                            <span className="text-xs text-gray-400 block">
-                              {calculateTimeAgo(notification.createdAt)}
-                            </span>
+                          </div>
+                          <span>
+                            <img
+                              className="h-[44px] w-[44px] object-cover rounded-xl"
+                              src={notification?.post?.image}
+                            />
                           </span>
                         </div>
-                        <span>
-                          <img
-                            className="h-[44px] w-[44px] object-cover rounded-xl"
-                            src={notification?.post?.image}
-                          />
-                        </span>
-                      </div>
-                    </Link>
-                  ))}
-                </div>
-              </>
-            ))}
+                      ) : (
+                        <Link
+                          to={`/p/${notification?.post?._id}`}
+                          onClick={() => {
+                            dispatch(setShowNotificationTab(false));
+                          }}
+                          className="pl-[20px] flex gap-3 justify-between items-center cursor-pointer py-2 hover:bg-gray-50"
+                        >
+                          <div className="flex gap-3">
+                            <Avatar
+                              className="w-12 h-12"
+                              style={{ border: "1px solid #e0e0e0" }}
+                            >
+                              <AvatarImage
+                                src={notification?.sender?.profilePicture}
+                              />
+                              <AvatarFallback>CN</AvatarFallback>
+                            </Avatar>
+                            <span className="text-sm">
+                              <div className="inline-flex mr-1 font-semibold inline-flex items-center gap-1">
+                                {notification?.sender?.username}
+                                {notification?.sender?.isVerified && (
+                                  <VerifiedBadge size={14} />
+                                )}
+                              </div>
+                              <span className="text-sm whitespace-normal break-all overflow-wrap-anywhere max-w-full">
+                                {notification?.message}.
+                              </span>
+                              <span className="text-xs text-gray-400 block">
+                                {calculateTimeAgo(notification.createdAt)}
+                              </span>
+                            </span>
+                          </div>
+                          <span>
+                            <img
+                              className="h-[44px] w-[44px] object-cover rounded-xl"
+                              src={notification?.post?.image}
+                            />
+                          </span>
+                        </Link>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          ))}
         </>
       )}
     </>
