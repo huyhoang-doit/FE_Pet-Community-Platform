@@ -1,21 +1,18 @@
-import { useEffect } from "react";
-import ChatPage from "./components/ChatPage";
-import EditProfile from "./components/EditProfile";
-import Home from "./components/Home";
-import Login from "./components/Login";
-import MainLayout from "./components/MainLayout";
-import Profile from "./components/Profile";
-import Signup from "./components/Signup";
+import ChatPage from "./components/pages/ChatPage";
+import EditProfile from "./components/pages/EditProfile";
+import Profile from "./components/pages/Profile";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import { io } from "socket.io-client";
-import { useDispatch, useSelector } from "react-redux";
-import { setSocket } from "./redux/socketSlice";
-import { setOnlineUsers } from "./redux/chatSlice";
-import { setLikeNotification } from "./redux/rtnSlice";
-import ProtectedRoutes from "./components/ProtectedRoutes";
+import ProtectedRoutes from "./components/routing/ProtectedRoutes";
 import "./App.css";
-import { BASE_WS } from "./configs/globalVariables";
-import LoadingSpinner from "./components/LoadingSpinner";
+import DonateCancel from "./components/features/donate/DonateCancel";
+import LoadingSpinner from "./components/core/LoadingSpinner";
+import MainLayout from "./components/layouts/MainLayout";
+import LandingPage from "./components/pages/LandingPage";
+import Login from "./components/pages/Login";
+import Signup from "./components/pages/Signup";
+import Home from "./components/pages/Home";
+import { SocketProvider } from "./contexts/SocketProvider";
+import PostDetail from "./components/features/posts/PostDetail";
 
 const browserRouter = createBrowserRouter([
   {
@@ -30,6 +27,14 @@ const browserRouter = createBrowserRouter([
         path: "/",
         element: (
           <ProtectedRoutes>
+            <LandingPage />
+          </ProtectedRoutes>
+        ),
+      },
+      {
+        path: "/forum",
+        element: (
+          <ProtectedRoutes>
             <Home />
           </ProtectedRoutes>
         ),
@@ -39,6 +44,14 @@ const browserRouter = createBrowserRouter([
         element: (
           <ProtectedRoutes>
             <Profile />
+          </ProtectedRoutes>
+        ),
+      },
+      {
+        path: "/p/:id",
+        element: (
+          <ProtectedRoutes>
+            <PostDetail />
           </ProtectedRoutes>
         ),
       },
@@ -65,7 +78,17 @@ const browserRouter = createBrowserRouter([
             <ChatPage />
           </ProtectedRoutes>
         ),
-      }
+      },
+      {
+        path: "/donate/cancel",
+        element: (
+          <ProtectedRoutes>
+            <DonateCancel>
+              <Home />
+            </DonateCancel>
+          </ProtectedRoutes>
+        ),
+      },
     ],
   },
   {
@@ -81,44 +104,12 @@ const browserRouter = createBrowserRouter([
 
 
 function App() {
-  const { user } = useSelector((store) => store.auth);
-  const { socket } = useSelector((store) => store.socketio);
-  const dispatch = useDispatch();
-
-  useEffect(() => {
-    if (user) {
-      const socketio = io(BASE_WS, {
-        query: {
-          userId: user?._id,
-        },
-        transports: ["websocket"],
-      });
-      dispatch(setSocket(socketio));
-
-      // listen all the events
-      socketio.on("getOnlineUsers", (onlineUsers) => {
-        dispatch(setOnlineUsers(onlineUsers));
-      });
-
-      socketio.on("notification", (notification) => {
-        dispatch(setLikeNotification(notification));
-      });
-
-      return () => {
-        socketio.close();
-        dispatch(setSocket(null));
-      };
-    } else if (socket) {
-      socket.close();
-      dispatch(setSocket(null));
-    }
-  }, [user, dispatch]);
 
   return (
-    <>
+    <SocketProvider>
       <LoadingSpinner />
       <RouterProvider router={browserRouter} />
-    </>
+    </SocketProvider>
   );
 }
 

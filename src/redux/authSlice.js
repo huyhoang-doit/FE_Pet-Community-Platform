@@ -7,7 +7,7 @@ const authSlice = createSlice({
         suggestedUsers: [],
         userProfile: null,
         selectedUser: null,
-        chatUsers: [],
+        chatUsers: []
     },
     reducers: {
         // actions

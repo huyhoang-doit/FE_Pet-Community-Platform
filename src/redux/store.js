@@ -1,14 +1,14 @@
 import { combineReducers, configureStore } from "@reduxjs/toolkit";
 import authSlice from "./authSlice.js";
 import postSlice from './postSlice.js';
-import socketSlice from "./socketSlice.js"
 import chatSlice from "./chatSlice.js";
 import rtnSlice from "./rtnSlice.js";
 import campaignSlice from "./campaignSlice.js";
 import donateSlice from "./donateSlice.js";
 import loadingSlice from "./loadingSlice.js";
+import sidebarSlice from "./sidebarSlice.js";
 
-import { 
+import {
     persistReducer,
     FLUSH,
     REHYDRATE,
@@ -27,14 +27,14 @@ const persistConfig = {
 }
 
 const rootReducer = combineReducers({
-    auth:authSlice,
-    post:postSlice,
-    socketio:socketSlice,
-    chat:chatSlice,
-    realTimeNotification:rtnSlice,
-    campaign:campaignSlice,
-    donate:donateSlice,
-    loading:loadingSlice
+    auth: authSlice,
+    post: postSlice,
+    chat: chatSlice,
+    realTimeNotification: rtnSlice,
+    campaign: campaignSlice,
+    donate: donateSlice,
+    loading: loadingSlice,
+    sidebar: sidebarSlice
 })
 
 const persistedReducer = persistReducer(persistConfig, rootReducer)

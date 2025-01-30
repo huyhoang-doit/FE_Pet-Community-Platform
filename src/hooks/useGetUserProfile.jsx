@@ -12,6 +12,7 @@ const useGetUserProfile = (username) => {
         const { data } = await getProfileAPI(username);
 
         if (data.status === 200) {  
+          
           dispatch(setUserProfile(data.data));
         }
       } catch (error) {
