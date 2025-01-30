@@ -13,6 +13,12 @@ import Signup from "./components/pages/Signup";
 import Home from "./components/pages/Home";
 import { SocketProvider } from "./contexts/SocketProvider";
 import PostDetail from "./components/features/posts/PostDetail";
+import Admin from "./components/pages/AdminPages/Admin";
+import Dashboard from "./components/pages/AdminPages/Dashboard";
+import AdminLayout from "./components/layouts/AdminLayout";
+import User from "./components/pages/AdminPages/User";
+import Donate from "./components/pages/AdminPages/Donate";
+import Staff from "./components/pages/AdminPages/Staff";
 
 const browserRouter = createBrowserRouter([
   {
@@ -99,10 +105,37 @@ const browserRouter = createBrowserRouter([
     path: "/signup",
     element: <Signup />,
   },
+  {
+    path: "/admin",
+    element: (
+      // <ProtectedRoutes> //thêm vào sau khi xác thực người dùng
+      <AdminLayout>
+        <Admin />
+      </AdminLayout>
+      // </ProtectedRoutes>
+    ),
+    children: [
+      {
+        path: "dashboard",
+        element: <Dashboard />,
+      },
+      {
+        path: "users",
+        element: <User />,
+      },
+      {
+        path: "donate",
+        element: <Donate />,
+      },
+      {
+        path: "staff",
+        element: <Staff />,
+      },
+    ],
+  },
 ]);
 
 function App() {
-
   return (
     <SocketProvider>
       <LoadingSpinner />
