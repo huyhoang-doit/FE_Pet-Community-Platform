@@ -5,7 +5,7 @@ const sidebarSlice = createSlice({
   initialState: {
     isDisplayText: false,
     showSearchTab: false,
-    showNotificationTab: false
+    showNotificationTab: false,
   },
   reducers: {
     setIsDisplayText: (state, action) => {

@@ -74,13 +74,6 @@ const LeftSidebar = () => {
 
   const handleClickOutside = (event) => {
     // Kiểm tra click trong notification area
-    if (location.pathname.includes("/chat/")) {
-      setActiveTab("Messages");
-      dispatch(setShowNotificationTab(false));
-      dispatch(setShowSearchTab(false));
-      return;
-    }
-
     const notificationArea = document.querySelector(".notification-area");
     const searchArea = document.querySelector(".search-area");
     if (
@@ -89,10 +82,27 @@ const LeftSidebar = () => {
     )
       return;
 
-    if (
-      notificationRef.current &&
-      !notificationRef.current.contains(event.target)
-    ) {
+    if (location.pathname.includes("/chat/")) {
+      setActiveTab("Messages");
+      dispatch(setShowNotificationTab(false));
+      dispatch(setShowSearchTab(false));
+      return;
+    }
+    if ((activeTab === "Search" || activeTab === "Notifications") && location.pathname.includes("/profile/")) {
+      setActiveTab("Profile");
+      dispatch(setIsDisplayText(true));
+      dispatch(setShowNotificationTab(false));
+      dispatch(setShowSearchTab(false));
+      return;
+    }
+    if (location.pathname.includes("/p/")) {
+      dispatch(setShowNotificationTab(false));
+      dispatch(setShowSearchTab(false));
+      dispatch(setIsDisplayText(true));
+      return;
+    }
+
+    if (notificationRef.current && !notificationRef.current.contains(event.target)) {
       dispatch(setShowNotificationTab(false));
       if (isActiveTab("Messages")) setActiveTab("Messages");
       else if (isActiveTab("Forum")) setActiveTab("Forum");
@@ -109,12 +119,6 @@ const LeftSidebar = () => {
       else if (isActiveTab("Profile")) setActiveTab("Profile");
       else if (isActiveTab("Notifications")) setActiveTab("Notifications");
       else if (isActiveTab("Search")) setActiveTab("Search");
-    }
-    
-    if ((activeTab === "Search" || activeTab === "Notifications") && location.pathname.includes("/profile/")) {
-      setActiveTab("Profile")
-      dispatch(setIsDisplayText(true));
-      return
     }
 
     const shouldDisplayText = !["Messages", "Notifications", "Search"].includes(
@@ -146,7 +150,7 @@ const LeftSidebar = () => {
     setActiveTab(textType);
     dispatch(setShowNotificationTab(false));
     dispatch(setShowSearchTab(false));
-
+    
     const actions = {
       Logout: logoutHandler,
       Create: () => setOpen(true),
