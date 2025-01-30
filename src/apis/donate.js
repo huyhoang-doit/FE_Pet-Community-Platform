@@ -1,11 +1,20 @@
 import { BASE_URL } from "@/configs/globalVariables"
 import authorizedAxiosInstance from "@/utils/authorizedAxios"
 
-export const donateAPI = async (amount, message, isAnonymous) => {
-  return await authorizedAxiosInstance.post(`${BASE_URL}/payment/create-payment-link`, {
+export const donateAPI = async (amount, description, isAnonymous, campaignId, returnUrl, cancelUrl) => {
+  return await authorizedAxiosInstance.post(`${BASE_URL}/payment/member/create-payment-link`, {
     amount,
-    message,
-    isAnonymous
+    description,
+    isAnonymous,
+    campaignId,
+    returnUrl,
+    cancelUrl
+  })
+}
+
+export const cancelDonateAPI = async (orderCode) => {
+  return await authorizedAxiosInstance.put(`${BASE_URL}/payment/cancel-payment-link`, {
+    orderCode
   })
 }
 

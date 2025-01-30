@@ -3,18 +3,19 @@ import { createSlice } from "@reduxjs/toolkit";
 const rtnSlice = createSlice({
     name: 'realTimeNotification',
     initialState: {
-        likeNotification: [], // [1,2,3]
+        notifications: [], // [1,2,3]
     },
     reducers: {
-        setLikeNotification: (state, action) => {
+        setNotifications: (state, action) => {
+            state.notifications = action.payload
             if (action.payload.type === 'like') {
-                state.likeNotification.push(action.payload);
+                state.notifications.push(action.payload);
             } else if (action.payload.type === 'dislike') {
-                state.likeNotification = state.likeNotification.filter((item) => item.userId !== action.payload.userId);
+                state.notifications = state.notifications.filter((item) => item.userId !== action.payload.userId);
             }
         }
     }
 });
 
-export const { setLikeNotification } = rtnSlice.actions;
+export const { setNotifications } = rtnSlice.actions;
 export default rtnSlice.reducer;

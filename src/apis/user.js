@@ -5,8 +5,8 @@ export const editProfileAPI = async (formData) => {
   return await authorizedAxiosInstance.post(`${BASE_URL}/user/profile/edit`, formData)
 }
 
-export const suggestedAPI = async () => {
-  return await authorizedAxiosInstance.get(`${BASE_URL}/user/suggested`)
+export const suggestedAPI = async (limit) => {
+  return await authorizedAxiosInstance.get(`${BASE_URL}/user/suggested?limit=${limit}`)
 }
 
 export const getProfileAPI = async (username) => {
@@ -23,4 +23,8 @@ export const getProfileByIdAPI = async (userId) => {
 
 export const getChatUserAPI = async () => {
   return await authorizedAxiosInstance.get(`${BASE_URL}/user/chat-users`)
+}
+
+export const getAllUsersAPI = async (q) => {
+  return await authorizedAxiosInstance.get(`${BASE_URL}/user/all?q=${q}`)
 }

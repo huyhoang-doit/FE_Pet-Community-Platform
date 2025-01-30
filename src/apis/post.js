@@ -17,8 +17,12 @@ export const bookmarkAPI = async (postId) => {
   return await authorizedAxiosInstance.get(`${BASE_URL}/post/${postId}/bookmark`)
 }
 
-export const fetchAllPostsAPI = async () => {
-  return await authorizedAxiosInstance.get(`${BASE_URL}/post/all`)
+export const fetchAllPostsAPI = async (page) => {
+  return await authorizedAxiosInstance.get(`${BASE_URL}/post/all?sortBy=createdAt:desc&limit=4&page=${page}`)
+}
+
+export const getPostById = async (postId) => {
+  return await authorizedAxiosInstance.get(`${BASE_URL}/post/${postId}/getpostbyid`)
 }
 
 export const addPostsAPI = async (formData) => {

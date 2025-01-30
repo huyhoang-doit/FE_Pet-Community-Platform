@@ -3,14 +3,15 @@ import { setSuggestedUsers } from "@/redux/authSlice";
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 
-const useGetSuggestedUsers = () => {
+const useGetSuggestedUsers = (limit) => {
   const dispatch = useDispatch();
   useEffect(() => {
     const fetchSuggestedUsers = async () => {
       try {
-        const { data } = await suggestedAPI();
+        const { data } = await suggestedAPI(limit);
+
         if (data.status === 200) {
-          dispatch(setSuggestedUsers(data.data));
+          dispatch(setSuggestedUsers(data.data.results));
         }
       } catch (error) {
         console.log(error);

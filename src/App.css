@@ -166,3 +166,21 @@
         transform: scale(40, 40);
     }
 }
+
+.aajq {
+    align-items: center;
+    border: 0;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+    font: inherit;
+    font-size: 100%;
+    height: auto;
+    justify-content: center;
+    margin: 0;
+    padding: 0 40px;
+    position: relative;
+    text-align: center;
+    vertical-align: baseline;
+}
