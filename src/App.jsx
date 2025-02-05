@@ -142,7 +142,6 @@ const browserRouter = createBrowserRouter([
     path: "/signup",
     element: <Signup />,
   },
-])
   {
     path: "/admin",
     element: (
@@ -170,8 +169,9 @@ const browserRouter = createBrowserRouter([
         element: <Staff />,
       },
     ],
-  },
+  }
 ]);
+
 function App() {
   return (
     <SocketProvider>
