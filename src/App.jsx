@@ -13,6 +13,10 @@ import Signup from "./components/pages/Signup";
 import Home from "./components/pages/Home";
 import { SocketProvider } from "./contexts/SocketProvider";
 import PostDetail from "./components/features/posts/PostDetail";
+import BlogList from "./components/features/blog/BlogList"
+import BlogDetail from "./components/features/blog/BlogDetail"
+import BlogCreate from "./components/features/blog/BlogCreate"
+import BlogEdit from "./components/features/blog/BlogEdit"
 
 const browserRouter = createBrowserRouter([
   {
@@ -89,6 +93,38 @@ const browserRouter = createBrowserRouter([
           </ProtectedRoutes>
         ),
       },
+      {
+        path: "/blog",
+        element: (
+          <ProtectedRoutes>
+            <BlogList />
+          </ProtectedRoutes>
+        ),
+      },
+      {
+        path: "/blog/:id",
+        element: (
+          <ProtectedRoutes>
+            <BlogDetail />
+          </ProtectedRoutes>
+        ),
+      },
+      {
+        path: "/blog/create",
+        element: (
+          <ProtectedRoutes>
+            <BlogCreate />
+          </ProtectedRoutes>
+        ),
+      },
+      {
+        path: "/blog/:id/edit",
+        element: (
+          <ProtectedRoutes>
+            <BlogEdit />
+          </ProtectedRoutes>
+        ),
+      },
     ],
   },
   {
@@ -99,7 +135,6 @@ const browserRouter = createBrowserRouter([
     path: "/signup",
     element: <Signup />,
   },
-
 ])
 
 
