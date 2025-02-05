@@ -4,10 +4,11 @@ import LeftSidebar from "./LeftSidebar";
 const MainLayout = () => {
   const location = useLocation();
   const isRootRoute = location.pathname === "/";
+  const isBlogRoute = location.pathname.includes("/blog");
 
   return (
     <div>
-      {!isRootRoute && <LeftSidebar />}
+      {!isRootRoute && !isBlogRoute && <LeftSidebar />}
       <div>
         <Outlet />
       </div>
