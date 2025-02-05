@@ -1,20 +1,22 @@
-import Feed from "./Feed";
-import { Outlet } from "react-router-dom";
+import ForumFeeds from "./ForumFeeds";
+import { Outlet, useLocation } from "react-router-dom";
 import RightSidebar from "../layouts/RightSidebar";
 import useFetchData from "@/hooks/useFetchData";
+import AdoptFeeds from "./AdoptFeeds";
 
 const Home = () => {
-  useFetchData()
-
+  useFetchData();
+  const location = useLocation();
   return (
     <div className="flex">
       <div className="flex-grow">
-        <Feed />
+        {location.pathname.includes("/forum") && <ForumFeeds />}
+        {location.pathname.includes("/adopt") && <AdoptFeeds />}
         <Outlet />
       </div>
-      <div className="w-[350px]">
+      <aside className="w-[350px] hidden lg:block">
         <RightSidebar />
-      </div>
+      </aside>
     </div>
   );
 };
