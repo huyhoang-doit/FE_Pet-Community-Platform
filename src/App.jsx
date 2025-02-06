@@ -13,6 +13,17 @@ import Signup from "./components/pages/Signup";
 import Home from "./components/pages/Home";
 import { SocketProvider } from "./contexts/SocketProvider";
 import PostDetail from "./components/features/posts/PostDetail";
+import BlogList from "./components/features/blog/BlogList"
+import BlogDetail from "./components/features/blog/BlogDetail"
+import BlogCreate from "./components/features/blog/BlogCreate"
+import BlogEdit from "./components/features/blog/BlogEdit"
+import Admin from "./components/pages/AdminPages/Admin";
+import Dashboard from "./components/pages/AdminPages/Dashboard";
+import AdminLayout from "./components/layouts/AdminLayout";
+import User from "./components/pages/AdminPages/User";
+import Donate from "./components/pages/AdminPages/Donate";
+import Staff from "./components/pages/AdminPages/Staff";
+
 
 const browserRouter = createBrowserRouter([
   {
@@ -89,6 +100,38 @@ const browserRouter = createBrowserRouter([
           </ProtectedRoutes>
         ),
       },
+      {
+        path: "/blog",
+        element: (
+          <ProtectedRoutes>
+            <BlogList />
+          </ProtectedRoutes>
+        ),
+      },
+      {
+        path: "/blog/:id",
+        element: (
+          <ProtectedRoutes>
+            <BlogDetail />
+          </ProtectedRoutes>
+        ),
+      },
+      {
+        path: "/blog/create",
+        element: (
+          <ProtectedRoutes>
+            <BlogCreate />
+          </ProtectedRoutes>
+        ),
+      },
+      {
+        path: "/blog/:id/edit",
+        element: (
+          <ProtectedRoutes>
+            <BlogEdit />
+          </ProtectedRoutes>
+        ),
+      },
     ],
   },
   {
@@ -99,10 +142,37 @@ const browserRouter = createBrowserRouter([
     path: "/signup",
     element: <Signup />,
   },
+  {
+    path: "/admin",
+    element: (
+      // <ProtectedRoutes> //thêm vào sau khi xác thực người dùng
+      <AdminLayout>
+        <Admin />
+      </AdminLayout>
+      // </ProtectedRoutes>
+    ),
+    children: [
+      {
+        path: "dashboard",
+        element: <Dashboard />,
+      },
+      {
+        path: "users",
+        element: <User />,
+      },
+      {
+        path: "donate",
+        element: <Donate />,
+      },
+      {
+        path: "staff",
+        element: <Staff />,
+      },
+    ],
+  }
 ]);
 
 function App() {
-
   return (
     <SocketProvider>
       <LoadingSpinner />
