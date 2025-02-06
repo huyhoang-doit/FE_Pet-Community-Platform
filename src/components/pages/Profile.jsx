@@ -96,12 +96,11 @@ const Profile = () => {
 
   const handlePostClick = async (post) => {
     try {
-      const res = await authorizedAxiosInstance.get(
+      const {data} = await authorizedAxiosInstance.get(
         `http://localhost:3000/api/v1/post/${post._id}/getpostbyid`
       );
-      console.log(res);
 
-      dispatch(setSelectedPost(res.data.post));
+      dispatch(setSelectedPost(data.data));
       setShowPostModal(true);
     } catch (error) {
       console.log(error);
