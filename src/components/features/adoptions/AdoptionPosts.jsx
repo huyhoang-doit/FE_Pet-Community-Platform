@@ -1,12 +1,12 @@
 import { Fragment, useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { setPostPage, setPosts } from "@/redux/postSlice";
-import { fetchAllPostsAPI } from "@/apis/post";
 import { toast } from "sonner";
 import AdoptionPost from "./AdoptionPost";
+import { setAdoptPostPage, setAdoptPosts } from "@/redux/adoptPostSlice";
+import { fetchAllAdoptionPostsAPI } from "@/apis/post";
 
 const AdoptionPosts = () => {
-  const { posts, page } = useSelector((store) => store.post);
+  const { adoptPosts, page } = useSelector((store) => store.adopt);
   const dispatch = useDispatch();
   const [hasMorePosts, setHasMorePosts] = useState(true);
   const loaderRef = useRef(null);
@@ -35,18 +35,18 @@ const AdoptionPosts = () => {
     loaderRef.current && observer.observe(loaderRef.current);
 
     return () => observer.disconnect();
-  }, [hasMorePosts, posts]);
+  }, [hasMorePosts, adoptPosts]);
 
   const handleLoadMore = async () => {
     try {
       const nextPage = page + 1;
-      dispatch(setPostPage(nextPage));
-      const { data } = await fetchAllPostsAPI(nextPage);
+      dispatch(setAdoptPostPage(nextPage));
+      const { data } = await fetchAllAdoptionPostsAPI(nextPage);
       if (data.data.results.length === 0) {
         setHasMorePosts(false);
         return;
       }
-      dispatch(setPosts([...posts, ...data.data.results]));
+      dispatch(setAdoptPosts([...adoptPosts, ...data.data.results]));
     } catch (error) {
       toast.error("Failed to load more posts");
     }
@@ -54,7 +54,7 @@ const AdoptionPosts = () => {
 
   return (
     <div>
-      {posts.map((post) => (
+      {adoptPosts.map((post) => (
         <Fragment key={post._id}>
           <AdoptionPost post={post} />
         </Fragment>

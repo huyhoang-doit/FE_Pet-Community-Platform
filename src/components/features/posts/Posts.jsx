@@ -20,7 +20,7 @@ const Posts = () => {
     return () => {
       history.scrollRestoration = originalScrollRestoration;
     };
-  }, [])
+  }, []);
 
   useEffect(() => {
     if (isInitialLoad.current) {
@@ -31,9 +31,9 @@ const Posts = () => {
       ([entry]) => entry.isIntersecting && hasMorePosts && handleLoadMore(),
       { threshold: 0.5 }
     );
-  
+
     loaderRef.current && observer.observe(loaderRef.current);
-    
+
     return () => observer.disconnect();
   }, [hasMorePosts, posts]);
 
@@ -61,8 +61,10 @@ const Posts = () => {
         </Fragment>
       ))}
       {hasMorePosts && (
-        <div ref={loaderRef} style={{ height: "50px", background: "transparent" }}>
-        </div>
+        <div
+          ref={loaderRef}
+          style={{ height: "50px", background: "transparent" }}
+        ></div>
       )}
     </div>
   );
