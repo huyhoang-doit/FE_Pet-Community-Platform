@@ -148,7 +148,7 @@ const Post = ({ post }) => {
             </div>
           </Link>
           <span className="text-sm text-gray-500">
-            •  {calculateTimeAgo(post.createdAt)}
+            • {calculateTimeAgo(post.createdAt)}
           </span>
           {user?.id === post.author.id && (
             <Badge variant="secondary">Author</Badge>
