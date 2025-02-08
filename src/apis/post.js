@@ -36,3 +36,7 @@ export const addPostsAPI = async (formData) => {
     }
   );
 }
+
+export const fetchAllAdoptionPostsAPI = async (page) => {
+  return await authorizedAxiosInstance.get(`${BASE_URL}/adoption-post/all?sortBy=createdAt:desc&limit=4&page=${page}`)
+}

@@ -7,6 +7,7 @@ import campaignSlice from "./campaignSlice.js";
 import donateSlice from "./donateSlice.js";
 import loadingSlice from "./loadingSlice.js";
 import sidebarSlice from "./sidebarSlice.js";
+import adoptPostSlice from "./adoptPostSlice.js";
 
 import {
     persistReducer,
@@ -29,6 +30,7 @@ const persistConfig = {
 const rootReducer = combineReducers({
     auth: authSlice,
     post: postSlice,
+    adopt: adoptPostSlice,
     chat: chatSlice,
     realTimeNotification: rtnSlice,
     campaign: campaignSlice,
