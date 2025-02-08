@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { getAllBlogsAPI } from '@/apis/blog'
+import { getAllBlogsAPI, deleteBlogAPI } from '@/apis/blog'
 import BlogCard from './BlogCard'
 import BlogCreate from './BlogCreate'
 import { Button } from '../../ui/button'
@@ -20,7 +20,7 @@ const BlogList = () => {
         try {
             setLoading(true)
             const params = selectedCategory !== 'All Posts' ? { category: selectedCategory } : {}
-            const res = await getAllBlogsAPI(params)
+            const res = await getAllBlogsAPI(params) // Lấy tất cả blog
             if (res.data.success) {
                 setBlogs(res.data.data.docs)
             }
@@ -28,6 +28,26 @@ const BlogList = () => {
             console.log(error)
         } finally {
             setLoading(false)
+        }
+    }
+
+    // Thêm hàm để tạo blog
+    const handleCreateBlog = async (formData) => {
+        try {
+            await createBlogAPI(formData) // Tạo blog mới
+            fetchBlogs() // Cập nhật danh sách blog
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    // Thêm hàm để xóa blog
+    const handleDeleteBlog = async (id) => {
+        try {
+            await deleteBlogAPI(id) // Xóa blog theo ID
+            fetchBlogs() // Cập nhật danh sách blog
+        } catch (error) {
+            console.log(error)
         }
     }
 
