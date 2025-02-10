@@ -1,53 +1,71 @@
+import { useState } from "react";
+import { Table, Tag, Button, Popconfirm, message } from "antd";
+
 const User = () => {
-  const users = [
+  const [users, setUsers] = useState([
     { id: 1, name: "User 1", status: "active" },
     { id: 2, name: "User 2", status: "offline" },
-    // Add more users
-  ];
+  ]);
 
   const handleBan = (id) => {
-    // Implement ban logic
-    console.log(`Banned user with id: ${id}`);
+    setUsers((prev) =>
+      prev.map((user) =>
+        user.id === id ? { ...user, status: "banned" } : user
+      )
+    );
+    message.success(`User with ID ${id} has been banned!`);
   };
+
+  const columns = [
+    {
+      title: "ID",
+      dataIndex: "id",
+      key: "id",
+    },
+    {
+      title: "Name",
+      dataIndex: "name",
+      key: "name",
+    },
+    {
+      title: "Status",
+      dataIndex: "status",
+      key: "status",
+      render: (status) => {
+        let color =
+          status === "active"
+            ? "green"
+            : status === "offline"
+            ? "orange"
+            : "red";
+        return <Tag color={color}>{status.toUpperCase()}</Tag>;
+      },
+    },
+    {
+      title: "Action",
+      key: "action",
+      render: (_, record) =>
+        record.status !== "banned" ? (
+          <Popconfirm
+            title="Are you sure to ban this user?"
+            onConfirm={() => handleBan(record.id)}
+            okText="Yes"
+            cancelText="No"
+          >
+            <Button type="primary" danger>
+              Ban
+            </Button>
+          </Popconfirm>
+        ) : (
+          <Tag color="red">Banned</Tag>
+        ),
+    },
+  ];
 
   return (
     <div className="p-4">
-      <h1 className="text-2xl font-bold">User Management</h1>
-      <table className="min-w-full mt-4">
-        <thead>
-          <tr>
-            <th className="border px-4 py-2 w-0.5">ID</th>
-            <th className="border px-4 py-2">Name</th>
-            <th className="border px-4 py-2">Status</th>
-            <th className="border px-4 py-2">Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          {users.map((user) => (
-            <tr key={user.id}>
-              <td className="text-center border px-4 py-2">{user.id}</td>
-              <td className="border px-4 py-2">{user.name}</td>
-              <td className="border px-4 py-2">
-                <span
-                  className={`px-1 rounded-full ${
-                    user.status === "active" ? "bg-green-500" : "bg-red-500"
-                  }`}
-                >
-                  {user.status}
-                </span>
-              </td>
-              <td className="border px-4 py-2">
-                <button
-                  onClick={() => handleBan(user.id)}
-                  className="text-red-500"
-                >
-                  Ban
-                </button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      <h1 className="text-2xl font-bold mb-4">User Management</h1>
+      <Table columns={columns} dataSource={users} rowKey="id" />
     </div>
   );
 };

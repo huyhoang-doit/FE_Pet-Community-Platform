@@ -8,8 +8,9 @@ import {
   Tooltip,
   Legend,
 } from "chart.js";
+import { Card, Table } from "antd";
 
-// Register the required components
+// Đăng ký ChartJS components
 ChartJS.register(
   CategoryScale,
   LinearScale,
@@ -22,6 +23,7 @@ ChartJS.register(
 const Dashboard = () => {
   const totalUsers = 100; // Replace with actual data
   const totalDonations = 5000; // Replace with actual data
+
   const donationsData = {
     labels: ["January", "February", "March", "April", "May", "June"],
     datasets: [
@@ -34,39 +36,41 @@ const Dashboard = () => {
   };
 
   const topUsers = [
-    { name: "User  1", amount: 1000 },
-    { name: "User  2", amount: 800 },
-    { name: "User  3", amount: 600 },
-    { name: "User  4", amount: 400 },
-    { name: "User  5", amount: 200 },
+    { key: "1", name: "User 1", amount: 1000 },
+    { key: "2", name: "User 2", amount: 800 },
+    { key: "3", name: "User 3", amount: 600 },
+    { key: "4", name: "User 4", amount: 400 },
+    { key: "5", name: "User 5", amount: 200 },
   ]; // Replace with actual data
+
+  const columns = [
+    { title: "User", dataIndex: "name", key: "name" },
+    { title: "Donation Amount ($)", dataIndex: "amount", key: "amount" },
+  ];
 
   return (
     <div className="p-4">
-      <h1 className="text-2xl font-bold">Dashboard</h1>
-      <div className="grid grid-cols-2 gap-4 mt-4">
-        <div className="bg-white p-4 rounded shadow">
-          <h2 className="text-xl">Total Users</h2>
-          <p className="text-2xl">{totalUsers}</p>
-        </div>
-        <div className="bg-white p-4 rounded shadow">
-          <h2 className="text-xl">Total Donations</h2>
-          <p className="text-2xl">${totalDonations}</p>
-        </div>
+      <h1 className="text-2xl font-bold mb-4">Dashboard</h1>
+
+      {/* Tổng Users & Donations */}
+      <div className="grid grid-cols-2 gap-4">
+        <Card title="Total Users" bordered={false} className="text-center">
+          <p className="text-2xl font-bold">{totalUsers}</p>
+        </Card>
+        <Card title="Total Donations" bordered={false} className="text-center">
+          <p className="text-2xl font-bold">${totalDonations}</p>
+        </Card>
       </div>
-      <div className="mt-4 w-full h-auto">
+
+      {/* Biểu đồ Donations */}
+      <Card title="Monthly Donations" className="mt-4">
         <Bar data={donationsData} />
-      </div>
-      <div className="mt-4">
-        <h2 className="text-xl">Top 5 Donors</h2>
-        <ul className="list-disc pl-5">
-          {topUsers.map((user, index) => (
-            <li key={index}>
-              {user.name}: ${user.amount}
-            </li>
-          ))}
-        </ul>
-      </div>
+      </Card>
+
+      {/* Top 5 Donors */}
+      <Card title="Top 5 Donors" className="mt-4">
+        <Table dataSource={topUsers} columns={columns} pagination={false} />
+      </Card>
     </div>
   );
 };
