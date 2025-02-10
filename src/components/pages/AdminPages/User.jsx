@@ -16,7 +16,7 @@ const User = () => {
       <table className="min-w-full mt-4">
         <thead>
           <tr>
-            <th className="border px-4 py-2">ID</th>
+            <th className="border px-4 py-2 w-0.5">ID</th>
             <th className="border px-4 py-2">Name</th>
             <th className="border px-4 py-2">Status</th>
             <th className="border px-4 py-2">Action</th>
@@ -25,9 +25,17 @@ const User = () => {
         <tbody>
           {users.map((user) => (
             <tr key={user.id}>
-              <td className="border px-4 py-2">{user.id}</td>
-              <td className="border px-4 py -2">{user.name}</td>
-              <td className="border px-4 py-2">{user.status}</td>
+              <td className="text-center border px-4 py-2">{user.id}</td>
+              <td className="border px-4 py-2">{user.name}</td>
+              <td className="border px-4 py-2">
+                <span
+                  className={`px-1 rounded-full ${
+                    user.status === "active" ? "bg-green-500" : "bg-red-500"
+                  }`}
+                >
+                  {user.status}
+                </span>
+              </td>
               <td className="border px-4 py-2">
                 <button
                   onClick={() => handleBan(user.id)}

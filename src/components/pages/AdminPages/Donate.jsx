@@ -11,7 +11,10 @@ const Donate = () => {
     const ws = XLSX.utils.json_to_sheet(donations);
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, "Donations");
-    XLSX.writeFile(wb, "donations.xlsx");
+    XLSX.writeFile(
+      wb,
+      `donations-${new Date().toISOString().slice(0, 10)}.xlsx`
+    );
   };
 
   return (
@@ -37,7 +40,9 @@ const Donate = () => {
             <tr key={donation.id}>
               <td className="border px-4 py-2">{donation.id}</td>
               <td className="border px-4 py-2">{donation.user}</td>
-              <td className="border px-4 py-2">${donation.amount}</td>
+              <td className="border px-4 py-2">
+                ${donation.amount.toLocaleString()}
+              </td>
               <td className="border px-4 py-2">{donation.date}</td>
             </tr>
           ))}
