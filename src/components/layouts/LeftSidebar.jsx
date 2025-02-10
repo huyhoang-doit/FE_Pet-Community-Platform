@@ -1,4 +1,5 @@
 import {
+  Dog,
   Heart,
   Home,
   LogOut,
@@ -14,7 +15,11 @@ import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { setAuthUser, setChatUsers } from "@/redux/authSlice";
 import { setPostPage, setPosts, setSelectedPost } from "@/redux/postSlice";
-import { setIsDisplayText, setShowNotificationTab, setShowSearchTab } from "@/redux/sidebarSlice";
+import {
+  setIsDisplayText,
+  setShowNotificationTab,
+  setShowSearchTab,
+} from "@/redux/sidebarSlice";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { Button } from "../ui/button";
 import { handleLogoutAPI } from "@/apis/auth";
@@ -28,6 +33,7 @@ const getInitialActiveTab = () => {
   const pathname = window.location.pathname;
   if (pathname === "/") return "Home";
   if (pathname.includes("/profile")) return "Profile";
+  if (pathname.includes("/adopt")) return "Adopt";
   if (pathname.includes("/forum")) return "Forum";
   if (pathname.includes("/chat")) return "Messages";
   return "Home"; // fallback
@@ -46,7 +52,9 @@ const LeftSidebar = () => {
   const [activeTab, setActiveTab] = useState(getInitialActiveTab());
   const notificationRef = useRef(null);
   const searchRef = useRef(null);
-  const { isDisplayText, showSearchTab, showNotificationTab } = useSelector((store) => store.sidebar);
+  const { isDisplayText, showSearchTab, showNotificationTab } = useSelector(
+    (store) => store.sidebar
+  );
 
   const logoutHandler = async () => {
     try {
@@ -88,7 +96,10 @@ const LeftSidebar = () => {
       dispatch(setShowSearchTab(false));
       return;
     }
-    if ((activeTab === "Search" || activeTab === "Notifications") && location.pathname.includes("/profile/")) {
+    if (
+      (activeTab === "Search" || activeTab === "Notifications") &&
+      location.pathname.includes("/profile/")
+    ) {
       setActiveTab("Profile");
       dispatch(setIsDisplayText(true));
       dispatch(setShowNotificationTab(false));
@@ -102,13 +113,17 @@ const LeftSidebar = () => {
       return;
     }
 
-    if (notificationRef.current && !notificationRef.current.contains(event.target)) {
+    if (
+      notificationRef.current &&
+      !notificationRef.current.contains(event.target)
+    ) {
       dispatch(setShowNotificationTab(false));
       if (isActiveTab("Messages")) setActiveTab("Messages");
       else if (isActiveTab("Forum")) setActiveTab("Forum");
       else if (isActiveTab("Profile")) setActiveTab("Profile");
       else if (isActiveTab("Notifications")) setActiveTab("Notifications");
       else if (isActiveTab("Search")) setActiveTab("Search");
+      else if (isActiveTab("Adopt")) setActiveTab("Adopt");
     }
 
     // Xử lý click outside cho search
@@ -119,12 +134,13 @@ const LeftSidebar = () => {
       else if (isActiveTab("Profile")) setActiveTab("Profile");
       else if (isActiveTab("Notifications")) setActiveTab("Notifications");
       else if (isActiveTab("Search")) setActiveTab("Search");
+      else if (isActiveTab("Adopt")) setActiveTab("Adopt");
     }
 
     const shouldDisplayText = !["Messages", "Notifications", "Search"].includes(
       activeTab
     );
-    
+
     dispatch(setIsDisplayText(shouldDisplayText));
   };
 
@@ -133,6 +149,7 @@ const LeftSidebar = () => {
       "/profile": "Profile",
       "/forum": "Forum",
       "/chat": "Messages",
+      "/adopt": "Adopt",
     };
 
     const activeKey = Object.keys(pathMapping).find((key) =>
@@ -150,7 +167,7 @@ const LeftSidebar = () => {
     setActiveTab(textType);
     dispatch(setShowNotificationTab(false));
     dispatch(setShowSearchTab(false));
-    
+
     const actions = {
       Logout: logoutHandler,
       Create: () => setOpen(true),
@@ -158,6 +175,7 @@ const LeftSidebar = () => {
       Forum: () => navigate("/forum"),
       Messages: () => navigate("/chat"),
       Home: () => navigate("/"),
+      Adopt: () => navigate("/adopt"),
       Notifications: () => {
         dispatch(setShowNotificationTab(true));
         dispatch(setIsDisplayText(false));
@@ -190,11 +208,20 @@ const LeftSidebar = () => {
       textType: "Forum",
     },
     {
+      icon: isActiveTab("Adopt") ? (
+        <Dog size={24} strokeWidth={3} />
+      ) : (
+        <Dog size={24} />
+      ),
+      text: "Nhận nuôi",
+      textType: "Adopt",
+    },
+    {
       icon: isActiveTab("Search") ? <FaSearch size={24} /> : <Search />,
       text: "Tìm kiếm",
       textType: "Search",
     },
-    { icon: <TrendingUp />, text: "Khám phá", textType: "Explore" },
+    // { icon: <TrendingUp />, text: "Khám phá", textType: "Explore" },
     {
       icon: isActiveTab("Messages") ? (
         <RiMessengerFill size={24} />
