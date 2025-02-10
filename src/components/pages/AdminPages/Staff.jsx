@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Table, Tag, Button, Popconfirm, message } from "antd";
 
 const Staff = () => {
   const [staffMembers, setStaffMembers] = useState([
@@ -8,46 +9,69 @@ const Staff = () => {
   ]);
 
   const handleBan = (id) => {
-    // Implement ban logic (e.g., change status to 'banned')
-    setStaffMembers(
-      staffMembers.map((staff) =>
+    setStaffMembers((prev) =>
+      prev.map((staff) =>
         staff.id === id ? { ...staff, status: "banned" } : staff
       )
     );
+    message.success("Staff member has been banned!");
   };
+
+  const columns = [
+    {
+      title: "ID",
+      dataIndex: "id",
+      key: "id",
+    },
+    {
+      title: "Name",
+      dataIndex: "name",
+      key: "name",
+    },
+    {
+      title: "Role",
+      dataIndex: "role",
+      key: "role",
+    },
+    {
+      title: "Status",
+      dataIndex: "status",
+      key: "status",
+      render: (status) => {
+        let color =
+          status === "active"
+            ? "green"
+            : status === "offline"
+            ? "orange"
+            : "red";
+        return <Tag color={color}>{status.toUpperCase()}</Tag>;
+      },
+    },
+    {
+      title: "Action",
+      key: "action",
+      render: (_, record) =>
+        record.status !== "banned" ? (
+          <Popconfirm
+            title="Are you sure to ban this staff member?"
+            onConfirm={() => handleBan(record.id)}
+            okText="Yes"
+            cancelText="No"
+          >
+            <Button type="primary" danger>
+              Ban
+            </Button>
+          </Popconfirm>
+        ) : (
+          <Tag color="red">Banned</Tag>
+        ),
+    },
+  ];
 
   return (
     <div className="p-4">
-      <h1 className="text-2xl font-bold">Staff Management</h1>
-      <table className="table-auto min-w-full mt-4">
-        <thead>
-          <tr>
-            <th className="border px-4 py-2 w-0.5">ID</th>
-            <th className="border px-4 py-2">Name</th>
-            <th className="border px-4 py-2">Role</th>
-            <th className="border px-4 py-2">Status</th>
-            <th className="border px-4 py-2">Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          {staffMembers.map((staff) => (
-            <tr key={staff.id}>
-              <td className="text-center border px-4 py-2">{staff.id}</td>
-              <td className="border px-4 py-2">{staff.name}</td>
-              <td className="border px-4 py-2">{staff.role}</td>
-              <td className="border px-4 py-2">{staff.status}</td>
-              <td className="border px-4 py-2">
-                <button
-                  onClick={() => handleBan(staff.id)}
-                  className="text-red-500"
-                >
-                  Ban
-                </button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      <h1 className="text-2xl font-bold mb-4">Staff Management</h1>
+      <Table columns={columns} dataSource={staffMembers} rowKey="id" />
     </div>
   );
 };

@@ -1,10 +1,13 @@
 import * as XLSX from "xlsx";
+import { Table, Button } from "antd";
+import { FileExcelOutlined } from "@ant-design/icons";
 
 const Donate = () => {
   const donations = [
-    { id: 1, user: "User  1", amount: 1000, date: "2023-01-01" },
-    { id: 2, user: "User  2", amount: 800, date: "2023-01-02" },
-    // Add more donations
+    { id: 1, user: "User 1", amount: 1000, date: "2023-01-01" },
+    { id: 2, user: "User 2", amount: 800, date: "2023-01-02" },
+    { id: 3, user: "User 3", amount: 1200, date: "2023-02-10" },
+    { id: 4, user: "User 4", amount: 500, date: "2023-03-15" },
   ];
 
   const exportToExcel = () => {
@@ -17,37 +20,50 @@ const Donate = () => {
     );
   };
 
+  const columns = [
+    {
+      title: "ID",
+      dataIndex: "id",
+      key: "id",
+      sorter: (a, b) => a.id - b.id,
+    },
+    {
+      title: "User",
+      dataIndex: "user",
+      key: "user",
+      filters: [
+        { text: "User 1", value: "User 1" },
+        { text: "User 2", value: "User 2" },
+      ],
+      onFilter: (value, record) => record.user.includes(value),
+    },
+    {
+      title: "Amount ($)",
+      dataIndex: "amount",
+      key: "amount",
+      sorter: (a, b) => a.amount - b.amount,
+      render: (amount) => `$${amount.toLocaleString()}`,
+    },
+    {
+      title: "Date",
+      dataIndex: "date",
+      key: "date",
+      sorter: (a, b) => new Date(a.date) - new Date(b.date),
+    },
+  ];
+
   return (
     <div className="p-4">
-      <h1 className="text-2xl font-bold">Donation Management</h1>
-      <button
+      <h1 className="text-2xl font-bold mb-4">Donation Management</h1>
+      <Button
+        type="primary"
+        icon={<FileExcelOutlined />}
         onClick={exportToExcel}
-        className="bg-blue-500 text-white px-4 py-2 rounded mt-4"
+        className="mb-4"
       >
         Export to Excel
-      </button>
-      <table className="min-w-full mt-4">
-        <thead>
-          <tr>
-            <th className="border px-4 py-2">ID</th>
-            <th className="border px-4 py-2">User </th>
-            <th className="border px-4 py-2">Amount</th>
-            <th className="border px-4 py-2">Date</th>
-          </tr>
-        </thead>
-        <tbody>
-          {donations.map((donation) => (
-            <tr key={donation.id}>
-              <td className="border px-4 py-2">{donation.id}</td>
-              <td className="border px-4 py-2">{donation.user}</td>
-              <td className="border px-4 py-2">
-                ${donation.amount.toLocaleString()}
-              </td>
-              <td className="border px-4 py-2">{donation.date}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      </Button>
+      <Table columns={columns} dataSource={donations} rowKey="id" />
     </div>
   );
 };
