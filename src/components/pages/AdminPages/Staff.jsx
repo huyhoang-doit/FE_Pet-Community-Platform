@@ -19,10 +19,10 @@ const Staff = () => {
   return (
     <div className="p-4">
       <h1 className="text-2xl font-bold">Staff Management</h1>
-      <table className="min-w-full mt-4">
+      <table className="table-auto min-w-full mt-4">
         <thead>
           <tr>
-            <th className="border px-4 py-2">ID</th>
+            <th className="border px-4 py-2 w-0.5">ID</th>
             <th className="border px-4 py-2">Name</th>
             <th className="border px-4 py-2">Role</th>
             <th className="border px-4 py-2">Status</th>
@@ -32,7 +32,7 @@ const Staff = () => {
         <tbody>
           {staffMembers.map((staff) => (
             <tr key={staff.id}>
-              <td className="border px-4 py-2">{staff.id}</td>
+              <td className="text-center border px-4 py-2">{staff.id}</td>
               <td className="border px-4 py-2">{staff.name}</td>
               <td className="border px-4 py-2">{staff.role}</td>
               <td className="border px-4 py-2">{staff.status}</td>
