@@ -1,10 +1,21 @@
 import { useEffect, useState } from 'react'
 import { getAllBlogsAPI } from '@/apis/blog'
-import BlogCard from './BlogCard'
 import BlogCreate from './BlogCreate'
 import { Button } from '../../ui/button'
+import { Link } from 'react-router-dom'
 
-const CATEGORIES = ['All Posts', 'Dogs', 'Cats']
+const POST_CATEGORIES = [
+    { name: "All Posts", color: "bg-secondary text-secondary-foreground" },
+    { name: "Dogs", color: "bg-blue-500 text-white" },
+    { name: "Cats", color: "bg-green-500 text-white" },
+]
+
+const BUTTON_CLASS = "px-4 py-2 rounded-full transition-all duration-300 hover:opacity-80"
+
+const cardClasses = "bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden transition-transform transform hover:scale-105"
+const imageClasses = "w-full h-48 object-cover"
+const textClasses = "text-lg font-semibold text-gray-900 dark:text-gray-100"
+const linkClasses = "text-purple-600 dark:text-purple-400 hover:underline"
 
 const BlogList = () => {
     const [blogs, setBlogs] = useState([])
@@ -27,7 +38,10 @@ const BlogList = () => {
         try {
             setLoading(true)
             setError(null)
-            const params = selectedCategory !== 'All Posts' ? { category: selectedCategory } : {}
+            const params = {
+                sortBy: '-createdAt',
+                ...(selectedCategory !== 'All Posts' ? { category: selectedCategory } : {})
+            }
             const res = await getAllBlogsAPI(params)
             if (res.data.success || res.data.status === 200) {
                 setBlogs(res.data.data.results)
@@ -50,35 +64,41 @@ const BlogList = () => {
         setSelectedCategory(category)
     }
 
-    const handleCreateSuccess = () => {
+    const handleCreateSuccess = (newBlog) => {
         setOpenCreate(false)
-        fetchBlogs()
+        setBlogs(prevBlogs => [newBlog, ...prevBlogs])
+        setPagination(prev => ({
+            ...prev,
+            totalResults: prev.totalResults + 1
+        }))
     }
 
     return (
-        <div className="bg-gray-100 min-h-screen p-6">
+        <div className="container mx-auto p-6 bg-gray-100 min-h-screen">
             <div className="max-w-7xl mx-auto">
                 <div className="flex justify-between items-center mb-6">
                     <div>
-                        <h1 className="text-3xl font-bold text-blue-600">PET BLOG</h1>
-                        <p className="text-gray-600 mt-1">
+                        <h1 className="text-4xl font-bold text-center text-primary mb-2">PET BLOG</h1>
+                        <p className="text-gray-600">
                             Tổng số bài viết: {pagination.totalResults}
                         </p>
                     </div>
-                    <Button onClick={() => setOpenCreate(true)}>Create New Blog</Button>
+                    <Button
+                        onClick={() => setOpenCreate(true)}
+                        className="bg-accent text-accent-foreground hover:bg-accent-dark"
+                    >
+                        Create New Blog
+                    </Button>
                 </div>
 
-                <div className="flex space-x-4 mb-6 overflow-x-auto">
-                    {CATEGORIES.map((category) => (
+                <div className="flex flex-wrap justify-center gap-4 mb-6">
+                    {POST_CATEGORIES.map((category) => (
                         <button
-                            key={category}
-                            onClick={() => handleCategoryChange(category)}
-                            className={`px-4 py-2 rounded transition-colors duration-200 ${selectedCategory === category
-                                    ? 'bg-blue-500 text-white'
-                                    : 'bg-gray-200 text-gray-800 hover:bg-gray-300'
-                                }`}
+                            key={category.name}
+                            onClick={() => handleCategoryChange(category.name)}
+                            className={`${selectedCategory === category.name ? category.color : 'bg-gray-200 text-gray-800'} ${BUTTON_CLASS}`}
                         >
-                            {category}
+                            {category.name}
                         </button>
                     ))}
                 </div>
@@ -94,22 +114,54 @@ const BlogList = () => {
                         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
                     </div>
                 ) : blogs.length > 0 ? (
-                    <>
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                            {blogs.map((blog) => (
-                                <BlogCard
-                                    key={blog._id}
-                                    blog={blog}
-                                    onBlogDeleted={fetchBlogs}
-                                />
-                            ))}
-                        </div>
-                        {pagination.totalPages > 1 && (
-                            <div className="mt-6 flex justify-center">
-                                {/* Có thể thêm phân trang ở đây nếu cần */}
+                    <div className="space-y-8">
+                        <div className="flex flex-col md:flex-row items-center bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg">
+                            <img
+                                src={blogs[0].thumbnail}
+                                alt={blogs[0].title}
+                                className="w-full md:w-1/2 rounded-lg object-cover h-[300px]"
+                            />
+                            <div className="md:ml-6 mt-4 md:mt-0 text-center md:text-left">
+                                <h2 className="text-2xl font-semibold text-primary">{blogs[0].title}</h2>
+                                <p className="text-gray-600 dark:text-gray-300 mt-2 line-clamp-3">
+                                    {blogs[0].content}
+                                </p>
+                                <Link
+                                    to={`/blog/${blogs[0]._id}`}
+                                    className="mt-4 inline-block bg-accent text-accent-foreground px-5 py-2 rounded-full transition-all duration-300 hover:bg-accent-dark"
+                                >
+                                    READ MORE
+                                </Link>
                             </div>
-                        )}
-                    </>
+                        </div>
+
+                        <div>
+                            <h2 className="text-2xl font-bold text-purple-600 dark:text-purple-400 mb-4">NEWEST POSTS</h2>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                {blogs.slice(1).map((blog) => (
+                                    <div key={blog._id} className={cardClasses}>
+                                        <img
+                                            src={blog.thumbnail}
+                                            alt={blog.title}
+                                            className={imageClasses}
+                                        />
+                                        <div className="p-4">
+                                            <h3 className={textClasses}>{blog.title}</h3>
+                                            <p className="text-zinc-600 dark:text-zinc-300 line-clamp-2">
+                                                {blog.content}
+                                            </p>
+                                            <Link
+                                                to={`/blog/${blog._id}`}
+                                                className={linkClasses}
+                                            >
+                                                Read More
+                                            </Link>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
                 ) : (
                     <div className="text-center text-gray-500 py-10">
                         Không có bài viết nào trong danh mục này
@@ -126,4 +178,4 @@ const BlogList = () => {
     )
 }
 
-export default BlogList 
+export default BlogList

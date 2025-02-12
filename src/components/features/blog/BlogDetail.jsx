@@ -1,22 +1,40 @@
 import { useEffect, useState } from 'react'
-import { useParams } from 'react-router-dom'
+import { useParams, Link } from 'react-router-dom'
 import { getBlogByIdAPI, likeBlogAPI, dislikeBlogAPI, commentBlogAPI } from '@/apis/blog'
 import { Avatar, AvatarFallback, AvatarImage } from '../../ui/avatar'
 import { calculateTimeAgo } from '@/utils/calculateTimeAgo'
 import VerifiedBadge from '../../core/VerifiedBadge'
 import { useSelector } from 'react-redux'
-import { FaHeart, FaRegHeart, FaBookmark } from 'react-icons/fa'
-import { LuBookmark } from 'react-icons/lu'
-import { MessageCircle, Send } from 'lucide-react'
+import { FaHeart, FaRegHeart } from 'react-icons/fa'
+import { MessageCircle, ArrowLeft } from 'lucide-react'
 import { toast } from 'sonner'
+
+const sharedClasses = {
+    textZinc: 'text-zinc-',
+    textPrimary: 'text-primary',
+    maxContainer: 'max-w-3xl mx-auto p-4',
+    textSm: 'text-sm',
+    textLg: 'text-lg',
+    textXl: 'text-xl',
+    text2xl: 'text-2xl',
+    text3xl: 'text-3xl',
+    fontBold: 'font-bold',
+    fontSemibold: 'font-semibold',
+    roundedLg: 'rounded-lg',
+    wFull: 'w-full',
+    hAuto: 'h-auto',
+    mb2: 'mb-2',
+    mb4: 'mb-4',
+    textZinc400: 'text-zinc-400',
+    textZinc500: 'text-zinc-500',
+    textZinc700: 'text-zinc-700',
+}
 
 const BlogDetail = () => {
     const { id } = useParams()
     const [blog, setBlog] = useState(null)
     const [loading, setLoading] = useState(true)
-    const [comment, setComment] = useState('')
     const [liked, setLiked] = useState(false)
-    const [bookmarked, setBookmarked] = useState(false)
     const { user } = useSelector((store) => store.auth)
 
     useEffect(() => {
@@ -37,139 +55,77 @@ const BlogDetail = () => {
         }
     }
 
-    const handleLike = async () => {
-        try {
-            const api = liked ? dislikeBlogAPI : likeBlogAPI
-            const res = await api(id)
-            if (res.data.success) {
-                setLiked(!liked)
-                fetchBlog() // Refresh blog data
-            }
-        } catch (error) {
-            toast.error(error.response?.data?.message || 'Something went wrong')
-        }
-    }
-
-    const handleComment = async () => {
-        if (!comment.trim()) return
-        try {
-            const res = await commentBlogAPI(id, comment)
-            if (res.data.success) {
-                setComment('')
-                fetchBlog() // Refresh blog data
-                toast.success('Comment added successfully')
-            }
-        } catch (error) {
-            toast.error(error.response?.data?.message || 'Something went wrong')
-        }
-    }
-
-    if (loading) return <div>Loading...</div>
-    if (!blog) return <div>Blog not found</div>
+    if (loading) return <div className="flex justify-center items-center h-screen">Loading...</div>
+    if (!blog) return <div className="text-center py-10">Blog not found</div>
 
     return (
-        <div className="my-8 w-full max-w-[850px] mx-auto border">
-            <div className="flex h-[600px] bg-white">
-                {/* Left side - Image */}
-                <div className="w-[60%] bg-black">
-                    <img
-                        src={blog.thumbnail}
-                        alt={blog.title}
-                        className="h-full w-full object-cover"
-                    />
-                </div>
+        <div className={sharedClasses.maxContainer}>
+            {/* Back Button */}
+            <Link
+                to="/blog"
+                className="group inline-flex items-center gap-2 px-4 py-2 mb-6 rounded-lg 
+                    hover:bg-gray-100 dark:hover:bg-gray-800 transition-all duration-300"
+            >
+                <ArrowLeft className="w-5 h-5 text-gray-600 group-hover:-translate-x-1 transition-transform" />
+                <span className="font-medium text-gray-600">Back to Blog List</span>
+            </Link>
 
-                {/* Right side - Details */}
-                <div className="w-[40%] flex flex-col border-l">
-                    {/* Header */}
-                    <div className="flex items-center p-4 border-b">
-                        <Avatar className="w-8 h-8">
-                            <AvatarImage src={blog.author.profilePicture} />
-                            <AvatarFallback>CN</AvatarFallback>
-                        </Avatar>
-                        <div className="ml-3">
-                            <div className="flex items-center gap-1">
-                                <span className="font-medium">{blog.author.username}</span>
-                                {blog.author.isVerified && <VerifiedBadge size={14} />}
-                            </div>
-                            <span className="text-sm text-gray-500">
-                                {calculateTimeAgo(blog.createdAt)}
-                            </span>
-                        </div>
+            {/* Breadcrumb */}
+            <div className={`${sharedClasses.textZinc500} ${sharedClasses.textSm} ${sharedClasses.mb2}`}>
+                PET BLOG / <span className={sharedClasses.textPrimary}>{blog.category}</span>
+            </div>
+
+            {/* Author Info */}
+            <div className="flex items-center gap-3 mb-4">
+                <Avatar className="w-10 h-10">
+                    <AvatarImage src={blog.author.profilePicture} />
+                    <AvatarFallback>CN</AvatarFallback>
+                </Avatar>
+                <div>
+                    <div className="flex items-center gap-1">
+                        <span className="font-medium">{blog.author.username}</span>
+                        {blog.author.isVerified && <VerifiedBadge size={14} />}
                     </div>
-
-                    {/* Content */}
-                    <div className="flex-grow overflow-y-auto p-4">
-                        <h1 className="text-xl font-bold mb-2">{blog.title}</h1>
-                        <p className="text-gray-800">{blog.content}</p>
-                    </div>
-
-                    {/* Actions */}
-                    <div className="border-t p-4">
-                        <div className="flex justify-between mb-4">
-                            <div className="flex space-x-4">
-                                {liked ? (
-                                    <FaHeart
-                                        onClick={handleLike}
-                                        className="w-6 h-6 text-red-500 cursor-pointer"
-                                    />
-                                ) : (
-                                    <FaRegHeart
-                                        onClick={handleLike}
-                                        className="w-6 h-6 cursor-pointer"
-                                    />
-                                )}
-                                <MessageCircle className="w-6 h-6 cursor-pointer" />
-                                <Send className="w-6 h-6 cursor-pointer" />
-                            </div>
-                            {bookmarked ? (
-                                <FaBookmark className="w-6 h-6 cursor-pointer" />
-                            ) : (
-                                <LuBookmark className="w-6 h-6 cursor-pointer" />
-                            )}
-                        </div>
-
-                        <div className="mb-4">
-                            <span className="font-semibold">{blog.likes?.length || 0} likes</span>
-                        </div>
-
-                        {/* Comments */}
-                        <div className="max-h-40 overflow-y-auto mb-4">
-                            {blog.comments?.map((comment) => (
-                                <div key={comment._id} className="flex items-start mb-2">
-                                    <Avatar className="w-6 h-6">
-                                        <AvatarImage src={comment.author.profilePicture} />
-                                        <AvatarFallback>CN</AvatarFallback>
-                                    </Avatar>
-                                    <div className="ml-2">
-                                        <span className="font-medium text-sm">{comment.author.username}</span>
-                                        <span className="text-sm ml-2">{comment.text}</span>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-
-                        {/* Comment input */}
-                        <div className="flex items-center mt-4">
-                            <input
-                                type="text"
-                                value={comment}
-                                onChange={(e) => setComment(e.target.value)}
-                                placeholder="Add a comment..."
-                                className="flex-grow text-sm focus:outline-none"
-                            />
-                            {comment && (
-                                <button
-                                    onClick={handleComment}
-                                    className="text-blue-500 font-semibold ml-2"
-                                >
-                                    Post
-                                </button>
-                            )}
-                        </div>
-                    </div>
+                    <span className={`${sharedClasses.textZinc400} ${sharedClasses.textSm}`}>
+                        {calculateTimeAgo(blog.createdAt)}
+                    </span>
                 </div>
             </div>
+
+            {/* Title */}
+            <h1 className={`${sharedClasses.text3xl} ${sharedClasses.fontBold} ${sharedClasses.mb4}`}>
+                {blog.title}
+            </h1>
+
+            {/* Main Image */}
+            <img
+                src={blog.thumbnail}
+                alt={blog.title}
+                className={`${sharedClasses.wFull} ${sharedClasses.hAuto} ${sharedClasses.roundedLg} ${sharedClasses.mb4}`}
+            />
+
+            {/* Content */}
+            <div className={`${sharedClasses.textZinc700} space-y-4 mb-8`}>
+                {blog.content}
+            </div>
+
+            {/* Actions */}
+            {/* <div className="flex items-center gap-4 mb-6">
+                <button onClick={handleLike} className="flex items-center gap-2">
+                    {liked ? (
+                        <FaHeart className="w-6 h-6 text-red-500" />
+                    ) : (
+                        <FaRegHeart className="w-6 h-6" />
+                    )}
+                    <span>{blog.likes?.length || 0} likes</span>
+                </button>
+                <button className="flex items-center gap-2">
+                    <MessageCircle className="w-6 h-6" />
+                    <span>{blog.comments?.length || 0} comments</span>
+                </button>
+            </div> */}
+
+
         </div>
     )
 }
