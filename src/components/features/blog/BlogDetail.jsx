@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { useParams, Link } from 'react-router-dom'
+import { useParams, Link, useLocation } from 'react-router-dom'
 import { getBlogByIdAPI, likeBlogAPI, dislikeBlogAPI, commentBlogAPI } from '@/apis/blog'
 import { Avatar, AvatarFallback, AvatarImage } from '../../ui/avatar'
 import { calculateTimeAgo } from '@/utils/calculateTimeAgo'
@@ -31,29 +31,30 @@ const sharedClasses = {
 }
 
 const BlogDetail = () => {
-    const { id } = useParams()
     const [blog, setBlog] = useState(null)
     const [loading, setLoading] = useState(true)
     const [liked, setLiked] = useState(false)
     const { user } = useSelector((store) => store.auth)
+    const location = useLocation();
+    const { blogId } = location.state
 
     useEffect(() => {
-        fetchBlog()
-    }, [id])
-
-    const fetchBlog = async () => {
-        try {
-            const res = await getBlogByIdAPI(id)
-            if (res.data.success) {
-                setBlog(res.data.data)
-                setLiked(res.data.data.likes.includes(user?.id))
+        const fetchBlog = async () => {
+            try {
+                const res = await getBlogByIdAPI(blogId)
+                if (res.data.success) {
+                    setBlog(res.data.data)
+                    setLiked(res.data.data.likes.includes(user?.id))
+                }
+            } catch (error) {
+                console.log(error)
+            } finally {
+                setLoading(false)
             }
-        } catch (error) {
-            console.log(error)
-        } finally {
-            setLoading(false)
         }
-    }
+        fetchBlog()
+    }, [blogId])
+
 
     if (loading) return <div className="flex justify-center items-center h-screen">Loading...</div>
     if (!blog) return <div className="text-center py-10">Blog not found</div>

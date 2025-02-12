@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { getAllBlogsAPI } from '@/apis/blog'
 import BlogCreate from './BlogCreate'
 import { Button } from '../../ui/button'
-import { Link } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 
 const POST_CATEGORIES = [
     { name: "All Posts", color: "bg-secondary text-secondary-foreground" },
@@ -23,6 +23,7 @@ const BlogList = () => {
     const [loading, setLoading] = useState(false)
     const [openCreate, setOpenCreate] = useState(false)
     const [error, setError] = useState(null)
+    const navigate = useNavigate()
     const [pagination, setPagination] = useState({
         page: 1,
         limit: 5,
@@ -72,6 +73,16 @@ const BlogList = () => {
             totalResults: prev.totalResults + 1
         }))
     }
+    const handleOnClickDetails = (id, title) => {
+        const slug = title.toLowerCase().replace(/\s+/g, "-"); // Chuyển thành chữ thường và thay thế khoảng trắng bằng "-"
+        console.log(slug); // Kiểm tra slug
+        navigate(`/blog/${slug}`, {
+            state: {
+                blogId: id,
+            },
+        });
+    };
+
 
     return (
         <div className="container mx-auto p-6 bg-gray-100 min-h-screen">
@@ -126,12 +137,12 @@ const BlogList = () => {
                                 <p className="text-gray-600 dark:text-gray-300 mt-2 line-clamp-3">
                                     {blogs[0].content}
                                 </p>
-                                <Link
-                                    to={`/blog/${blogs[0]._id}`}
+                                <button
+                                    onClick={() => handleOnClickDetails(blogs[0]._id, blogs[0].title)}
                                     className="mt-4 inline-block bg-accent text-accent-foreground px-5 py-2 rounded-full transition-all duration-300 hover:bg-accent-dark"
                                 >
                                     READ MORE
-                                </Link>
+                                </button>
                             </div>
                         </div>
 
@@ -150,12 +161,10 @@ const BlogList = () => {
                                             <p className="text-zinc-600 dark:text-zinc-300 line-clamp-2">
                                                 {blog.content}
                                             </p>
-                                            <Link
-                                                to={`/blog/${blog._id}`}
-                                                className={linkClasses}
-                                            >
+                                            <button onClick={() => handleOnClickDetails(blog._id, blog.title)}
+                                                className={linkClasses}>
                                                 Read More
-                                            </Link>
+                                            </button>
                                         </div>
                                     </div>
                                 ))}
