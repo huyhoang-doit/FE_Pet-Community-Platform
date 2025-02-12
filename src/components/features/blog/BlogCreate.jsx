@@ -9,9 +9,10 @@ import { useSelector } from "react-redux";
 import { createBlogAPI } from "@/apis/blog";
 import { Button } from "@/components/ui/button";
 
+
 const CATEGORIES = ['Dogs', 'Cats', 'Diet', 'Lifestyle', 'Vet']
 
-const BlogCreate = ({ open, setOpen }) => {
+const BlogCreate = ({ open, setOpen, onSuccess }) => {
     const imageRef = useRef();
     const [thumbnail, setThumbnail] = useState(null);
     const [title, setTitle] = useState("");
@@ -30,33 +31,24 @@ const BlogCreate = ({ open, setOpen }) => {
         }
     };
 
-    const createBlogHandler = async (e) => {
-        e.preventDefault();
-        const formData = new FormData();
-        formData.append("title", title);
-        formData.append("content", content);
-        formData.append("category", category);
-        if (thumbnail) {
-            formData.append("thumbnail", thumbnail);
-        }
-
+    const handleSubmit = async (values) => {
         try {
-            setLoading(true);
-            const res = await createBlogAPI(formData);
+            const formData = new FormData()
+            formData.append('title', values.title)
+            formData.append('content', values.content)
+            formData.append('category', values.category)
+            formData.append('thumbnail', values.thumbnail)
+
+            const res = await createBlogAPI(formData)
+            
             if (res.data.success) {
-                toast.success(res.data.message);
-                setOpen(false);
-                setTitle("");
-                setContent("");
-                setThumbnail(null);
-                setImagePreview(null);
+                toast.success(res.data.message)
+                onSuccess(res.data.data)
             }
         } catch (error) {
-            toast.error(error.response.data.message);
-        } finally {
-            setLoading(false);
+            toast.error(error.response.data.message)
         }
-    };
+    }
 
     return (
         <Dialog open={open}>
@@ -134,7 +126,7 @@ const BlogCreate = ({ open, setOpen }) => {
                     </Button>
                 ) : (
                     <Button
-                        onClick={createBlogHandler}
+                        onClick={() => handleSubmit({ title, content, category, thumbnail })}
                         type="submit"
                         className="w-full"
                         disabled={!title || !content || !thumbnail}
