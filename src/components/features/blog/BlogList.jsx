@@ -3,7 +3,7 @@ import { getAllBlogsAPI } from "@/apis/blog";
 import BlogCreate from "./BlogCreate";
 import { Button, Card, Spin, Pagination } from "antd";
 import { Link } from "react-router-dom";
-import Logo from "../../../../public/assets/images/logo.png";
+import Header from "@/components/layouts/Header";
 
 const POST_CATEGORIES = [
   { name: "All Posts", color: "bg-secondary text-secondary-foreground" },
@@ -57,13 +57,13 @@ const BlogList = () => {
   };
 
   return (
-    <div className="container mx-auto p-6 bg-gray-100 min-h-screen">
+    <div className="container-fluid mx-auto p-6 bg-gray-100 min-h-screen">
+      <div className="mb-6">
+        <Header />
+      </div>
       <div className="max-w-7xl mx-auto">
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-4xl font-bold text-center text-primary mb-2">
-            <span>
-              <img src={Logo} alt="logo" className="w-30 h-20 inline-block" />
-            </span>{" "}
             <span>PET BLOG</span>
           </h1>
           <Button type="primary" onClick={() => setOpenCreate(true)}>
