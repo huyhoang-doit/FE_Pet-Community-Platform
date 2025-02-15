@@ -41,7 +41,9 @@ const BlogList = () => {
             setError(null)
             const params = {
                 sortBy: '-createdAt',
-                ...(selectedCategory !== 'All Posts' ? { category: selectedCategory } : {})
+                category: selectedCategory,
+                page: pagination.page,
+                limit: pagination.limit
             }
             const res = await getAllBlogsAPI(params)
             if (res.data.success || res.data.status === 200) {
@@ -82,7 +84,6 @@ const BlogList = () => {
             },
         });
     };
-
 
     return (
         <div className="container mx-auto p-6 bg-gray-100 min-h-screen">

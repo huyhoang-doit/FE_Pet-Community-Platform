@@ -1,13 +1,12 @@
 import { useEffect, useState } from 'react'
-import { useParams, Link, useLocation } from 'react-router-dom'
 import { getBlogByIdAPI, likeBlogAPI, dislikeBlogAPI, commentBlogAPI } from '@/apis/blog'
 import { Avatar, AvatarFallback, AvatarImage } from '../../ui/avatar'
 import { calculateTimeAgo } from '@/utils/calculateTimeAgo'
 import VerifiedBadge from '../../core/VerifiedBadge'
 import { useSelector } from 'react-redux'
+import { ArrowLeft, MessageCircle } from 'lucide-react'
 import { FaHeart, FaRegHeart } from 'react-icons/fa'
-import { MessageCircle, ArrowLeft } from 'lucide-react'
-import { toast } from 'sonner'
+import { Link, useLocation } from 'react-router-dom'
 
 const sharedClasses = {
     textZinc: 'text-zinc-',
@@ -111,8 +110,8 @@ const BlogDetail = () => {
             </div>
 
             {/* Actions */}
-            {/* <div className="flex items-center gap-4 mb-6">
-                <button onClick={handleLike} className="flex items-center gap-2">
+            <div className="flex items-center gap-4 mb-6">
+                <button className="flex items-center gap-2">
                     {liked ? (
                         <FaHeart className="w-6 h-6 text-red-500" />
                     ) : (
@@ -124,7 +123,7 @@ const BlogDetail = () => {
                     <MessageCircle className="w-6 h-6" />
                     <span>{blog.comments?.length || 0} comments</span>
                 </button>
-            </div> */}
+            </div>
 
 
         </div>
