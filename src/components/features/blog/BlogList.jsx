@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react";
 import { getAllBlogsAPI } from "@/apis/blog";
 import BlogCreate from "./BlogCreate";
@@ -28,6 +29,7 @@ const BlogList = () => {
     fetchBlogs();
   }, [selectedCategory]);
 
+
   const fetchBlogs = async () => {
     try {
       setLoading(true);
@@ -56,6 +58,17 @@ const BlogList = () => {
     }
   };
 
+
+    const handleOnClickDetails = (id, title) => {
+        const slug = title.toLowerCase().replace(/\s+/g, "-"); // Chuyển thành chữ thường và thay thế khoảng trắng bằng "-"
+        console.log(slug); // Kiểm tra slug
+        navigate(`/blog/${slug}`, {
+            state: {
+                blogId: id,
+            },
+        });
+    };
+
   return (
     <div className="container-fluid mx-auto p-6 bg-gray-100 min-h-screen">
       <div className="mb-6">
@@ -70,7 +83,6 @@ const BlogList = () => {
             Create New Blog
           </Button>
         </div>
-
         <div className="flex flex-wrap justify-left gap-4 mb-6">
           {POST_CATEGORIES.map((category) => (
             <Button
@@ -119,35 +131,62 @@ const BlogList = () => {
               </Link>
             </div>
 
-            <h2 className="text-2xl font-bold text-purple-600 mb-4">
-              NEWEST POSTS
-            </h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {blogs.slice(1).map((blog) => (
-                <Link key={blog._id} to={`/blog/${blog._id}`}>
-                  <Card
-                    hoverable
-                    cover={
-                      <img
-                        alt={blog.title}
-                        src={blog.thumbnail}
-                        className="h-60 w-full object-cover"
-                      />
-                    }
-                  >
-                    <h3 className="text-lg font-semibold">{blog.title}</h3>
-                    <p className="text-zinc-600 line-clamp-2">{blog.content}</p>
-                    <Link to={`/blog/${blog._id}`}>Read More</Link>
-                  </Card>
-                </Link>
-              ))}
-            </div>
-          </>
-        ) : (
-          <div className="text-center text-gray-500 py-10">
-            Không có bài viết nào trong danh mục này
-          </div>
-        )}
+                {loading ? (
+                    <div className="flex justify-center items-center h-64">
+                        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+                    </div>
+                ) : blogs.length > 0 ? (
+                    <div className="space-y-8">
+                        <div className="flex flex-col md:flex-row items-center bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg">
+                            <img
+                                src={blogs[0].thumbnail}
+                                alt={blogs[0].title}
+                                className="w-full md:w-1/2 rounded-lg object-cover h-[300px]"
+                            />
+                            <div className="md:ml-6 mt-4 md:mt-0 text-center md:text-left">
+                                <h2 className="text-2xl font-semibold text-primary">{blogs[0].title}</h2>
+                                <p className="text-gray-600 dark:text-gray-300 mt-2 line-clamp-3">
+                                    {blogs[0].content}
+                                </p>
+                                <button
+                                    onClick={() => handleOnClickDetails(blogs[0]._id, blogs[0].title)}
+                                    className="mt-4 inline-block bg-accent text-accent-foreground px-5 py-2 rounded-full transition-all duration-300 hover:bg-accent-dark"
+                                >
+                                    READ MORE
+                                </button>
+                            </div>
+                        </div>
+
+                        <div>
+                            <h2 className="text-2xl font-bold text-purple-600 dark:text-purple-400 mb-4">NEWEST POSTS</h2>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                {blogs.slice(1).map((blog) => (
+                                    <div key={blog._id} className={cardClasses}>
+                                        <img
+                                            src={blog.thumbnail}
+                                            alt={blog.title}
+                                            className={imageClasses}
+                                        />
+                                        <div className="p-4">
+                                            <h3 className={textClasses}>{blog.title}</h3>
+                                            <p className="text-zinc-600 dark:text-zinc-300 line-clamp-2">
+                                                {blog.content}
+                                            </p>
+                                            <button onClick={() => handleOnClickDetails(blog._id, blog.title)}
+                                                className={linkClasses}>
+                                                Read More
+                                            </button>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+                ) : (
+                    <div className="text-center text-gray-500 py-10">
+                        Không có bài viết nào trong danh mục này
+                    </div>
+                )}
 
         <Pagination
           current={pagination.page}
@@ -156,7 +195,6 @@ const BlogList = () => {
           onChange={(page) => setPagination((prev) => ({ ...prev, page }))}
           className="mt-6 flex justify-center"
         />
-
         <BlogCreate
           open={openCreate}
           setOpen={setOpenCreate}
