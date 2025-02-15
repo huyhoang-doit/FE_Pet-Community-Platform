@@ -5,6 +5,9 @@ import { dogBreeds } from "./dobBreeds";
 import { toast } from "sonner";
 import { readFileAsDataURL } from "@/lib/utils";
 import { submitPetAPI } from "@/apis/submitPet";
+import { FaCloudUploadAlt } from "react-icons/fa";
+import { MdDelete } from "react-icons/md";
+import { motion } from "framer-motion";
 
 const petValidationSchema = Yup.object({
   name: Yup.string()
@@ -43,16 +46,18 @@ const petValidationSchema = Yup.object({
 
 const SubmitPet = () => {
   const [step, setStep] = useState(1);
-  const [image, setImage] = useState(null);
+  const [images, setImages] = useState([]);
   const [imagePreview, setImagePreview] = useState(null);
   const imageRef = useRef();
 
   const fileChangeHandler = async (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setImage(file);
-      const dataUrl = await readFileAsDataURL(file);
-      setImagePreview(dataUrl);
+    const files = e.target.files;
+    if (files && files.length > 0) {
+      const newImages = Array.from(files);
+      setImages(newImages);
+
+      const firstImagePreview = await readFileAsDataURL(newImages[0]);
+      setImagePreview(firstImagePreview);
     }
   };
 
@@ -68,10 +73,17 @@ const SubmitPet = () => {
       formData.append("size", values.size);
       formData.append("coat", values.coat);
       formData.append("temperament", values.temperament);
-      formData.append("image_url", image);
+
+      // Gửi nhiều hình ảnh
+      images.forEach((image) => {
+        formData.append("image_url", image);
+      });
+
       await submitPetAPI(formData);
       toast.success("Thông tin thú cưng đã được gửi thành công!");
       resetForm();
+      setImages([]); // Xóa danh sách hình ảnh sau khi gửi
+      setImagePreview([]);
     } catch (error) {
       toast.error("Đã xảy ra lỗi khi gửi thông tin thú cưng.");
       console.log(error);
@@ -83,7 +95,7 @@ const SubmitPet = () => {
   return (
     <div className="flex flex-col items-center my-8">
       <marquee
-        className="text-2xl font-bold my-[2%] ml-[20%] z-[1000000] text-[#DA5BA9]"
+        className="text-2xl font-bold my-[2%] ml-[25%] z-[1000000] text-[#DA5BA9]"
         scrollamount="15"
       >
         Nhập thông tin chó cần gửi vào đây!
@@ -202,26 +214,45 @@ const SubmitPet = () => {
 
             {step === 2 && (
               <div className="border border-gray-300 rounded-md p-8">
-                <div className="py-2">
-                  {imagePreview && (
-                    <div className="w-full h-64 flex items-center justify-center py-6">
-                      <img
+                <div className="w-full bg-card backdrop-blur-md h-64 rounded-md border-2 border-dotted border-gray-300 cursor-pointer flex items-center justify-center relative">
+                  {imagePreview ? (
+                    <div className="w-full h-full flex items-center justify-center relative">
+                      <motion.img
                         src={imagePreview}
                         alt="preview"
                         className="object-cover h-full w-full rounded-md"
                       />
+                      {/* Nút xoá ảnh */}
+                      <button
+                        type="button"
+                        className="absolute top-2 right-2 bg-red-500 text-white p-2 rounded-full shadow-md hover:bg-red-600 transition"
+                        onClick={() => setImagePreview(null)} // Xóa ảnh preview
+                      >
+                        <MdDelete className="text-lg" />
+                      </button>
                     </div>
+                  ) : (
+                    <label
+                      htmlFor="upload-image"
+                      className="flex flex-col items-center justify-center h-full w-full cursor-pointer"
+                    >
+                      <p className="font-bold text-4xl">
+                        <FaCloudUploadAlt className="-rotate-0" />
+                      </p>
+                      <p className="text-lg text-textColor">
+                        Nhấn để tải ảnh lên
+                      </p>
+                      <input
+                        id="upload-image"
+                        type="file"
+                        name="upload-image"
+                        accept="image/*"
+                        multiple
+                        onChange={(e) => fileChangeHandler(e, setFieldValue)}
+                        className="w-0 h-0"
+                      />
+                    </label>
                   )}
-                  <input
-                    ref={imageRef}
-                    type="file"
-                    accept="image/png"
-                    onChange={async (event) => {
-                      await fileChangeHandler(event);
-                      setFieldValue("image_url", event.target.files[0]);
-                    }}
-                    className=" w-full px-4 py-3 bg-[rgba(255,255,255,0.4)] shadow-md outline-none rounded-md border border-gray-200 focus:border-[#DA5BA9] focus:shadow-lg transition-all duration-300 ease-in-out"
-                  />
                 </div>
 
                 <div className="py-2">
