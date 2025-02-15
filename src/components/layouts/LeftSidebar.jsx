@@ -5,6 +5,7 @@ import {
   LogOut,
   PlusSquare,
   Search,
+  PawPrint,
   TrendingUp,
 } from "lucide-react";
 import { MdForum, MdOutlineForum } from "react-icons/md";
@@ -124,6 +125,7 @@ const LeftSidebar = () => {
       else if (isActiveTab("Notifications")) setActiveTab("Notifications");
       else if (isActiveTab("Search")) setActiveTab("Search");
       else if (isActiveTab("Adopt")) setActiveTab("Adopt");
+      else if (isActiveTab("SubmitPet")) setActiveTab("SubmitPet");
     }
 
     // Xử lý click outside cho search
@@ -150,6 +152,7 @@ const LeftSidebar = () => {
       "/forum": "Forum",
       "/chat": "Messages",
       "/adopt": "Adopt",
+      "/submitPet": "SubmitPet",
     };
 
     const activeKey = Object.keys(pathMapping).find((key) =>
@@ -176,6 +179,7 @@ const LeftSidebar = () => {
       Messages: () => navigate("/chat"),
       Home: () => navigate("/"),
       Adopt: () => navigate("/adopt"),
+      SubmitPet: () => navigate("/submitPet"),
       Notifications: () => {
         dispatch(setShowNotificationTab(true));
         dispatch(setIsDisplayText(false));
@@ -215,6 +219,15 @@ const LeftSidebar = () => {
       ),
       text: "Nhận nuôi",
       textType: "Adopt",
+    },
+    {
+      icon: isActiveTab("SubmitPet") ? (
+        <PawPrint size={24} strokeWidth={3} />
+      ) : (
+        <PawPrint size={24} />
+      ),
+      text: "Gửi thú cưng",
+      textType: "SubmitPet",
     },
     {
       icon: isActiveTab("Search") ? <FaSearch size={24} /> : <Search />,

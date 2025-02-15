@@ -24,6 +24,7 @@ import User from "./components/pages/AdminPages/User";
 import Donate from "./components/pages/AdminPages/Donate";
 import Staff from "./components/pages/AdminPages/Staff";
 import AdoptionPosts from "./components/features/adoptions/AdoptionPosts";
+import { SubmitPet } from "./components/submitPet";
 
 const browserRouter = createBrowserRouter([
   {
@@ -137,6 +138,14 @@ const browserRouter = createBrowserRouter([
         element: (
           <ProtectedRoutes>
             <BlogEdit />
+          </ProtectedRoutes>
+        ),
+      },
+      {
+        path: "/submitPet",
+        element: (
+          <ProtectedRoutes>
+            <SubmitPet />
           </ProtectedRoutes>
         ),
       },
