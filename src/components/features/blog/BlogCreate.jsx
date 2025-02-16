@@ -1,13 +1,13 @@
-import { useRef, useState } from "react";
-import { Dialog, DialogContent, DialogHeader } from "@/components/ui/dialog";
+import { createBlogAPI } from "@/apis/blog";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogHeader } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
 import { readFileAsDataURL } from "@/lib/utils";
 import { Loader2 } from "lucide-react";
-import { toast } from "sonner";
+import { useRef, useState } from "react";
 import { useSelector } from "react-redux";
-import { createBlogAPI } from "@/apis/blog";
-import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 
 
 const CATEGORIES = ['Dogs', 'Cats', 'Diet', 'Lifestyle', 'Vet']
