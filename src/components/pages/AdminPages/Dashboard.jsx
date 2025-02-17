@@ -12,6 +12,7 @@ import {
   Tooltip,
   Legend,
 } from "chart.js";
+import { formatVND } from "@/utils/formatVND";
 
 ChartJS.register(
   CategoryScale,
@@ -39,7 +40,7 @@ const Dashboard = () => {
     const getStats = async () => {
       try {
         const response = await getStatsAPI();
-        console.log("API Response:", response.data?.data);
+        console.log("response", response);
 
         setTotalUsers(response.data?.data?.user || 0);
 
@@ -131,9 +132,7 @@ const Dashboard = () => {
           bordered={false}
           className="text-center"
         >
-          <p className="text-2xl font-bold">
-            {currentMonthTotal.toLocaleString()} VNĐ
-          </p>
+          <p className="text-2xl font-bold">{formatVND(currentMonthTotal)}</p>
         </Card>
       </div>
 

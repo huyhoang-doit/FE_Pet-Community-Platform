@@ -1,6 +1,8 @@
-import authorizedAxiosInstance from "@/utils/authorizedAxios";
 import { BASE_URL } from "@/configs/globalVariables";
+import authorizedAxiosInstance from "@/utils/authorizedAxios";
 
 export const getStatsAPI = async () => {
-  return await authorizedAxiosInstance.get(`${BASE_URL}/admin/stats`);
+  const response = await authorizedAxiosInstance.get(`${BASE_URL}/admin/stats`);
+  console.log("response", response);
+  return response;
 };
