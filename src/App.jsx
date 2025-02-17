@@ -17,7 +17,6 @@ import BlogList from "./components/features/blog/BlogList";
 import BlogDetail from "./components/features/blog/BlogDetail";
 import BlogCreate from "./components/features/blog/BlogCreate";
 import BlogEdit from "./components/features/blog/BlogEdit";
-import Admin from "./components/pages/AdminPages/Admin";
 import Dashboard from "./components/pages/AdminPages/Dashboard";
 import AdminLayout from "./components/layouts/AdminLayout";
 import User from "./components/pages/AdminPages/User";
@@ -163,9 +162,7 @@ const browserRouter = createBrowserRouter([
     path: "/admin",
     element: (
       // <ProtectedRoutes> //thêm vào sau khi xác thực người dùng
-      <AdminLayout>
-        <Admin />
-      </AdminLayout>
+      <AdminLayout />
       // </ProtectedRoutes>
     ),
     children: [
