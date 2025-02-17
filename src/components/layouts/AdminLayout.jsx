@@ -50,11 +50,11 @@ const AdminLayout = () => {
             Admin Panel
           </div>
 
-          {/* Menu chính */}
+          {/* Menu */}
           <Menu
             theme="dark"
             mode="inline"
-            selectedKeys={[location.pathname]} // Đánh dấu menu active theo URL
+            selectedKeys={[location.pathname]}
             onClick={({ key }) => {
               if (key === "logout") {
                 handleLogout();
@@ -79,7 +79,7 @@ const AdminLayout = () => {
               {
                 key: "logout",
                 icon: <LogoutOutlined />,
-                label: <span className="text-red-500">Logout</span>, // Màu đỏ để nổi bật
+                label: <span className="text-red-500">Logout</span>,
               },
             ]}
             className="flex-1"

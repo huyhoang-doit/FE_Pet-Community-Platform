@@ -1,11 +1,23 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Table, Tag, Button, Popconfirm, message } from "antd";
+import { getAllUsersAPI } from "@/apis/user";
 
 const User = () => {
-  const [users, setUsers] = useState([
-    { id: 1, name: "User 1", status: "active" },
-    { id: 2, name: "User 2", status: "offline" },
-  ]);
+  const [users, setUsers] = useState([]);
+
+  useEffect(() => {
+    const getAllUsers = async () => {
+      try {
+        const response = await getAllUsersAPI();
+        console.log("response", response.data.data);
+        setUsers(response.data.data.results);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    getAllUsers();
+  }, []);
 
   const handleBan = (id) => {
     setUsers((prev) =>
