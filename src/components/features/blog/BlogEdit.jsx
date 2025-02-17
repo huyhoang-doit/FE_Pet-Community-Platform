@@ -3,7 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { getBlogByIdAPI, updateBlogAPI } from '@/apis/blog'
 import { toast } from 'sonner'
 
-const CATEGORIES = ['Dogs', 'Cats', 'Diet', 'Lifestyle', 'Vet']
+const CATEGORIES = ['Dogs', 'Cats']
 
 const BlogEdit = () => {
     const { id } = useParams()

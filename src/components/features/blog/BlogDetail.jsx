@@ -1,12 +1,12 @@
-import { useEffect, useState } from 'react'
-import { getBlogByIdAPI, likeBlogAPI, dislikeBlogAPI, commentBlogAPI } from '@/apis/blog'
-import { Avatar, AvatarFallback, AvatarImage } from '../../ui/avatar'
+import { getBlogByIdAPI } from '@/apis/blog'
 import { calculateTimeAgo } from '@/utils/calculateTimeAgo'
-import VerifiedBadge from '../../core/VerifiedBadge'
-import { useSelector } from 'react-redux'
 import { ArrowLeft, MessageCircle } from 'lucide-react'
+import { useEffect, useState } from 'react'
 import { FaHeart, FaRegHeart } from 'react-icons/fa'
+import { useSelector } from 'react-redux'
 import { Link, useLocation } from 'react-router-dom'
+import VerifiedBadge from '../../core/VerifiedBadge'
+import { Avatar, AvatarFallback, AvatarImage } from '../../ui/avatar'
 
 const sharedClasses = {
     textZinc: 'text-zinc-',
