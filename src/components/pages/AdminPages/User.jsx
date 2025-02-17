@@ -8,16 +8,17 @@ const User = () => {
   useEffect(() => {
     const getAllUsers = async () => {
       try {
-        const response = await getAllUsersAPI();
+        const response = await getAllUsersAPI("");
         console.log("response", response.data.data);
         setUsers(response.data.data.results);
       } catch (error) {
         console.log(error);
       }
     };
-
     getAllUsers();
   }, []);
+  console.log("users", users);
+  
 
   const handleBan = (id) => {
     setUsers((prev) =>
@@ -36,21 +37,22 @@ const User = () => {
     },
     {
       title: "Name",
-      dataIndex: "name",
-      key: "name",
+      dataIndex: "username",
+      key: "username",
+      render: (username) => <a>{username}</a>,
     },
     {
       title: "Status",
-      dataIndex: "status",
-      key: "status",
-      render: (status) => {
+      dataIndex: "isActive",
+      key: "isActive",
+      render: (isActive) => {
         let color =
-          status === "active"
+        isActive
             ? "green"
             : status === "offline"
             ? "orange"
             : "red";
-        return <Tag color={color}>{status.toUpperCase()}</Tag>;
+        return <Tag color={color}>{isActive ? "Đang hoạt động" : "Ngừng hoạt động"}</Tag>;
       },
     },
     {
