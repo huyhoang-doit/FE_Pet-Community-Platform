@@ -38,6 +38,15 @@ function Header() {
       <Menu.Item key="profile">
         <NavLink to={`/profile/${user?.username}`}>Profile</NavLink>
       </Menu.Item>
+      {user?.role === "staff" && (
+        <Menu.Item
+          key="approvePet"
+          onClick={() => navigate("/staff/approvePet")}
+        >
+          Approve Pet
+        </Menu.Item>
+      )}
+
       <Menu.Item key="logout" onClick={handleLogout}>
         Logout
       </Menu.Item>

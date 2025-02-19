@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Table, Tag, Button, Popconfirm, message } from "antd";
 
-const Staff = () => {
+const ManageStaff = () => {
   const [staffMembers, setStaffMembers] = useState([
     { id: 1, name: "Staff Member 1", role: "Admin", status: "active" },
     { id: 2, name: "Staff Member 2", role: "Editor", status: "active" },
@@ -76,4 +76,4 @@ const Staff = () => {
   );
 };
 
-export default Staff;
+export default ManageStaff;

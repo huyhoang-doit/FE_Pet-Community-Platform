@@ -4,7 +4,7 @@ import * as Yup from "yup";
 import { dogBreeds } from "./dobBreeds";
 import { toast } from "sonner";
 import { readFileAsDataURL } from "@/lib/utils";
-import { submitPetAPI } from "@/apis/submitPet";
+import { submitPetAPI } from "@/apis/pet";
 import { FaCloudUploadAlt } from "react-icons/fa";
 import { MdDelete } from "react-icons/md";
 import { motion } from "framer-motion";
@@ -48,14 +48,13 @@ const SubmitPet = () => {
   const [step, setStep] = useState(1);
   const [images, setImages] = useState([]);
   const [imagePreview, setImagePreview] = useState(null);
-  const imageRef = useRef();
 
-  const fileChangeHandler = async (e) => {
+  const fileChangeHandler = async (e, setFieldValue) => {
     const files = e.target.files;
     if (files && files.length > 0) {
       const newImages = Array.from(files);
       setImages(newImages);
-
+      setFieldValue("image_url", newImages);
       const firstImagePreview = await readFileAsDataURL(newImages[0]);
       setImagePreview(firstImagePreview);
     }
@@ -74,7 +73,6 @@ const SubmitPet = () => {
       formData.append("coat", values.coat);
       formData.append("temperament", values.temperament);
 
-      // Gửi nhiều hình ảnh
       images.forEach((image) => {
         formData.append("image_url", image);
       });
@@ -82,8 +80,8 @@ const SubmitPet = () => {
       await submitPetAPI(formData);
       toast.success("Thông tin thú cưng đã được gửi thành công!");
       resetForm();
-      setImages([]); // Xóa danh sách hình ảnh sau khi gửi
-      setImagePreview([]);
+      setImages([]);
+      setImagePreview(null);
     } catch (error) {
       toast.error("Đã xảy ra lỗi khi gửi thông tin thú cưng.");
       console.log(error);
@@ -330,7 +328,7 @@ const SubmitPet = () => {
                     }}
                     className={`px-4 py-2 rounded ${
                       !isValid || !dirty
-                        ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+                        ? "bg-gray-300 text-gray-500 cursor-not-allowed shake"
                         : "bg-blue-500 text-white hover:bg-blue-600"
                     }`}
                   >

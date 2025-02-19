@@ -21,9 +21,11 @@ import Dashboard from "./components/pages/AdminPages/Dashboard";
 import AdminLayout from "./components/layouts/AdminLayout";
 import User from "./components/pages/AdminPages/User";
 import Donate from "./components/pages/AdminPages/Donate";
-import Staff from "./components/pages/AdminPages/Staff";
+import ManageStaff from "./components/pages/AdminPages/ManageStaff";
 import AdoptionPosts from "./components/features/adoptions/AdoptionPosts";
 import { SubmitPet } from "./components/submitPet";
+import { ApprovePet } from "./components/pages/StaffPages";
+import StaffLayout from "./components/layouts/StaffLayout";
 
 const browserRouter = createBrowserRouter([
   {
@@ -180,7 +182,23 @@ const browserRouter = createBrowserRouter([
       },
       {
         path: "staff",
-        element: <Staff />,
+        element: <ManageStaff />,
+      },
+    ],
+  },
+  {
+    path: "/staff",
+    element: (
+      <ProtectedRoutes>
+        <StaffLayout>
+          <ManageStaff />
+        </StaffLayout>
+      </ProtectedRoutes>
+    ),
+    children: [
+      {
+        path: "approvePet",
+        element: <ApprovePet />,
       },
     ],
   },
