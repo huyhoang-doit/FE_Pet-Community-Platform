@@ -92,7 +92,7 @@ const BlogList = () => {
       <div className="max-w-7xl mx-auto">
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-4xl font-bold text-center text-primary mb-2">PET BLOG</h1>
-          {user.role === "staff" && (
+          {user.role === "forum_staff" && (
             <Button type="primary" onClick={() => setOpenCreate(true)}>Create New Blog</Button>
           )}
         </div>
@@ -167,7 +167,7 @@ const BlogList = () => {
                           Read More
                         </Button>
 
-                        {user.role === "staff" && (
+                        {user.role === "forum_staff" && (
                           <>
                             <Button type="default" onClick={() => handleUpdate(blog._id)}>Update</Button>
                             <Button type="danger" onClick={() => handleDelete(blog._id)}>Delete</Button>
@@ -194,7 +194,7 @@ const BlogList = () => {
         />
 
         {/* Modal tạo bài viết */}
-        {user.role === "staff" && (
+        {user.role === "forum_staff" && (
           <BlogCreate open={openCreate} setOpen={setOpenCreate} onSuccess={() => fetchBlogs()} />
         )}
       </div>
