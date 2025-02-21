@@ -1,7 +1,10 @@
-import { getStatsAPI } from "@/apis/admin";
-import { Card, Table } from "antd";
 import { useEffect, useState } from "react";
+import { Card, Table } from "antd";
 import { Line } from "react-chartjs-2";
+import { getStatsAPI } from "@/apis/admin";
+import { getTop5DonateAPI } from "@/apis/donate";
+import { formatVND } from "@/utils/formatVND";
+
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -12,7 +15,7 @@ import {
   Tooltip,
   Legend,
 } from "chart.js";
-import { formatVND } from "@/utils/formatVND";
+import { toast } from "sonner";
 
 ChartJS.register(
   CategoryScale,
@@ -29,30 +32,23 @@ const Dashboard = () => {
   const [totalDonations, setTotalDonations] = useState([]);
   const [totalUsers, setTotalUsers] = useState(0);
   const [currentMonthTotal, setCurrentMonthTotal] = useState(0);
-  const [topDonors, setTopDonors] = useState([]);
+  const [top5, setTop5] = useState([]);
 
-  // Get current month name (e.g., "January")
   const currentMonthName = new Date().toLocaleString("en-US", {
     month: "long",
   });
 
   useEffect(() => {
-    const getStats = async () => {
+    const fetchStats = async () => {
       try {
-        const response = await getStatsAPI();
-        console.log("response", response);
+        const { data } = await getStatsAPI();
+        setTotalUsers(data?.data?.user || 0);
 
-        setTotalUsers(response.data?.data?.user || 0);
-
-        const donationsData = response.data?.data?.donations || [];
-        const donorsData = response.data?.data?.topDonors || []; // Ensure this is in API response
-
-        // Convert array into a Map for easier access
+        const donationsData = data?.data?.donations || [];
         const donationsMap = new Map(
           donationsData.map((item) => [item.month, item.total])
         );
 
-        // Ensure all months exist (default 0 if missing)
         const monthNames = [
           "January",
           "February",
@@ -67,34 +63,29 @@ const Dashboard = () => {
           "November",
           "December",
         ];
-        const orderedDonations = monthNames.map((month) => ({
-          month,
-          total: donationsMap.get(month) || 0,
-        }));
 
-        setMonths(orderedDonations.map((item) => item.month));
-        setTotalDonations(orderedDonations.map((item) => item.total));
-
-        // Get total donations for the current month
+        const orderedDonations = monthNames.map(
+          (month) => donationsMap.get(month) || 0
+        );
+        setMonths(monthNames);
+        setTotalDonations(orderedDonations);
         setCurrentMonthTotal(donationsMap.get(currentMonthName) || 0);
-
-        // Process top 5 donors
-        const sortedTopDonors = donorsData
-          .sort((a, b) => b.total - a.total) // Sort descending by total donation
-          .slice(0, 5) // Get only top 5
-          .map((donor, index) => ({
-            key: index + 1,
-            name: donor.name,
-            amount: donor.total,
-          }));
-
-        setTopDonors(sortedTopDonors);
       } catch (error) {
-        console.error("Error fetching stats:", error);
+        toast.error("Error fetching stats:", error);
       }
     };
 
-    getStats();
+    const fetchTopDonators = async () => {
+      try {
+        const { data } = await getTop5DonateAPI();
+        setTop5(data?.data || []);
+      } catch (error) {
+        toast.error("Error fetching top 5 donors:", error);
+      }
+    };
+
+    fetchStats();
+    fetchTopDonators();
   }, [currentMonthName]);
 
   const donationsData = {
@@ -108,21 +99,25 @@ const Dashboard = () => {
         pointBackgroundColor: "rgba(75, 192, 192, 1)",
         pointBorderColor: "#fff",
         pointRadius: 5,
-        tension: 0.4, // Độ cong của đường, 0 là đường thẳng
+        tension: 0.4,
       },
     ],
   };
 
   const columns = [
-    { title: "User", dataIndex: "name", key: "name" },
-    { title: "Donation Amount (VNĐ)", dataIndex: "amount", key: "amount" },
+    { title: "User", dataIndex: ["user", "username"], key: "username" },
+    {
+      title: "Donation Amount (VNĐ)",
+      dataIndex: "totalAmount",
+      key: "amount",
+      render: formatVND,
+    },
   ];
 
   return (
     <div className="p-4">
       <h1 className="text-2xl font-bold mb-4">Dashboard</h1>
 
-      {/* Total Users & Donations */}
       <div className="grid grid-cols-2 gap-4">
         <Card title="Total Users" bordered={false} className="text-center">
           <p className="text-2xl font-bold">{totalUsers}</p>
@@ -136,14 +131,17 @@ const Dashboard = () => {
         </Card>
       </div>
 
-      {/* Donations Chart */}
       <Card title="Monthly Donations" className="mt-4">
         <Line data={donationsData} />
       </Card>
 
-      {/* Top 5 Donors */}
       <Card title="Top 5 Donors" className="mt-4">
-        <Table dataSource={topDonors} columns={columns} pagination={false} />
+        <Table
+          dataSource={top5}
+          columns={columns}
+          pagination={false}
+          rowKey={(record) => record.user._id}
+        />
       </Card>
     </div>
   );

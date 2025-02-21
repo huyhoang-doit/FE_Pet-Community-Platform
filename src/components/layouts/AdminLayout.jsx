@@ -7,12 +7,11 @@ import {
   UploadOutlined,
   UserOutlined,
 } from "@ant-design/icons";
-import { Button, Layout, Menu, theme, Input, Avatar } from "antd";
+import { Button, Layout, Menu, theme, Avatar } from "antd";
 import { useEffect, useState } from "react";
 import { Outlet, useNavigate, useLocation } from "react-router-dom";
 
 const { Header, Sider, Content } = Layout;
-const { Search } = Input;
 
 const AdminLayout = () => {
   const [collapsed, setCollapsed] = useState(() => {
@@ -97,14 +96,6 @@ const AdminLayout = () => {
             icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
             onClick={() => setCollapsed(!collapsed)}
             className="text-lg w-12 h-12"
-          />
-
-          {/* Ô tìm kiếm */}
-          <Search
-            placeholder="Search..."
-            onSearch={(value) => console.log(value)}
-            style={{ width: 200 }}
-            className="ml-4"
           />
 
           {/* Avatar */}

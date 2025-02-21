@@ -1,65 +1,103 @@
 import { useEffect, useState } from "react";
-import { Table, Tag, Button, Popconfirm, message } from "antd";
-import { getAllUsersAPI } from "@/apis/user";
+import { Table, Tag, Button, Popconfirm, message, Input, Spin } from "antd";
+import { editProfileAPI, getAllUsersAPI } from "@/apis/user";
 
 const User = () => {
   const [users, setUsers] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [limit] = useState(10);
+  const [totalResults, setTotalResults] = useState(0);
+  const [loading, setLoading] = useState(false);
+  const { Search } = Input;
+
+  const fetchUsers = async (page = 1, search = "") => {
+    setLoading(true);
+    try {
+      const response = await getAllUsersAPI(
+        page,
+        search ? 1000 : limit,
+        search
+      );
+
+      console.log(response);
+      if (response.data?.data?.results) {
+        setUsers(response.data.data.results);
+        setTotalResults(
+          search
+            ? response.data.data.results.length
+            : response.data.data.totalResults
+        );
+      } else {
+        setUsers([]);
+        setTotalResults(0);
+      }
+    } catch (error) {
+      console.error("Error fetching users:", error);
+      message.error("Failed to fetch users. Please try again later.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const getAllUsers = async () => {
-      try {
-        const response = await getAllUsersAPI("");
-        console.log("response", response.data.data);
-        setUsers(response.data.data.results);
-      } catch (error) {
-        console.log(error);
-      }
-    };
-    getAllUsers();
-  }, []);
-  console.log("users", users);
-  
+    fetchUsers(currentPage);
+  }, [currentPage]);
 
-  const handleBan = (id) => {
-    setUsers((prev) =>
-      prev.map((user) =>
-        user.id === id ? { ...user, status: "banned" } : user
-      )
-    );
-    message.success(`User with ID ${id} has been banned!`);
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+  };
+
+  const handleBan = async (id) => {
+    try {
+      const response = await editProfileAPI({ id, isDeleted: true });
+      if (response.data?.status === 200) {
+        message.success(`User with ID ${id} has been banned!`);
+      } else {
+        message.error("Failed to ban the user. Please try again.");
+      }
+    } catch (error) {
+      console.error("Error banning user:", error);
+      message.error("An error occurred. Please try again later.");
+    }
   };
 
   const columns = [
     {
-      title: "ID",
-      dataIndex: "id",
-      key: "id",
-    },
-    {
-      title: "Name",
+      title: (
+        <div className="flex items-center gap-10">
+          Name
+          <Search
+            placeholder="Search users..."
+            onSearch={(value) => fetchUsers(1, value)}
+            style={{ width: 200 }}
+            allowClear
+          />
+        </div>
+      ),
       dataIndex: "username",
       key: "username",
       render: (username) => <a>{username}</a>,
     },
     {
+      title: "Email",
+      dataIndex: "email",
+      key: "email",
+    },
+    {
       title: "Status",
-      dataIndex: "isActive",
-      key: "isActive",
-      render: (isActive) => {
-        let color =
-        isActive
-            ? "green"
-            : status === "offline"
-            ? "orange"
-            : "red";
-        return <Tag color={color}>{isActive ? "Đang hoạt động" : "Ngừng hoạt động"}</Tag>;
-      },
+      dataIndex: "isBlocked",
+      key: "status",
+      render: (isBlocked) => (
+        <Tag color={isBlocked ? "red" : "green"}>
+          {isBlocked ? "Banned" : "Đang hoạt động"}
+        </Tag>
+      ),
     },
     {
       title: "Action",
       key: "action",
       render: (_, record) =>
-        record.status !== "banned" ? (
+        !record.isBlocked ? (
           <Popconfirm
             title="Are you sure to ban this user?"
             onConfirm={() => handleBan(record.id)}
@@ -79,7 +117,20 @@ const User = () => {
   return (
     <div className="p-4">
       <h1 className="text-2xl font-bold mb-4">User Management</h1>
-      <Table columns={columns} dataSource={users} rowKey="id" />
+
+      <Spin spinning={loading}>
+        <Table
+          columns={columns}
+          dataSource={users}
+          rowKey="id"
+          pagination={{
+            current: currentPage,
+            pageSize: limit,
+            total: totalResults,
+            onChange: handlePageChange,
+          }}
+        />
+      </Spin>
     </div>
   );
 };
