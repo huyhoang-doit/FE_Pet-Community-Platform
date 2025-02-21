@@ -22,7 +22,6 @@ import AdminLayout from "./components/layouts/AdminLayout";
 import User from "./components/pages/AdminPages/User";
 import Donate from "./components/pages/AdminPages/Donate";
 import ManageStaff from "./components/pages/AdminPages/ManageStaff";
-import AdoptionPosts from "./components/features/adoptions/AdoptionPosts";
 import { SubmitPet } from "./components/submitPet";
 import { ApprovePet } from "./components/pages/StaffPages";
 import StaffLayout from "./components/layouts/StaffLayout";
@@ -30,19 +29,11 @@ import StaffLayout from "./components/layouts/StaffLayout";
 const browserRouter = createBrowserRouter([
   {
     path: "/",
-    element: (
-      <ProtectedRoutes>
-        <MainLayout />
-      </ProtectedRoutes>
-    ),
+    element: <MainLayout />,
     children: [
       {
         path: "/",
-        element: (
-          <ProtectedRoutes>
-            <LandingPage />
-          </ProtectedRoutes>
-        ),
+        element: <LandingPage />,
       },
       {
         path: "/forum",
@@ -56,7 +47,7 @@ const browserRouter = createBrowserRouter([
         path: "/adopt",
         element: (
           <ProtectedRoutes>
-            <AdoptionPosts />
+            <Home />
           </ProtectedRoutes>
         ),
       },
@@ -163,9 +154,9 @@ const browserRouter = createBrowserRouter([
   {
     path: "/admin",
     element: (
-      // <ProtectedRoutes> //thêm vào sau khi xác thực người dùng
-      <AdminLayout />
-      // </ProtectedRoutes>
+      <ProtectedRoutes allowedRoles={["admin"]}>
+          <AdminLayout />
+      </ProtectedRoutes>
     ),
     children: [
       {
@@ -189,7 +180,7 @@ const browserRouter = createBrowserRouter([
   {
     path: "/staff",
     element: (
-      <ProtectedRoutes>
+      <ProtectedRoutes allowedRoles={["staff"]}>
         <StaffLayout>
           <ManageStaff />
         </StaffLayout>

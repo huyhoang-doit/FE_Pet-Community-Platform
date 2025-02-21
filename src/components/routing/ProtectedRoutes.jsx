@@ -8,7 +8,7 @@ import { setAuthUser, setChatUsers } from "@/redux/authSlice";
 import { setPostPage, setPosts, setSelectedPost } from "@/redux/postSlice";
 import { toast } from "sonner";
 
-const ProtectedRoutes = ({ children }) => {
+const ProtectedRoutes = ({ children, allowedRoles = [] }) => {
   const { user } = useSelector((store) => store.auth);
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -17,7 +17,8 @@ const ProtectedRoutes = ({ children }) => {
     const accessToken = localStorage.getItem("access_token");
 
     if (!accessToken) {
-      logoutHandler();
+      navigate("/login");
+      // logoutHandler();
       return;
     }
 
@@ -30,6 +31,11 @@ const ProtectedRoutes = ({ children }) => {
       }
     } catch (error) {
       logoutHandler();
+    }
+
+    if (user && allowedRoles.length > 0 && !allowedRoles.includes(user.role)) {
+      toast.error("You are not authorized to access this page");
+      navigate("/");
     }
   }, [user]);
 
@@ -52,7 +58,7 @@ const ProtectedRoutes = ({ children }) => {
     }
   };
 
-  return <>{children}</>;
+  return user ? children : null;
 };
 
 export default ProtectedRoutes;
