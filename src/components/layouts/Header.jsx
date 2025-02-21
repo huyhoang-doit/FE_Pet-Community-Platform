@@ -1,6 +1,5 @@
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import { FaCartShopping, FaHeart } from "react-icons/fa6";
-import { FaUser } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
 import { handleLogoutAPI } from "@/apis/auth";
 import { setAuthUser, setChatUsers } from "@/redux/authSlice";
@@ -76,7 +75,7 @@ function Header() {
           </div>
         ) : (
           <Dropdown overlay={menu} trigger={["click"]}>
-            <Avatar size="large" icon={<FaUser />} className="cursor-pointer" />
+            <Avatar size="large" icon={<img src={user.profilePicture}/>} className="cursor-pointer" />
           </Dropdown>
         )}
 

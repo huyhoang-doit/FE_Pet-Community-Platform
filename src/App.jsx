@@ -30,19 +30,11 @@ import StaffLayout from "./components/layouts/StaffLayout";
 const browserRouter = createBrowserRouter([
   {
     path: "/",
-    element: (
-      <ProtectedRoutes>
-        <MainLayout />
-      </ProtectedRoutes>
-    ),
+    element: <MainLayout />,
     children: [
       {
         path: "/",
-        element: (
-          <ProtectedRoutes>
-            <LandingPage />
-          </ProtectedRoutes>
-        ),
+        element: <LandingPage />,
       },
       {
         path: "/forum",
@@ -163,9 +155,9 @@ const browserRouter = createBrowserRouter([
   {
     path: "/admin",
     element: (
-      // <ProtectedRoutes> //thêm vào sau khi xác thực người dùng
-      <AdminLayout />
-      // </ProtectedRoutes>
+      <ProtectedRoutes allowedRoles={["admin"]}>
+          <AdminLayout />
+      </ProtectedRoutes>
     ),
     children: [
       {
@@ -189,7 +181,7 @@ const browserRouter = createBrowserRouter([
   {
     path: "/staff",
     element: (
-      <ProtectedRoutes>
+      <ProtectedRoutes allowedRoles={["staff"]}>
         <StaffLayout>
           <ManageStaff />
         </StaffLayout>
