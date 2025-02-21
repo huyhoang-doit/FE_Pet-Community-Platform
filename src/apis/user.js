@@ -36,7 +36,7 @@ export const getChatUserAPI = async () => {
   return await authorizedAxiosInstance.get(`${BASE_URL}/user/chat-users`);
 };
 
-export const getAllUsersAPI = async (page = 1, limit = 10, q = "") => {
+export const getAllUsersAPI = async (page = 1, limit = 5, q = "") => {
   return await authorizedAxiosInstance.get(
     `${BASE_URL}/user/all?q=${encodeURIComponent(
       q
