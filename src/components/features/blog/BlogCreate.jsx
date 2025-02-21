@@ -10,7 +10,7 @@ import { useSelector } from "react-redux";
 import { toast } from "sonner";
 
 
-const CATEGORIES = ['Dogs', 'Cats', 'Diet', 'Lifestyle', 'Vet']
+const CATEGORIES = ['Dogs', 'Cats']
 
 const BlogCreate = ({ open, setOpen, onSuccess }) => {
     const imageRef = useRef();
@@ -40,7 +40,7 @@ const BlogCreate = ({ open, setOpen, onSuccess }) => {
             formData.append('thumbnail', values.thumbnail)
 
             const res = await createBlogAPI(formData)
-            
+
             if (res.data.success) {
                 toast.success(res.data.message)
                 onSuccess(res.data.data)
