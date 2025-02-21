@@ -1,9 +1,10 @@
-import { getAllBlogsAPI } from "@/apis/blog";
+import { deleteBlogAPI, getAllBlogsAPI } from "@/apis/blog";
 import Header from "@/components/layouts/Header";
 import { Button, Card, Pagination, Spin } from "antd";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import BlogCreate from "./BlogCreate";
+import { useSelector } from "react-redux";
 
 const POST_CATEGORIES = [
   { name: "All Posts", color: "bg-secondary text-secondary-foreground" },
@@ -18,6 +19,11 @@ const BlogList = () => {
   const [loading, setLoading] = useState(false);
   const [openCreate, setOpenCreate] = useState(false);
   const [error, setError] = useState(null);
+
+  const { user } = useSelector((store) => store.auth);
+
+
+
   const [pagination, setPagination] = useState({
     page: 1,
     limit: 6,
@@ -64,6 +70,20 @@ const BlogList = () => {
     });
   };
 
+  const handleUpdate = (blogId) => {
+    navigate(`/blog/${blogId}/edit`);
+  }
+  const handleDelete = async (blogId) => {
+    if (window.confirm("Are you sure you want to delete this blog?")) {
+      try {
+        await deleteBlogAPI(blogId);
+        fetchBlogs(); // Cập nhật lại danh sách sau khi xóa
+      } catch (error) {
+        console.error("Error deleting blog:", error);
+      }
+    }
+  };
+
   return (
     <div className="container-fluid mx-auto p-6 bg-gray-100 min-h-screen">
       <div className="mb-6">
@@ -72,7 +92,9 @@ const BlogList = () => {
       <div className="max-w-7xl mx-auto">
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-4xl font-bold text-center text-primary mb-2">PET BLOG</h1>
-          <Button type="primary" onClick={() => setOpenCreate(true)}>Create New Blog</Button>
+          {user.role === "forum_staff" && (
+            <Button type="primary" onClick={() => setOpenCreate(true)}>Create New Blog</Button>
+          )}
         </div>
 
         {/* Danh mục bài viết */}
@@ -136,13 +158,22 @@ const BlogList = () => {
                     <div className="p-4">
                       <h3 className="text-xl font-semibold">{blog.title}</h3>
                       <p className="text-gray-600 line-clamp-2">{blog.content}</p>
-                      <Button
-                        type="link"
-                        onClick={() => handleOnClickDetails(blog._id, blog.title)}
-                        className="text-blue-500"
-                      >
-                        Read More
-                      </Button>
+                      <div className="flex items-center gap-4">
+                        <Button
+                          type="link"
+                          onClick={() => handleOnClickDetails(blog._id, blog.title)}
+                          className="text-blue-500"
+                        >
+                          Read More
+                        </Button>
+
+                        {user.role === "forum_staff" && (
+                          <>
+                            <Button type="default" onClick={() => handleUpdate(blog._id)}>Update</Button>
+                            <Button type="danger" onClick={() => handleDelete(blog._id)}>Delete</Button>
+                          </>
+                        )}
+                      </div>
                     </div>
                   </Card>
                 ))}
@@ -163,10 +194,13 @@ const BlogList = () => {
         />
 
         {/* Modal tạo bài viết */}
-        <BlogCreate open={openCreate} setOpen={setOpenCreate} onSuccess={() => fetchBlogs()} />
+        {user.role === "forum_staff" && (
+          <BlogCreate open={openCreate} setOpen={setOpenCreate} onSuccess={() => fetchBlogs()} />
+        )}
       </div>
     </div>
   );
 };
 
 export default BlogList;
+
