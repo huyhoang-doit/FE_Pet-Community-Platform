@@ -1,72 +1,148 @@
-import { Bar } from "react-chartjs-2";
+import { useEffect, useState } from "react";
+import { Card, Table } from "antd";
+import { Line } from "react-chartjs-2";
+import { getStatsAPI } from "@/apis/admin";
+import { getTop5DonateAPI } from "@/apis/donate";
+import { formatVND } from "@/utils/formatVND";
+
 import {
   Chart as ChartJS,
   CategoryScale,
   LinearScale,
-  BarElement,
+  PointElement,
+  LineElement,
   Title,
   Tooltip,
   Legend,
 } from "chart.js";
+import { toast } from "sonner";
 
-// Register the required components
 ChartJS.register(
   CategoryScale,
   LinearScale,
-  BarElement,
+  PointElement,
+  LineElement,
   Title,
   Tooltip,
   Legend
 );
 
 const Dashboard = () => {
-  const totalUsers = 100; // Replace with actual data
-  const totalDonations = 5000; // Replace with actual data
+  const [months, setMonths] = useState([]);
+  const [totalDonations, setTotalDonations] = useState([]);
+  const [totalUsers, setTotalUsers] = useState(0);
+  const [currentMonthTotal, setCurrentMonthTotal] = useState(0);
+  const [top5, setTop5] = useState([]);
+
+  const currentMonthName = new Date().toLocaleString("en-US", {
+    month: "long",
+  });
+
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const { data } = await getStatsAPI();
+        setTotalUsers(data?.data?.user || 0);
+
+        const donationsData = data?.data?.donations || [];
+        const donationsMap = new Map(
+          donationsData.map((item) => [item.month, item.total])
+        );
+
+        const monthNames = [
+          "January",
+          "February",
+          "March",
+          "April",
+          "May",
+          "June",
+          "July",
+          "August",
+          "September",
+          "October",
+          "November",
+          "December",
+        ];
+
+        const orderedDonations = monthNames.map(
+          (month) => donationsMap.get(month) || 0
+        );
+        setMonths(monthNames);
+        setTotalDonations(orderedDonations);
+        setCurrentMonthTotal(donationsMap.get(currentMonthName) || 0);
+      } catch (error) {
+        toast.error("Error fetching stats:", error);
+      }
+    };
+
+    const fetchTopDonators = async () => {
+      try {
+        const { data } = await getTop5DonateAPI();
+        setTop5(data?.data || []);
+      } catch (error) {
+        toast.error("Error fetching top 5 donors:", error);
+      }
+    };
+
+    fetchStats();
+    fetchTopDonators();
+  }, [currentMonthName]);
+
   const donationsData = {
-    labels: ["January", "February", "March", "April", "May", "June"],
+    labels: months,
     datasets: [
       {
         label: "Monthly Donations",
-        data: [1200, 1900, 3000, 500, 2000, 3000], // Replace with actual data
-        backgroundColor: "rgba(75, 192, 192, 0.6)",
+        data: totalDonations,
+        borderColor: "rgba(75, 192, 192, 1)",
+        backgroundColor: "rgba(75, 192, 192, 0.2)",
+        pointBackgroundColor: "rgba(75, 192, 192, 1)",
+        pointBorderColor: "#fff",
+        pointRadius: 5,
+        tension: 0.4,
       },
     ],
   };
 
-  const topUsers = [
-    { name: "User  1", amount: 1000 },
-    { name: "User  2", amount: 800 },
-    { name: "User  3", amount: 600 },
-    { name: "User  4", amount: 400 },
-    { name: "User  5", amount: 200 },
-  ]; // Replace with actual data
+  const columns = [
+    { title: "User", dataIndex: ["user", "username"], key: "username" },
+    {
+      title: "Donation Amount (VNĐ)",
+      dataIndex: "totalAmount",
+      key: "amount",
+      render: formatVND,
+    },
+  ];
 
   return (
     <div className="p-4">
-      <h1 className="text-2xl font-bold">Dashboard</h1>
-      <div className="grid grid-cols-2 gap-4 mt-4">
-        <div className="bg-white p-4 rounded shadow">
-          <h2 className="text-xl">Total Users</h2>
-          <p className="text-2xl">{totalUsers}</p>
-        </div>
-        <div className="bg-white p-4 rounded shadow">
-          <h2 className="text-xl">Total Donations</h2>
-          <p className="text-2xl">${totalDonations}</p>
-        </div>
+      <h1 className="text-2xl font-bold mb-4">Dashboard</h1>
+
+      <div className="grid grid-cols-2 gap-4">
+        <Card title="Total Users" bordered={false} className="text-center">
+          <p className="text-2xl font-bold">{totalUsers}</p>
+        </Card>
+        <Card
+          title={`Total Donations in ${currentMonthName}`}
+          bordered={false}
+          className="text-center"
+        >
+          <p className="text-2xl font-bold">{formatVND(currentMonthTotal)}</p>
+        </Card>
       </div>
-      <div className="mt-4 w-full h-auto">
-        <Bar data={donationsData} />
-      </div>
-      <div className="mt-4">
-        <h2 className="text-xl">Top 5 Donors</h2>
-        <ul className="list-disc pl-5">
-          {topUsers.map((user, index) => (
-            <li key={index}>
-              {user.name}: ${user.amount}
-            </li>
-          ))}
-        </ul>
-      </div>
+
+      <Card title="Monthly Donations" className="mt-4">
+        <Line data={donationsData} />
+      </Card>
+
+      <Card title="Top 5 Donors" className="mt-4">
+        <Table
+          dataSource={top5}
+          columns={columns}
+          pagination={false}
+          rowKey={(record) => record.user._id}
+        />
+      </Card>
     </div>
   );
 };

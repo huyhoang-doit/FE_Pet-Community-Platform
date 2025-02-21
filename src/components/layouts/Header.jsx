@@ -1,11 +1,11 @@
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import { FaCartShopping, FaHeart } from "react-icons/fa6";
-import { FaUser } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
 import { handleLogoutAPI } from "@/apis/auth";
 import { setAuthUser, setChatUsers } from "@/redux/authSlice";
 import { setPostPage, setPosts, setSelectedPost } from "@/redux/postSlice";
 import { toast } from "sonner";
+import { Avatar, Button, Dropdown, Menu } from "antd";
 import Navbar from "./Navbar";
 
 function Header() {
@@ -20,7 +20,7 @@ function Header() {
         dispatch(setAuthUser(null));
         dispatch(setSelectedPost(null));
         dispatch(setPosts([]));
-        dispatch(setChatUsers([]))
+        dispatch(setChatUsers([]));
         dispatch(setPostPage(1));
         localStorage.removeItem("access_token");
         localStorage.removeItem("refresh_token");
@@ -31,41 +31,52 @@ function Header() {
       toast.error(error.response.data.message);
     }
   };
+
+  const menu = (
+    <Menu>
+      <Menu.Item key="profile">
+        <NavLink to={`/profile/${user?.username}`}>Profile</NavLink>
+      </Menu.Item>
+      {user?.role === "staff" && (
+        <Menu.Item
+          key="approvePet"
+          onClick={() => navigate("/staff/approvePet")}
+        >
+          Approve Pet
+        </Menu.Item>
+      )}
+
+      <Menu.Item key="logout" onClick={handleLogout}>
+        Logout
+      </Menu.Item>
+    </Menu>
+  );
+
   return (
     <header className="flex justify-between items-center h-20 bg-white px-10">
       <div id="logo" className="w-16">
         <Link to="/">
-          <img src="/assets/images/favicon.png" alt="" />
+          <img src="/assets/images/favicon.png" alt="logo" />
         </Link>
       </div>
       <div className="flex gap-12 h-full">
         <Navbar />
       </div>
       <div className="flex gap-10 items-center">
-        {!user || user === null ? (
+        {!user ? (
           <div className="relative group py-7">
-            <NavLink to="/login">Signin</NavLink>
+            <Button type="link">
+              <NavLink to="/login">Signin</NavLink>
+            </Button>
             {" / "}
-            <NavLink to="/signup">Signup</NavLink>
+            <Button type="link">
+              <NavLink to="/signup">Signup</NavLink>
+            </Button>
           </div>
         ) : (
-          <div className="relative group py-7">
-            <FaUser className="cursor-pointer text-xl" />
-            <div className="absolute top-[4.85rem] border right-[-2.5rem] bg-white p-2  opacity-0 invisible transform translate-y-4 transition-all duration-150 ease-in-out group-hover:opacity-100 group-hover:visible group-hover:translate-y-0">
-              <NavLink
-                to={`/profile/${user.username}`}
-                className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
-              >
-                Profile
-              </NavLink>
-              <NavLink
-                className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
-                onClick={handleLogout}
-              >
-                Logout
-              </NavLink>
-            </div>
-          </div>
+          <Dropdown overlay={menu} trigger={["click"]}>
+            <Avatar size="large" icon={<img src={user.profilePicture}/>} className="cursor-pointer" />
+          </Dropdown>
         )}
 
         <div className="relative">

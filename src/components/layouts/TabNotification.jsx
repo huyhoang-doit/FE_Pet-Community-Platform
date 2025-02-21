@@ -17,7 +17,7 @@ const TabNotification = () => {
 
   const groupNotificationsByDate = (notifications) => {
     return Object.entries(
-      notifications.reduce((acc, notification) => {
+      notifications?.reduce((acc, notification) => {
         const date = new Date(notification.createdAt);
         const today = new Date();
         const yesterday = new Date(today);
@@ -184,13 +184,41 @@ const TabNotification = () => {
                 {notificationsForDate.map((notification, index) => {
                   const isCurrentPost =
                     location.pathname === `/p/${notification?.post?._id}`;
+
                   return (
                     <div key={index}>
-                      {isCurrentPost ? (
-                        <div
-                          className="pl-[20px] flex gap-3 justify-between items-center cursor-default py-2"
-                        >
-                          {/* Non-clickable element */}
+                      {/* Nếu thông báo không liên quan đến post (post === null) */}
+                      {!notification?.post ? (
+                        <div className="pl-[20px] flex gap-3 justify-between items-center cursor-default py-2">
+                          <div className="flex gap-3">
+                            <Avatar
+                              className="w-12 h-12"
+                              style={{ border: "1px solid #e0e0e0" }}
+                            >
+                              <AvatarImage
+                                src={notification?.sender?.profilePicture}
+                              />
+                              <AvatarFallback>CN</AvatarFallback>
+                            </Avatar>
+                            <span className="text-sm">
+                              <div className="inline-flex mr-1 font-semibold inline-flex items-center gap-1">
+                                {notification?.sender?.username}
+                                {notification?.sender?.isVerified && (
+                                  <VerifiedBadge size={14} />
+                                )}
+                              </div>
+                              <span className="text-sm whitespace-normal break-all overflow-wrap-anywhere max-w-full">
+                                {notification?.message}.
+                              </span>
+                              <span className="text-xs text-gray-400 block">
+                                {calculateTimeAgo(notification.createdAt)}
+                              </span>
+                            </span>
+                          </div>
+                        </div>
+                      ) : isCurrentPost ? (
+                        // Nếu post đã được mở, hiển thị nhưng không cho click
+                        <div className="pl-[20px] flex gap-3 justify-between items-center cursor-default py-2">
                           <div className="flex gap-3">
                             <Avatar
                               className="w-12 h-12"
@@ -224,11 +252,12 @@ const TabNotification = () => {
                           </span>
                         </div>
                       ) : (
+                        // Nếu post chưa mở, cho phép click vào
                         <Link
                           to={`/p/${notification?.post?._id}`}
-                          onClick={() => {
-                            dispatch(setShowNotificationTab(false));
-                          }}
+                          onClick={() =>
+                            dispatch(setShowNotificationTab(false))
+                          }
                           className="pl-[20px] flex gap-3 justify-between items-center cursor-pointer py-2 hover:bg-gray-50"
                         >
                           <div className="flex gap-3">

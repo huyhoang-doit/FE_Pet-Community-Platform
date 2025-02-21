@@ -1,46 +1,42 @@
-import { useEffect, useState } from "react";
-import { Table, Tag, Button, Popconfirm, message, Input, Spin } from "antd";
-import { editProfileAPI, getAllUsersAPI } from "@/apis/user";
+import { useState, useEffect } from "react";
+import { Table, Tag, Button, Popconfirm, message, Spin } from "antd";
+import { getAllStaffAPI } from "@/apis/admin";
+import { editProfileAPI } from "@/apis/user";
 
-const User = () => {
-  const [users, setUsers] = useState([]);
+const ManageStaff = () => {
+  const [staffMembers, setStaffMembers] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const [limit] = useState(5);
+  const [limit] = useState(10);
   const [totalResults, setTotalResults] = useState(0);
   const [loading, setLoading] = useState(false);
-  const { Search } = Input;
 
-  const fetchUsers = async (page = 1, search = "") => {
-    setLoading(true);
+  const fetchStaffMembers = async (page = 1, search = "") => {
     try {
-      const response = await getAllUsersAPI(
+      const response = await getAllStaffAPI(
         page,
         search ? 1000 : limit,
         search
       );
-
       console.log(response);
-      if (response.data?.data?.results) {
-        setUsers(response.data.data.results);
+      if (response.data?.data) {
+        setStaffMembers(response.data.data);
         setTotalResults(
-          search
-            ? response.data.data.results.length
-            : response.data.data.totalResults
+          search ? response.data.data.length : response.data.data.totalResults
         );
       } else {
-        setUsers([]);
+        setStaffMembers([]);
         setTotalResults(0);
       }
     } catch (error) {
-      console.error("Error fetching users:", error);
-      message.error("Failed to fetch users. Please try again later.");
+      console.error("Error fetching staff members:", error);
+      message.error("Failed to fetch staff members.");
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchUsers(currentPage);
+    fetchStaffMembers(currentPage);
   }, [currentPage]);
 
   const handlePageChange = (page) => {
@@ -52,7 +48,6 @@ const User = () => {
       const response = await editProfileAPI({ id, isDeleted: true });
       if (response.data?.status === 200) {
         message.success(`User with ID ${id} has been banned!`);
-        fetchUsers(currentPage);
       } else {
         message.error("Failed to ban the user. Please try again.");
       }
@@ -64,20 +59,9 @@ const User = () => {
 
   const columns = [
     {
-      title: (
-        <div className="flex items-center gap-10">
-          Name
-          <Search
-            placeholder="Search users..."
-            onSearch={(value) => fetchUsers(1, value)}
-            style={{ width: 200 }}
-            allowClear
-          />
-        </div>
-      ),
+      title: "Name",
       dataIndex: "username",
       key: "username",
-      render: (username) => <a>{username}</a>,
     },
     {
       title: "Email",
@@ -98,9 +82,9 @@ const User = () => {
       title: "Action",
       key: "action",
       render: (_, record) =>
-        !record.isBlocked ? (
+        record.status !== "banned" ? (
           <Popconfirm
-            title="Are you sure to ban this user?"
+            title="Are you sure to ban this staff member?"
             onConfirm={() => handleBan(record.id)}
             okText="Yes"
             cancelText="No"
@@ -117,12 +101,11 @@ const User = () => {
 
   return (
     <div className="p-4">
-      <h1 className="text-2xl font-bold mb-4">User Management</h1>
-
+      <h1 className="text-2xl font-bold mb-4">Staff Management</h1>
       <Spin spinning={loading}>
         <Table
           columns={columns}
-          dataSource={users}
+          dataSource={staffMembers}
           rowKey="id"
           pagination={{
             current: currentPage,
@@ -135,5 +118,4 @@ const User = () => {
     </div>
   );
 };
-
-export default User;
+export default ManageStaff;

@@ -13,35 +13,28 @@ import Signup from "./components/pages/Signup";
 import Home from "./components/pages/Home";
 import { SocketProvider } from "./contexts/SocketProvider";
 import PostDetail from "./components/features/posts/PostDetail";
-import BlogList from "./components/features/blog/BlogList"
-import BlogDetail from "./components/features/blog/BlogDetail"
-import BlogCreate from "./components/features/blog/BlogCreate"
-import BlogEdit from "./components/features/blog/BlogEdit"
-import Admin from "./components/pages/AdminPages/Admin";
+import BlogList from "./components/features/blog/BlogList";
+import BlogDetail from "./components/features/blog/BlogDetail";
+import BlogCreate from "./components/features/blog/BlogCreate";
+import BlogEdit from "./components/features/blog/BlogEdit";
 import Dashboard from "./components/pages/AdminPages/Dashboard";
 import AdminLayout from "./components/layouts/AdminLayout";
 import User from "./components/pages/AdminPages/User";
 import Donate from "./components/pages/AdminPages/Donate";
-import Staff from "./components/pages/AdminPages/Staff";
+import ManageStaff from "./components/pages/AdminPages/ManageStaff";
 import AdoptionPosts from "./components/features/adoptions/AdoptionPosts";
-
+import { SubmitPet } from "./components/submitPet";
+import { ApprovePet } from "./components/pages/StaffPages";
+import StaffLayout from "./components/layouts/StaffLayout";
 
 const browserRouter = createBrowserRouter([
   {
     path: "/",
-    element: (
-      <ProtectedRoutes>
-        <MainLayout />
-      </ProtectedRoutes>
-    ),
+    element: <MainLayout />,
     children: [
       {
         path: "/",
-        element: (
-          <ProtectedRoutes>
-            <LandingPage />
-          </ProtectedRoutes>
-        ),
+        element: <LandingPage />,
       },
       {
         path: "/forum",
@@ -141,6 +134,14 @@ const browserRouter = createBrowserRouter([
           </ProtectedRoutes>
         ),
       },
+      {
+        path: "/submitPet",
+        element: (
+          <ProtectedRoutes>
+            <SubmitPet />
+          </ProtectedRoutes>
+        ),
+      },
     ],
   },
   {
@@ -154,15 +155,13 @@ const browserRouter = createBrowserRouter([
   {
     path: "/admin",
     element: (
-      // <ProtectedRoutes> //thêm vào sau khi xác thực người dùng
-      <AdminLayout>
-        <Admin />
-      </AdminLayout>
-      // </ProtectedRoutes>
+      <ProtectedRoutes allowedRoles={["admin"]}>
+          <AdminLayout />
+      </ProtectedRoutes>
     ),
     children: [
       {
-        path: "dashboard",
+        path: "",
         element: <Dashboard />,
       },
       {
@@ -175,10 +174,26 @@ const browserRouter = createBrowserRouter([
       },
       {
         path: "staff",
-        element: <Staff />,
+        element: <ManageStaff />,
       },
     ],
-  }
+  },
+  {
+    path: "/staff",
+    element: (
+      <ProtectedRoutes allowedRoles={["staff"]}>
+        <StaffLayout>
+          <ManageStaff />
+        </StaffLayout>
+      </ProtectedRoutes>
+    ),
+    children: [
+      {
+        path: "approvePet",
+        element: <ApprovePet />,
+      },
+    ],
+  },
 ]);
 
 function App() {

@@ -9,6 +9,8 @@ const Home = () => {
 
   const location = useLocation();
 
+  console.log("Current path:", location.pathname);
+
   const renderFeed = () => {
     if (location.pathname.includes("/forum")) {
       return <ForumFeeds />;
