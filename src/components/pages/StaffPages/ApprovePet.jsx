@@ -2,6 +2,7 @@ import { getPetNotApprovedAPI, approvePetAPI } from "@/apis/pet";
 import React, { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+<<<<<<< adopt-pet-view
 import { Pagination, Select } from "antd";
 
 const ApprovePet = () => {
@@ -12,6 +13,11 @@ const ApprovePet = () => {
 
   const startIndex = (currentPage - 1) * itemsPerPage;
   const currentPets = pets.slice(startIndex, startIndex + itemsPerPage);
+=======
+
+const ApprovePet = () => {
+  const [pets, setPets] = useState([]);
+>>>>>>> main
 
   useEffect(() => {
     const fetchData = async () => {
