@@ -75,7 +75,7 @@ function Header() {
             </Button>
           </div>
         ) : (
-          <Dropdown menu={menu} trigger={["click"]}>
+          <Dropdown overlay={menu} trigger={["click"]}>
             <Avatar size="large" icon={<FaUser />} className="cursor-pointer" />
           </Dropdown>
         )}

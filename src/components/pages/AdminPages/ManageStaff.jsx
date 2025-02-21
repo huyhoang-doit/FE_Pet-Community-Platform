@@ -8,18 +8,18 @@ const ManageStaff = () => {
     { id: 3, name: "Staff Member 3", role: "Viewer", status: "offline" },
   ]);
 
-  const getAllStaff = async () => {
-    try {
-      const response = await getAllStaffAPI();
-      if (response.data?.data) {
-        setStaffMembers(response.data.data);
-      } else {
-        setStaffMembers([]);
-      }
-    } catch (error) {
-      console.error("Error fetching staff members:", error);
-    }
-  };
+  // const getAllStaff = async () => {
+  //   try {
+  //     const response = await getAllStaffAPI();
+  //     if (response.data?.data) {
+  //       setStaffMembers(response.data.data);
+  //     } else {
+  //       setStaffMembers([]);
+  //     }
+  //   } catch (error) {
+  //     console.error("Error fetching staff members:", error);
+  //   }
+  // };
 
   const handleBan = (id) => {
     setStaffMembers((prev) =>
