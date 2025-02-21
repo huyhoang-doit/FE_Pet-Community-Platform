@@ -1,3 +1,6 @@
+import { handleLogoutAPI } from "@/apis/auth";
+import { setAuthUser, setChatUsers } from "@/redux/authSlice";
+import { setPostPage, setPosts, setSelectedPost } from "@/redux/postSlice";
 import {
   LogoutOutlined,
   MenuFoldOutlined,
@@ -7,18 +10,21 @@ import {
   UploadOutlined,
   UserOutlined,
 } from "@ant-design/icons";
-import { Button, Layout, Menu, theme, Input, Avatar } from "antd";
+import { Button, Layout, Menu, theme, Avatar } from "antd";
 import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { Outlet, useNavigate, useLocation } from "react-router-dom";
+import { toast } from "sonner";
 
 const { Header, Sider, Content } = Layout;
-const { Search } = Input;
 
 const AdminLayout = () => {
+  const { user } = useSelector((store) => store.auth);
+  const dispatch = useDispatch();
   const [collapsed, setCollapsed] = useState(() => {
     return localStorage.getItem("sidebar-collapsed") === "true";
   });
-
+  
   const navigate = useNavigate();
   const location = useLocation();
   const {
@@ -30,9 +36,23 @@ const AdminLayout = () => {
   }, [collapsed]);
 
   // Xử lý logout
-  const handleLogout = () => {
-    localStorage.removeItem("access_token");
-    navigate("/login");
+  const handleLogout = async () => {
+    try {
+      const res = await handleLogoutAPI();
+      if (res.status === 200) {
+        dispatch(setAuthUser(null));
+        dispatch(setSelectedPost(null));
+        dispatch(setPosts([]));
+        dispatch(setChatUsers([]));
+        dispatch(setPostPage(1));
+        localStorage.removeItem("access_token");
+        localStorage.removeItem("refresh_token");
+        navigate("/");
+        toast.success(res.data.message);
+      }
+    } catch (error) {
+      toast.error(error.response.data.message);
+    }
   };
 
   return (
@@ -99,17 +119,9 @@ const AdminLayout = () => {
             className="text-lg w-12 h-12"
           />
 
-          {/* Ô tìm kiếm */}
-          <Search
-            placeholder="Search..."
-            onSearch={(value) => console.log(value)}
-            style={{ width: 200 }}
-            className="ml-4"
-          />
-
           {/* Avatar */}
           <div className="ml-auto">
-            <Avatar size="large" src="https://i.pravatar.cc/150" />
+            <Avatar style={{border: '1px solid gray'}} size="large" src={user.profilePicture} />
           </div>
         </Header>
 
