@@ -5,7 +5,7 @@ import { editProfileAPI, getAllUsersAPI } from "@/apis/user";
 const User = () => {
   const [users, setUsers] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const [limit] = useState(10);
+  const [limit] = useState(5);
   const [totalResults, setTotalResults] = useState(0);
   const [loading, setLoading] = useState(false);
   const { Search } = Input;
@@ -52,6 +52,7 @@ const User = () => {
       const response = await editProfileAPI({ id, isDeleted: true });
       if (response.data?.status === 200) {
         message.success(`User with ID ${id} has been banned!`);
+        fetchUsers(currentPage);
       } else {
         message.error("Failed to ban the user. Please try again.");
       }
@@ -89,7 +90,7 @@ const User = () => {
       key: "status",
       render: (isBlocked) => (
         <Tag color={isBlocked ? "red" : "green"}>
-          {isBlocked ? "Banned" : "Đang hoạt động"}
+          {isBlocked ? "Banned" : "Active"}
         </Tag>
       ),
     },
