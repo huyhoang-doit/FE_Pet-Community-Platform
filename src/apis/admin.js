@@ -14,3 +14,8 @@ export const getAllStaffAPI = async (page = 1, limit = 5, q = "") => {
   );
   return response;
 };
+
+export const getAllDonationsAPI = async () => {
+  const response = await authorizedAxiosInstance.get(`${BASE_URL}/donation`);
+  return response;
+};
