@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import  { useState } from "react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import { dogBreeds } from "./dobBreeds";
@@ -94,7 +94,7 @@ const SubmitPet = () => {
     <div className="flex flex-col items-center my-8">
       <marquee
         className="text-2xl font-bold my-[2%] ml-[25%] z-[1000000] text-[#DA5BA9]"
-        scrollamount="15"
+        scrollAmount="15"
       >
         Nhập thông tin chó cần gửi vào đây!
       </marquee>
