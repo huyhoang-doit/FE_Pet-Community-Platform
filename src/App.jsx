@@ -180,7 +180,7 @@ const browserRouter = createBrowserRouter([
   {
     path: "/staff",
     element: (
-      <ProtectedRoutes allowedRoles={["staff"]}>
+      <ProtectedRoutes allowedRoles={["forum_staff"]}>
         <StaffLayout>
           <ManageStaff />
         </StaffLayout>
