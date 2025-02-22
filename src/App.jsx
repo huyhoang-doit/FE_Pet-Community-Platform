@@ -155,7 +155,7 @@ const browserRouter = createBrowserRouter([
     path: "/admin",
     element: (
       <ProtectedRoutes allowedRoles={["admin"]}>
-          <AdminLayout />
+        <AdminLayout />
       </ProtectedRoutes>
     ),
     children: [

@@ -169,8 +169,20 @@ const BlogList = () => {
 
                         {user.role === "forum_staff" && (
                           <>
-                            <Button type="default" onClick={() => handleUpdate(blog._id)}>Update</Button>
-                            <Button type="danger" onClick={() => handleDelete(blog._id)}>Delete</Button>
+                            <Button
+                              className="bg-blue-500 text-white hover:bg-blue-600 transition duration-300"
+                              onClick={() => handleUpdate(blog._id)}
+                            >
+                              Update
+                            </Button>
+
+                            <Button
+                              className="bg-red-500 text-white hover:bg-red-600 transition duration-300"
+                              onClick={() => handleDelete(blog._id)}
+                            >
+                              Delete
+                            </Button>
+
                           </>
                         )}
                       </div>
@@ -203,4 +215,5 @@ const BlogList = () => {
 };
 
 export default BlogList;
+
 
