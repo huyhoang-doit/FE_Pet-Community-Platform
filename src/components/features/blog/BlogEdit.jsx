@@ -52,7 +52,7 @@ const BlogEdit = () => {
             const res = await updateBlogAPI(id, data)
             if (res.data.success) {
                 toast.success(res.data.message)
-                navigate(`/blog/${id}`)
+                navigate(`/blog`)
             }
         } catch (error) {
             toast.error(error.response.data.message)
