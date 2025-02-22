@@ -37,7 +37,7 @@ function Header() {
       <Menu.Item key="profile">
         <NavLink to={`/profile/${user?.username}`}>Profile</NavLink>
       </Menu.Item>
-      {user?.role === "staff" && (
+      {user?.role === "forum_staff" && (
         <Menu.Item
           key="approvePet"
           onClick={() => navigate("/staff/approvePet")}
@@ -75,7 +75,7 @@ function Header() {
           </div>
         ) : (
           <Dropdown overlay={menu} trigger={["click"]}>
-            <Avatar size="large" icon={<img src={user.profilePicture}/>} className="cursor-pointer" />
+            <Avatar size="large" icon={<img src={user.profilePicture} />} className="cursor-pointer" />
           </Dropdown>
         )}
 
