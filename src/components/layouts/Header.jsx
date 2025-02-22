@@ -46,6 +46,11 @@ function Header() {
         </Menu.Item>
       )}
 
+      {user?.role === "admin" && (
+        <Menu.Item key="dashboard" onClick={() => navigate("/admin/")}>
+          DashBoard
+        </Menu.Item>
+      )}
       <Menu.Item key="logout" onClick={handleLogout}>
         Logout
       </Menu.Item>
@@ -75,7 +80,11 @@ function Header() {
           </div>
         ) : (
           <Dropdown overlay={menu} trigger={["click"]}>
-            <Avatar size="large" icon={<img src={user.profilePicture}/>} className="cursor-pointer" />
+            <Avatar
+              size="large"
+              icon={<img src={user.profilePicture} />}
+              className="cursor-pointer"
+            />
           </Dropdown>
         )}
 
