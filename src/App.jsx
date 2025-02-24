@@ -23,7 +23,7 @@ import User from "./components/pages/AdminPages/User";
 import Donate from "./components/pages/AdminPages/Donate";
 import ManageStaff from "./components/pages/AdminPages/ManageStaff";
 import { SubmitPet } from "./components/submitPet";
-import { ApprovePet } from "./components/pages/StaffPages";
+import { ApprovePet, ManagePet } from "./components/pages/StaffPages";
 import StaffLayout from "./components/layouts/StaffLayout";
 
 const browserRouter = createBrowserRouter([
@@ -190,6 +190,10 @@ const browserRouter = createBrowserRouter([
       {
         path: "approvePet",
         element: <ApprovePet />,
+      },
+      {
+        path: "managePet",
+        element: <ManagePet />,
       },
     ],
   },
