@@ -37,7 +37,7 @@ function Header() {
       key: "profile",
       label: <NavLink to={`/profile/${user?.username}`}>Profile</NavLink>,
     },
-    user?.role === "forum_staff" && {
+    user?.role === "services_staff" && {
       key: "approvePet",
       label: "Approve Pet",
       onClick: () => navigate("/staff/approvePet"),

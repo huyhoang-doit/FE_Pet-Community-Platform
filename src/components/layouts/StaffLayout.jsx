@@ -2,14 +2,13 @@ import {
   LogoutOutlined,
   MenuFoldOutlined,
   MenuUnfoldOutlined,
-  PieChartOutlined,
-  TeamOutlined,
   UploadOutlined,
-  UserOutlined,
 } from "@ant-design/icons";
 import { Button, Layout, Menu, theme, Input, Avatar } from "antd";
 import { useEffect, useState } from "react";
 import { Outlet, useNavigate, useLocation } from "react-router-dom";
+import { FaPaw } from "react-icons/fa";
+import { MdOutlineManageAccounts } from "react-icons/md";
 
 const { Header, Sider, Content } = Layout;
 const { Search } = Input;
@@ -64,17 +63,16 @@ const StaffLayout = () => {
             }}
             items={[
               {
-                key: "/admin/",
-                icon: <PieChartOutlined />,
-                label: "Dashboard",
+                key: "/staff/approvePet",
+                icon: <FaPaw />,
+                label: "Approve Pet",
               },
-              { key: "/admin/users", icon: <UserOutlined />, label: "Users" },
-              { key: "/admin/staff", icon: <TeamOutlined />, label: "Staffs" },
               {
-                key: "/admin/donate",
-                icon: <UploadOutlined />,
-                label: "Donate",
+                key: "/staff/managePet",
+                icon: <MdOutlineManageAccounts className="w-4 h-4" />,
+                label: "Manage Pet",
               },
+
               { type: "divider" }, // Dòng phân cách
               {
                 key: "logout",
