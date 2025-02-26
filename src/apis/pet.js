@@ -16,6 +16,21 @@ export const submitPetAPI = async (formData) => {
 export const getPetNotApprovedAPI = async () => {
   return await authorizedAxiosInstance.get(`${BASE_URL}/pets/not-approved`);
 };
+export const getPetApprovedAPI = async () => {
+  return await authorizedAxiosInstance.get(`${BASE_URL}/pets/approved`);
+};
+export const updatePetAPI = async (petId, formData) => {
+  console.log(petId);
+  return await authorizedAxiosInstance.post(
+    `${BASE_URL}/pets/update/${petId}`,
+    formData,
+    {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    }
+  );
+};
 
 export const approvePetAPI = async (petId) => {
   return await authorizedAxiosInstance.post(
