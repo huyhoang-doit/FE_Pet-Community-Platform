@@ -6,9 +6,15 @@ import LightGallery from "lightgallery/react";
 import "lightgallery/css/lightgallery.css";
 import "lightgallery/css/lg-thumbnail.css";
 import "lightgallery/css/lg-zoom.css";
+import "lightgallery/css/lg-rotate.css";
+import "lightgallery/css/lg-share.css";
+import "lightgallery/css/lg-autoplay.css";
+
 import lgThumbnail from "lightgallery/plugins/thumbnail";
 import lgZoom from "lightgallery/plugins/zoom";
-
+import lgRotate from "lightgallery/plugins/rotate";
+import lgShare from "lightgallery/plugins/share";
+import lgAutoplay from "lightgallery/plugins/autoplay";
 const ApprovePet = () => {
   const [pets, setPets] = useState([]);
   const { Option } = Select;
@@ -129,11 +135,20 @@ const ApprovePet = () => {
                       {pet.vaccinated ? "True" : "False"}
                     </td>
                     <td className="px-6 py-4 capitalize text-sm text-gray-700 dark:text-gray-300 border-b border-gray-200 dark:border-gray-700 border-r">
-                      <LightGallery speed={500} plugins={[lgThumbnail, lgZoom]}>
+                      <LightGallery
+                        speed={500}
+                        plugins={[
+                          lgThumbnail,
+                          lgZoom,
+                          lgRotate,
+                          lgShare,
+                          lgAutoplay,
+                        ]}
+                      >
                         <a href={pet.image_url[0]}>
                           <img
                             src={pet.image_url[0]}
-                            alt={`Pet-0`}
+                            alt="Pet-0"
                             className="h-12 w-12 object-cover rounded-md cursor-pointer mx-1"
                           />
                         </a>

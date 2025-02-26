@@ -39,7 +39,7 @@ function Header() {
     },
     user?.role === "services_staff" && {
       key: "approvePet",
-      label: "Approve Pet",
+      label: "Services Staff",
       onClick: () => navigate("/staff/approvePet"),
     },
     user?.role === "admin" && {
