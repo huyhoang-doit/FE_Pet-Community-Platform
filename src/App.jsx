@@ -25,6 +25,7 @@ import ManageStaff from "./components/pages/AdminPages/ManageStaff";
 import { SubmitPet } from "./components/submitPet";
 import { ApprovePet, ManagePet } from "./components/pages/StaffPages";
 import StaffLayout from "./components/layouts/StaffLayout";
+import ManageCampaign from "./components/pages/AdminPages/ManageCampaign";
 
 const browserRouter = createBrowserRouter([
   {
@@ -174,6 +175,10 @@ const browserRouter = createBrowserRouter([
       {
         path: "staff",
         element: <ManageStaff />,
+      },
+      {
+        path: "campaign",
+        element: <ManageCampaign />,
       },
     ],
   },

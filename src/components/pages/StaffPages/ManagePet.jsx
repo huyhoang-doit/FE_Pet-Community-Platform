@@ -1,4 +1,4 @@
-import { Modal, Pagination, Select } from "antd";
+import { Pagination, Select } from "antd";
 import { useEffect, useState } from "react";
 import LightGallery from "lightgallery/react";
 import "lightgallery/css/lightgallery.css";
@@ -12,7 +12,6 @@ import lgZoom from "lightgallery/plugins/zoom";
 import lgRotate from "lightgallery/plugins/rotate";
 import lgShare from "lightgallery/plugins/share";
 import lgAutoplay from "lightgallery/plugins/autoplay";
-import { useFormik } from "formik";
 import { getPetApprovedAPI } from "@/apis/pet";
 import { Button } from "@/components/ui/button";
 import EditPetModal from "./EditPetModal";

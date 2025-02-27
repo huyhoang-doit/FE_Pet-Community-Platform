@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { getPetNotApprovedAPI, approvePetAPI } from "@/apis/pet";
 import { Button } from "@/components/ui/button";
 import { Pagination, Select } from "antd";

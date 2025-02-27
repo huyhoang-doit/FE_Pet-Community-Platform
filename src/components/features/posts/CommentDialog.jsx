@@ -30,7 +30,8 @@ const CommentDialog = ({ open, setOpen }) => {
   useEffect(() => {
     if (selectedPost) {
       setComment(selectedPost.comments);
-      setLiked(selectedPost.likes.includes(user?.id) || false);
+      setLiked(selectedPost.likes.some(like => like.id === user?.id) || false);
+      // setLiked(selectedPost.likes.includes(user?.id) || false);
       setPostLike(selectedPost.likes.length);
       setBookmarked(user.bookmarks.includes(selectedPost?._id) || false);
     }
@@ -71,7 +72,6 @@ const CommentDialog = ({ open, setOpen }) => {
     try {
       const action = liked ? "dislike" : "like";
       const res = await likeOrDislikeAPI(selectedPost._id, action);
-      console.log(res.data);
       if (res.data.success) {
         const updatedLikes = liked ? postLike - 1 : postLike + 1;
         setPostLike(updatedLikes);

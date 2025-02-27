@@ -2,6 +2,7 @@ import { handleLogoutAPI } from "@/apis/auth";
 import { setAuthUser, setChatUsers } from "@/redux/authSlice";
 import { setPostPage, setPosts, setSelectedPost } from "@/redux/postSlice";
 import {
+  AlertOutlined,
   LogoutOutlined,
   MenuFoldOutlined,
   MenuUnfoldOutlined,
@@ -94,6 +95,10 @@ const AdminLayout = () => {
                 key: "/admin/donate",
                 icon: <UploadOutlined />,
                 label: "Donate",
+              },{
+                key: "/admin/campaign",
+                icon: <AlertOutlined />,
+                label: "Campaign",
               },
               { type: "divider" }, // Dòng phân cách
               {
