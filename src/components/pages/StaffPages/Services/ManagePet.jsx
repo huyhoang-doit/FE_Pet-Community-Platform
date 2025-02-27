@@ -16,6 +16,7 @@ import { useFormik } from "formik";
 import { getPetApprovedAPI } from "@/apis/pet";
 import { Button } from "@/components/ui/button";
 import EditPetModal from "./EditPetModal";
+import CreateAuctionPostModal from "./CreateAdoptPostModal";
 
 const ManagePet = () => {
   const [pets, setPets] = useState([]);
@@ -23,6 +24,7 @@ const ManagePet = () => {
   const [itemsPerPage] = useState(4);
   const [currentPage, setCurrentPage] = useState(1);
   const [editingPet, setEditingPet] = useState(null);
+  const [createPost, setCreatePost] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -177,8 +179,21 @@ const ManagePet = () => {
                     </td>
                     <td className="px-6 py-4 capitalize text-sm text-gray-700 dark:text-gray-300 border-b border-gray-200 dark:border-gray-700 border-r">
                       {new Date(pet.createdAt).toLocaleDateString("vi-VN")}
+                      {console.log(
+                        "🚀 ~ ManagePet ~ pet.isAddPost:",
+                        pet.isAddPost
+                      )}
                     </td>
                     <td className="flex gap-4 px-6 py-4 capitalize text-sm text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-700 border-r">
+                      {!pet.isAddPost ? (
+                        <Button
+                          onClick={() => setCreatePost(pet)}
+                          className="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600"
+                        >
+                          Create post
+                        </Button>
+                      ) : null}
+
                       <Button
                         onClick={() => setEditingPet(pet)}
                         className="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600"
@@ -212,6 +227,20 @@ const ManagePet = () => {
             setPets((prev) =>
               prev.map((p) =>
                 p._id === editingPet._id ? { ...p, ...editingPet } : p
+              )
+            )
+          }
+        />
+      )}
+      {createPost && (
+        <CreateAuctionPostModal
+          visible={!!createPost}
+          pet={createPost}
+          onClose={() => setCreatePost(null)}
+          onUpdate={() =>
+            setPets((prev) =>
+              prev.map((p) =>
+                p._id === createPost._id ? { ...p, ...createPost } : p
               )
             )
           }

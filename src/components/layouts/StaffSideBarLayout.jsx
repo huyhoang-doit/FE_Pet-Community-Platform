@@ -53,6 +53,12 @@ const StaffSideBarLayout = () => {
       roles: ["services_staff"],
     },
     {
+      key: "/staff-services/manageAdoptionPost",
+      icon: <MdOutlineManageAccounts className="w-4 h-4" />,
+      label: "Manage Post",
+      roles: ["services_staff"],
+    },
+    {
       key: "/staff-forum/manageBlog",
       icon: <GoNote className="w-4 h-4" />,
       label: "Manage Blog",
