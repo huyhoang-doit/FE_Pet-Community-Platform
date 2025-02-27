@@ -7,23 +7,87 @@ import {
 import { Button, Layout, Menu, theme, Input, Avatar } from "antd";
 import { useEffect, useState } from "react";
 import { Outlet, useNavigate, useLocation } from "react-router-dom";
-import { FaPaw } from "react-icons/fa";
 import { MdOutlineManageAccounts } from "react-icons/md";
 import { PiPawPrintLight } from "react-icons/pi";
+import { GoNote } from "react-icons/go";
+import { IoHomeOutline } from "react-icons/io5";
+import { useSelector } from "react-redux";
 
 const { Header, Sider, Content } = Layout;
 const { Search } = Input;
 
-const StaffLayout = () => {
+const StaffSideBarLayout = () => {
   const [collapsed, setCollapsed] = useState(() => {
     return localStorage.getItem("sidebar-collapsed") === "true";
   });
-
+  const { user } = useSelector((store) => store.auth);
   const navigate = useNavigate();
   const location = useLocation();
   const {
     token: { borderRadiusLG },
   } = theme.useToken();
+
+  const menuItems = [
+    {
+      key: "/adopt",
+      icon: <IoHomeOutline className="w-4 h-4" />,
+      label: "Home",
+      roles: ["services_staff"],
+    },
+    {
+      key: "/forum",
+      icon: <IoHomeOutline className="w-4 h-4" />,
+      label: "Home",
+      roles: ["forum_staff"],
+    },
+    {
+      key: "/staff-services/approvePet",
+      icon: <PiPawPrintLight className="w-4 h-4" />,
+      label: "Approve Pet",
+      roles: ["services_staff"],
+    },
+    {
+      key: "/staff-services/managePet",
+      icon: <MdOutlineManageAccounts className="w-4 h-4" />,
+      label: "Manage Pet",
+      roles: ["services_staff"],
+    },
+    {
+      key: "/staff-services/manageAdoptionPost",
+      icon: <MdOutlineManageAccounts className="w-4 h-4" />,
+      label: "Manage Post",
+      roles: ["services_staff"],
+    },
+    {
+      key: "/staff-forum/manageBlog",
+      icon: <GoNote className="w-4 h-4" />,
+      label: "Manage Blog",
+      roles: ["forum_staff"],
+    },
+    {
+      key: "/staff-forum/managePost",
+      icon: <GoNote className="w-4 h-4" />,
+      label: "Manage Post",
+      roles: ["forum_staff"],
+    },
+    {
+      key: "/staff-forum/ApprovePost",
+      icon: <GoNote className="w-4 h-4" />,
+      label: "Approve Post",
+      roles: ["forum_staff"],
+    },
+    { type: "divider" },
+    {
+      key: "logout",
+      icon: <LogoutOutlined />,
+      label: <span className="text-red-500">Logout</span>,
+    },
+  ];
+
+  const userRole = user.role;
+  const filteredItems = menuItems.filter(
+    (item) => !item.roles || item.roles.includes(userRole)
+  );
 
   useEffect(() => {
     localStorage.setItem("sidebar-collapsed", collapsed);
@@ -47,14 +111,15 @@ const StaffLayout = () => {
         <div className="h-full flex flex-col">
           {/* Logo */}
           <div className="p-3 text-white text-center font-bold">
-            Staff Services Panel
+            {userRole === "services_staff"
+              ? "Staff Services Panel"
+              : "Staff Forum Panel"}
           </div>
-
           {/* Menu chính */}
           <Menu
             theme="dark"
             mode="inline"
-            selectedKeys={[location.pathname]} // Đánh dấu menu active theo URL
+            selectedKeys={[location.pathname]}
             onClick={({ key }) => {
               if (key === "logout") {
                 handleLogout();
@@ -62,27 +127,10 @@ const StaffLayout = () => {
                 navigate(key);
               }
             }}
-            items={[
-              {
-                key: "/staff/approvePet",
-                icon: <PiPawPrintLight className="w-4 h-4" />,
-                label: "Approve Pet",
-              },
-              {
-                key: "/staff/managePet",
-                icon: <MdOutlineManageAccounts className="w-4 h-4" />,
-                label: "Manage Pet",
-              },
-
-              { type: "divider" }, // Dòng phân cách
-              {
-                key: "logout",
-                icon: <LogoutOutlined />,
-                label: <span className="text-red-500">Logout</span>, // Màu đỏ để nổi bật
-              },
-            ]}
+            items={filteredItems}
             className="flex-1"
           />
+          ;
         </div>
       </Sider>
 
@@ -104,7 +152,7 @@ const StaffLayout = () => {
 
           {/* Avatar */}
           <div className="ml-auto">
-            <Avatar size="large" src="https://i.pravatar.cc/150" />
+            <Avatar size="large" src={user.profilePicture} />
           </div>
         </Header>
 
@@ -123,4 +171,4 @@ const StaffLayout = () => {
   );
 };
 
-export default StaffLayout;
+export default StaffSideBarLayout;

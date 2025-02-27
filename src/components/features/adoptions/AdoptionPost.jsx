@@ -18,17 +18,15 @@ import { calculateTimeAgo } from "@/utils/calculateTimeAgo";
 import { Button } from "@/components/ui/button";
 
 const AdoptionPost = ({ post }) => {
+  console.log("🚀 ~ AdoptionPost ~ post:", post);
   const { user } = useSelector((store) => store.auth);
-  const { posts } = useSelector((store) => store.post);
-  console.log("🚀 ~ AdoptionPost ~ posts:", posts);
-  const { adoptPosts } = useSelector((store) => store.adopt);
   const [liked, setLiked] = useState(post.likes.includes(user?.id) || false);
-  console.log("🚀 ~ AdoptionPost ~ adoptPosts:", adoptPosts);
   const [bookmarked, setBookmarked] = useState(
     user.bookmarks.includes(post?._id) || false
   );
   const [postLike, setPostLike] = useState(post.likes.length);
   const dispatch = useDispatch();
+  const pet = post.pet;
 
   // const changeEventHandler = (e) => {
   //   const inputText = e.target.value;
@@ -205,18 +203,20 @@ const AdoptionPost = ({ post }) => {
       <div className="flex flex-col items-start justify-between mt-2 gap-3">
         <div className="flex items-center justify-start gap-2">
           <PawPrint style={{ width: 20, height: 20, color: "#ff5722" }} />
-          <span className="text-sm font-medium text-gray-900">Giống: Pun</span>
+          <span className="text-sm font-medium text-gray-900">
+            Giống: {pet.breed}
+          </span>
         </div>
         <div className="flex items-center justify-start gap-2">
           <MapPin style={{ width: 20, height: 20, color: "#2980b9" }} />
           <span className="text-sm font-medium text-gray-900">
-            Vị trí: Ho Chi Minh
+            Vị trí: {post.location}
           </span>
         </div>
         <div className="flex items-center justify-start gap-2">
           <HandHeart style={{ width: 20, height: 20, color: "#16a085" }} />
           <span className="text-sm font-medium text-gray-900">
-            Tình trạng: Đã được nhận nuôi
+            Tình trạng: {post.adopt_status}
           </span>
         </div>
       </div>
@@ -292,7 +292,7 @@ const AdoptionPost = ({ post }) => {
         <Button className="button--primary button rippleButton">
           <div className="flex items-center gap-2">
             <Send className="cursor-pointer hover:text-gray-600" size={16} />
-            <span className="button-text"> Lien he nhan nuoi</span>
+            <span className="button-text"> Liên Hệ Nhận Nuôi</span>
           </div>
         </Button>
       </div>
