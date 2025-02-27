@@ -37,12 +37,17 @@ function Header() {
       key: "profile",
       label: <NavLink to={`/profile/${user?.username}`}>Profile</NavLink>,
     },
-    user?.role === "services_staff" && {
+    user?.role.includes("services_staff") && {
       key: "approvePet",
       label: "Services Staff",
-      onClick: () => navigate("/staff/approvePet"),
+      onClick: () => navigate("/staff-services/approvePet"),
     },
-    user?.role === "admin" && {
+    user?.role.includes("forum_staff") && {
+      key: "manageBlog",
+      label: "Forum Staff",
+      onClick: () => navigate("/staff-forum/managePost"),
+    },
+    user?.role.includes("admin") && {
       key: "dashboard",
       label: "DashBoard",
       onClick: () => navigate("/admin/"),
@@ -52,7 +57,7 @@ function Header() {
       label: "Logout",
       onClick: handleLogout,
     },
-  ].filter(Boolean); // Lọc bỏ giá trị `false` để tránh lỗi khi user không có role phù hợp
+  ].filter(Boolean);
 
   return (
     <header className="flex justify-between items-center h-20 bg-white px-10">
