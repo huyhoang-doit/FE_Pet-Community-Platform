@@ -21,3 +21,7 @@ export const cancelDonateAPI = async (orderCode) => {
 export const getTop5DonateAPI = async () => {
   return await authorizedAxiosInstance.get(`${BASE_URL}/donation/top-5`)
 }
+
+export const getAllDonateAPI = async (page, limit) => {
+  return await authorizedAxiosInstance.get(`${BASE_URL}/donation?page=${page}&limit=${limit}`)
+}
