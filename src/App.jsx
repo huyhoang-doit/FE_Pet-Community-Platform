@@ -22,9 +22,8 @@ import AdminLayout from "./components/layouts/AdminLayout";
 import User from "./components/pages/AdminPages/User";
 import Donate from "./components/pages/AdminPages/Donate";
 import ManageStaff from "./components/pages/AdminPages/ManageStaff";
-import AdoptionPosts from "./components/features/adoptions/AdoptionPosts";
 import { SubmitPet } from "./components/submitPet";
-import { ApprovePet } from "./components/pages/StaffPages";
+import { ApprovePet, ManagePet } from "./components/pages/StaffPages";
 import StaffLayout from "./components/layouts/StaffLayout";
 
 const browserRouter = createBrowserRouter([
@@ -48,7 +47,7 @@ const browserRouter = createBrowserRouter([
         path: "/adopt",
         element: (
           <ProtectedRoutes>
-            <AdoptionPosts />
+            <Home />
           </ProtectedRoutes>
         ),
       },
@@ -156,7 +155,7 @@ const browserRouter = createBrowserRouter([
     path: "/admin",
     element: (
       <ProtectedRoutes allowedRoles={["admin"]}>
-          <AdminLayout />
+        <AdminLayout />
       </ProtectedRoutes>
     ),
     children: [
@@ -181,7 +180,7 @@ const browserRouter = createBrowserRouter([
   {
     path: "/staff",
     element: (
-      <ProtectedRoutes allowedRoles={["staff"]}>
+      <ProtectedRoutes allowedRoles={["services_staff"]}>
         <StaffLayout>
           <ManageStaff />
         </StaffLayout>
@@ -191,6 +190,10 @@ const browserRouter = createBrowserRouter([
       {
         path: "approvePet",
         element: <ApprovePet />,
+      },
+      {
+        path: "managePet",
+        element: <ManagePet />,
       },
     ],
   },

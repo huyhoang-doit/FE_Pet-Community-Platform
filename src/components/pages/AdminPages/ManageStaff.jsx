@@ -1,42 +1,39 @@
-import { useState, useEffect } from "react";
-import { Table, Tag, Button, Popconfirm, message, Spin } from "antd";
+import { useEffect, useState } from "react";
+import { Table, Tag, Button, Popconfirm, message } from "antd";
 import { getAllStaffAPI } from "@/apis/admin";
+import Search from "antd/es/input/Search";
 import { editProfileAPI } from "@/apis/user";
 
 const ManageStaff = () => {
   const [staffMembers, setStaffMembers] = useState([]);
+  const [limit] = useState(5);
   const [currentPage, setCurrentPage] = useState(1);
-  const [limit] = useState(10);
   const [totalResults, setTotalResults] = useState(0);
-  const [loading, setLoading] = useState(false);
 
-  const fetchStaffMembers = async (page = 1, search = "") => {
+  const getAllStaff = async (page = 1, search = "") => {
     try {
       const response = await getAllStaffAPI(
         page,
         search ? 1000 : limit,
         search
       );
-      console.log(response);
       if (response.data?.data) {
-        setStaffMembers(response.data.data);
         setTotalResults(
           search ? response.data.data.length : response.data.data.totalResults
         );
-      } else {
-        setStaffMembers([]);
-        setTotalResults(0);
       }
+      const staffData = Array.isArray(response.data?.data)
+        ? response.data.data
+        : [];
+      setStaffMembers(staffData);
     } catch (error) {
-      console.error("Error fetching staff members:", error);
-      message.error("Failed to fetch staff members.");
-    } finally {
-      setLoading(false);
+      setStaffMembers([]); // Ensure it stays an array even if API fails
+      setTotalResults(0);
     }
   };
 
   useEffect(() => {
-    fetchStaffMembers(currentPage);
+    getAllStaff(currentPage);
   }, [currentPage]);
 
   const handlePageChange = (page) => {
@@ -48,6 +45,7 @@ const ManageStaff = () => {
       const response = await editProfileAPI({ id, isDeleted: true });
       if (response.data?.status === 200) {
         message.success(`User with ID ${id} has been banned!`);
+        getAllStaff(currentPage);
       } else {
         message.error("Failed to ban the user. Please try again.");
       }
@@ -59,22 +57,32 @@ const ManageStaff = () => {
 
   const columns = [
     {
-      title: "Name",
+      title: (
+        <div className="flex items-center gap-10">
+          Name
+          <Search
+            placeholder="Search users..."
+            onSearch={(value) => getAllStaff(1, value)}
+            style={{ width: 200 }}
+            allowClear
+          />
+        </div>
+      ),
       dataIndex: "username",
-      key: "username",
+      key: "name",
     },
     {
-      title: "Email",
-      dataIndex: "email",
-      key: "email",
+      title: "Role",
+      dataIndex: "role",
+      key: "role",
     },
     {
       title: "Status",
-      dataIndex: "isBlocked",
+      dataIndex: "isActived",
       key: "status",
-      render: (isBlocked) => (
-        <Tag color={isBlocked ? "red" : "green"}>
-          {isBlocked ? "Banned" : "Active"}
+      render: (isActived) => (
+        <Tag color={isActived ? "red" : "green"}>
+          {isActived ? "Banned" : "Active"}
         </Tag>
       ),
     },
@@ -102,20 +110,19 @@ const ManageStaff = () => {
   return (
     <div className="p-4">
       <h1 className="text-2xl font-bold mb-4">Staff Management</h1>
-      <Spin spinning={loading}>
-        <Table
-          columns={columns}
-          dataSource={staffMembers}
-          rowKey="id"
-          pagination={{
-            current: currentPage,
-            pageSize: limit,
-            total: totalResults,
-            onChange: handlePageChange,
-          }}
-        />
-      </Spin>
+      <Table
+        columns={columns}
+        dataSource={staffMembers}
+        rowKey="id"
+        pagination={{
+          current: currentPage,
+          pageSize: limit,
+          total: totalResults,
+          onChange: handlePageChange,
+        }}
+      />
     </div>
   );
 };
+
 export default ManageStaff;

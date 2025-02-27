@@ -20,7 +20,10 @@ import { Button } from "@/components/ui/button";
 const AdoptionPost = ({ post }) => {
   const { user } = useSelector((store) => store.auth);
   const { posts } = useSelector((store) => store.post);
+  console.log("🚀 ~ AdoptionPost ~ posts:", posts);
+  const { adoptPosts } = useSelector((store) => store.adopt);
   const [liked, setLiked] = useState(post.likes.includes(user?.id) || false);
+  console.log("🚀 ~ AdoptionPost ~ adoptPosts:", adoptPosts);
   const [bookmarked, setBookmarked] = useState(
     user.bookmarks.includes(post?._id) || false
   );
@@ -120,7 +123,7 @@ const AdoptionPost = ({ post }) => {
   };
 
   return (
-    <div className="my-8 w-full max-w-[650px] mx-auto border-b-2 border-gray-200 pb-8">
+    <div className="my-8 w-full max-w-[550px] mx-auto border-b-2 border-gray-200 pb-8">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <Link to={`/profile/${post.author?.username}`}>

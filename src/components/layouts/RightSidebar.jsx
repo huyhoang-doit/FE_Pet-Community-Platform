@@ -5,9 +5,11 @@ import VerifiedBadge from "../core/VerifiedBadge";
 import ProcessDonate from "../features/donate/ProcessDonate";
 import TopDonate from "../features/donate/TopDonate";
 import SuggestedUsers from "../features/users/SuggestedUsers";
+import AdoptionCreatePost from "../features/adoptions/AdoptionCreatePost";
 
 const RightSidebar = () => {
   const { user } = useSelector((store) => store.auth);
+  const userRole = user?.role ? user.role : "user";
   const { campaign } = useSelector((store) => store.campaign);
   const { topDonate } = useSelector((store) => store.donate);
 
@@ -30,7 +32,10 @@ const RightSidebar = () => {
           </span>
         </div>
       </div>
-      {campaign && <ProcessDonate campaign={campaign} />}
+      {userRole !== "service_staff" && campaign && (
+        <ProcessDonate campaign={campaign} />
+      )}
+      {userRole === "service_staff" && <AdoptionCreatePost />}
       {topDonate.length > 0 && <TopDonate topDonate={topDonate} />}
       <SuggestedUsers />
     </div>

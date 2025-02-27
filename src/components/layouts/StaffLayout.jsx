@@ -2,14 +2,14 @@ import {
   LogoutOutlined,
   MenuFoldOutlined,
   MenuUnfoldOutlined,
-  PieChartOutlined,
-  TeamOutlined,
   UploadOutlined,
-  UserOutlined,
 } from "@ant-design/icons";
 import { Button, Layout, Menu, theme, Input, Avatar } from "antd";
 import { useEffect, useState } from "react";
 import { Outlet, useNavigate, useLocation } from "react-router-dom";
+import { FaPaw } from "react-icons/fa";
+import { MdOutlineManageAccounts } from "react-icons/md";
+import { PiPawPrintLight } from "react-icons/pi";
 
 const { Header, Sider, Content } = Layout;
 const { Search } = Input;
@@ -47,7 +47,7 @@ const StaffLayout = () => {
         <div className="h-full flex flex-col">
           {/* Logo */}
           <div className="p-3 text-white text-center font-bold">
-            Admin Panel
+            Staff Services Panel
           </div>
 
           {/* Menu chính */}
@@ -64,17 +64,16 @@ const StaffLayout = () => {
             }}
             items={[
               {
-                key: "/admin/",
-                icon: <PieChartOutlined />,
-                label: "Dashboard",
+                key: "/staff/approvePet",
+                icon: <PiPawPrintLight className="w-4 h-4" />,
+                label: "Approve Pet",
               },
-              { key: "/admin/users", icon: <UserOutlined />, label: "Users" },
-              { key: "/admin/staff", icon: <TeamOutlined />, label: "Staffs" },
               {
-                key: "/admin/donate",
-                icon: <UploadOutlined />,
-                label: "Donate",
+                key: "/staff/managePet",
+                icon: <MdOutlineManageAccounts className="w-4 h-4" />,
+                label: "Manage Pet",
               },
+
               { type: "divider" }, // Dòng phân cách
               {
                 key: "logout",
@@ -87,11 +86,8 @@ const StaffLayout = () => {
         </div>
       </Sider>
 
-      {/* Main Layout */}
       <Layout className="h-full">
-        {/* Header */}
         <Header className="bg-white shadow-md px-4 flex items-center">
-          {/* Nút thu gọn/mở rộng Sidebar */}
           <Button
             type="text"
             icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
@@ -99,7 +95,6 @@ const StaffLayout = () => {
             className="text-lg w-12 h-12"
           />
 
-          {/* Ô tìm kiếm */}
           <Search
             placeholder="Search..."
             onSearch={(value) => console.log(value)}

@@ -4,7 +4,7 @@ import { ArrowLeft, MessageCircle } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { FaHeart, FaRegHeart } from 'react-icons/fa'
 import { useSelector } from 'react-redux'
-import { Link, useLocation } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import VerifiedBadge from '../../core/VerifiedBadge'
 import { Avatar, AvatarFallback, AvatarImage } from '../../ui/avatar'
 
@@ -35,9 +35,17 @@ const BlogDetail = () => {
     const [liked, setLiked] = useState(false)
     const { user } = useSelector((store) => store.auth)
     const location = useLocation();
-    const { blogId } = location.state
+    const navigate = useNavigate();
+    
+    // Kiểm tra location.state trước khi truy xuất blogId
+    const blogId = location.state?.blogId || null;
 
     useEffect(() => {
+        if (!blogId) {
+            setLoading(false);
+            return;
+        }
+
         const fetchBlog = async () => {
             try {
                 const res = await getBlogByIdAPI(blogId)
@@ -46,17 +54,40 @@ const BlogDetail = () => {
                     setLiked(res.data.data.likes.includes(user?.id))
                 }
             } catch (error) {
-                console.log(error)
+                console.error("Error fetching blog:", error);
             } finally {
-                setLoading(false)
+                setLoading(false);
             }
         }
         fetchBlog()
     }, [blogId])
 
 
-    if (loading) return <div className="flex justify-center items-center h-screen">Loading...</div>
-    if (!blog) return <div className="text-center py-10">Blog not found</div>
+    if (loading) {
+        return <div className="flex justify-center items-center h-screen">Loading...</div>
+    }
+
+    if (!blogId) {
+        return (
+            <div className="text-center py-10">
+                <p className="text-red-500">Không tìm thấy bài viết!</p>
+                <button
+                    onClick={() => navigate('/blog')}
+                    className="mt-4 px-4 py-2 bg-primary text-white rounded-lg"
+                >
+                    Quay lại danh sách blog
+                </button>
+            </div>
+        );
+    }
+
+    if (!blog) {
+        return (
+            <div className="text-center py-10">
+                Blog not found
+            </div>
+        );
+    }
 
     return (
         <div className={sharedClasses.maxContainer}>
@@ -124,10 +155,8 @@ const BlogDetail = () => {
                     <span>{blog.comments?.length || 0} comments</span>
                 </button>
             </div>
-
-
         </div>
     )
 }
 
-export default BlogDetail 
+export default BlogDetail

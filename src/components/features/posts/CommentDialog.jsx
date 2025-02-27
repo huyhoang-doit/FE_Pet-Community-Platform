@@ -36,9 +36,7 @@ const CommentDialog = ({ open, setOpen }) => {
       setBookmarked(user.bookmarks.includes(selectedPost?._id) || false);
     }
   }, [selectedPost, user]);
-  console.log(selectedPost);
   
-
   const changeEventHandler = (e) => {
     const inputText = e.target.value;
     if (inputText.trim()) {

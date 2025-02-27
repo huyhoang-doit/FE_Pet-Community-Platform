@@ -5,7 +5,7 @@ import { handleLogoutAPI } from "@/apis/auth";
 import { setAuthUser, setChatUsers } from "@/redux/authSlice";
 import { setPostPage, setPosts, setSelectedPost } from "@/redux/postSlice";
 import { toast } from "sonner";
-import { Avatar, Button, Dropdown, Menu } from "antd";
+import { Avatar, Button, Dropdown } from "antd";
 import Navbar from "./Navbar";
 
 function Header() {
@@ -32,36 +32,43 @@ function Header() {
     }
   };
 
-  const menu = (
-    <Menu>
-      <Menu.Item key="profile">
-        <NavLink to={`/profile/${user?.username}`}>Profile</NavLink>
-      </Menu.Item>
-      {user?.role === "staff" && (
-        <Menu.Item
-          key="approvePet"
-          onClick={() => navigate("/staff/approvePet")}
-        >
-          Approve Pet
-        </Menu.Item>
-      )}
-
-      <Menu.Item key="logout" onClick={handleLogout}>
-        Logout
-      </Menu.Item>
-    </Menu>
-  );
+  const menuItems = [
+    {
+      key: "profile",
+      label: <NavLink to={`/profile/${user?.username}`}>Profile</NavLink>,
+    },
+    user?.role === "services_staff" && {
+      key: "approvePet",
+      label: "Services Staff",
+      onClick: () => navigate("/staff/approvePet"),
+    },
+    user?.role === "admin" && {
+      key: "dashboard",
+      label: "DashBoard",
+      onClick: () => navigate("/admin/"),
+    },
+    {
+      key: "logout",
+      label: "Logout",
+      onClick: handleLogout,
+    },
+  ].filter(Boolean); // Lọc bỏ giá trị `false` để tránh lỗi khi user không có role phù hợp
 
   return (
     <header className="flex justify-between items-center h-20 bg-white px-10">
+      {/* Logo */}
       <div id="logo" className="w-16">
         <Link to="/">
           <img src="/assets/images/favicon.png" alt="logo" />
         </Link>
       </div>
+
+      {/* Navbar */}
       <div className="flex gap-12 h-full">
         <Navbar />
       </div>
+
+      {/* User Actions */}
       <div className="flex gap-10 items-center">
         {!user ? (
           <div className="relative group py-7">
@@ -74,11 +81,16 @@ function Header() {
             </Button>
           </div>
         ) : (
-          <Dropdown overlay={menu} trigger={["click"]}>
-            <Avatar size="large" icon={<img src={user.profilePicture}/>} className="cursor-pointer" />
+          <Dropdown menu={{ items: menuItems }} trigger={["click"]}>
+            <Avatar
+              size="large"
+              icon={<img src={user.profilePicture} />}
+              className="cursor-pointer"
+            />
           </Dropdown>
         )}
 
+        {/* Wishlist */}
         <div className="relative">
           <Link to="/wishlist">
             <FaHeart className="cursor-pointer text-xl" />
@@ -87,6 +99,8 @@ function Header() {
             </p>
           </Link>
         </div>
+
+        {/* Cart */}
         <div className="relative">
           <Link to="/cart">
             <FaCartShopping className="cursor-pointer text-xl" />
