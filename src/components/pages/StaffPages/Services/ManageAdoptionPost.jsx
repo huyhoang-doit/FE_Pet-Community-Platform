@@ -5,6 +5,7 @@ import "lightgallery/css/lightgallery.css";
 import lgThumbnail from "lightgallery/plugins/thumbnail";
 import lgZoom from "lightgallery/plugins/zoom";
 import { fetchAllAdoptionPostsAPI } from "@/apis/post";
+import EditAdoptPostModal from "./EditAdoptPostModal";
 
 const { Option } = Select;
 
@@ -13,6 +14,8 @@ const ManageAdoptionPost = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalResults, setTotalResults] = useState(0);
   const itemsPerPage = 4; // Matches API's limit
+  const [editModalOpen, setEditModalOpen] = useState(false);
+  const [selectedPost, setSelectedPost] = useState(null);
 
   // Fetch posts when page changes
   useEffect(() => {
@@ -52,6 +55,18 @@ const ManageAdoptionPost = () => {
   // Handle page change
   const handlePageChange = (page) => {
     setCurrentPage(page);
+  };
+
+  const handleEditClick = (post) => {
+    setSelectedPost(post);
+    setEditModalOpen(true);
+  };
+
+  const handleUpdatePost = (updatedPost) => {
+    setPosts((prevPosts) =>
+      prevPosts.map((p) => (p._id === updatedPost._id ? updatedPost : p))
+    );
+    setEditModalOpen(false);
   };
 
   return (
@@ -152,21 +167,22 @@ const ManageAdoptionPost = () => {
                       ? new Date(post.createdAt).toLocaleDateString("vi-VN")
                       : "Unknown"}
                   </td>
-                  <td className="flex gap-4 px-6 py-4 text-sm text-gray-700 dark:text-gray-300 border-b border-gray-200 dark:border-gray-700 border-r">
+
+                  <td className="flex px-6 py-4 text-sm text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-700 border-r">
                     <Button
-                      onClick={() => console.log(`Edit post: ${post._id}`)}
+                      onClick={() => handleEditClick(post)}
                       className="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600"
                     >
                       Edit
                     </Button>
-                    {/* Uncomment and implement delete functionality if needed */}
-                    {/* <Button
+                  </td>
+                  {/* Uncomment and implement delete functionality if needed */}
+                  {/* <Button
                       onClick={() => console.log(`Delete post: ${post._id}`)}
                       className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600"
                     >
                       Delete
                     </Button> */}
-                  </td>
                 </tr>
               ))}
             </tbody>
@@ -178,11 +194,19 @@ const ManageAdoptionPost = () => {
         <Pagination
           current={currentPage}
           pageSize={itemsPerPage}
-          total={totalResults} // Use totalResults from API
+          total={totalResults}
           onChange={handlePageChange}
-          showSizeChanger={false} // Disable page size changer since it's fixed
+          showSizeChanger={false}
         />
       </div>
+      {editModalOpen && (
+        <EditAdoptPostModal
+          open={editModalOpen}
+          setOpen={setEditModalOpen}
+          post={selectedPost}
+          onUpdate={handleUpdatePost}
+        />
+      )}
     </div>
   );
 };

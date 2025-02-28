@@ -52,7 +52,7 @@ export const addPostsAPI = async (formData) => {
 
 export const addAdoptPostsAPI = async (formData) => {
   return await authorizedAxiosInstance.post(
-    `${BASE_URL}/adoption-post/addpost`,
+    `${BASE_URL}/adoption-post/`,
     formData,
     {
       headers: {
@@ -65,5 +65,17 @@ export const addAdoptPostsAPI = async (formData) => {
 export const fetchAllAdoptionPostsAPI = async (page, limit) => {
   return await authorizedAxiosInstance.get(
     `${BASE_URL}/adoption-post/all?sortBy=createdAt:desc&limit=${limit}&page=${page}`
+  );
+};
+
+export const updateAdoptPostsAPI = async (postId, formData) => {
+  return await authorizedAxiosInstance.put(
+    `${BASE_URL}/adoption-post/${postId}`,
+    formData,
+    {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    }
   );
 };

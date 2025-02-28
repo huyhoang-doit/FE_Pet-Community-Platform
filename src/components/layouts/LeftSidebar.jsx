@@ -56,6 +56,7 @@ const LeftSidebar = () => {
   const { isDisplayText, showSearchTab, showNotificationTab } = useSelector(
     (store) => store.sidebar
   );
+  const userRole = user.role;
 
   const logoutHandler = async () => {
     try {
@@ -234,7 +235,6 @@ const LeftSidebar = () => {
       text: "Tìm kiếm",
       textType: "Search",
     },
-    // { icon: <TrendingUp />, text: "Khám phá", textType: "Explore" },
     {
       icon: isActiveTab("Messages") ? (
         <RiMessengerFill size={24} />
@@ -267,6 +267,21 @@ const LeftSidebar = () => {
     },
   ];
 
+  const allowedStaffItems = [
+    "Home",
+    "Forum",
+    "Adopt",
+    "Messages",
+    "Notifications",
+    "Create",
+    "Profile",
+  ];
+
+  const filteredSidebarItems =
+    userRole !== "user"
+      ? sidebarItems.filter((item) => allowedStaffItems.includes(item.textType))
+      : sidebarItems;
+
   return (
     <div
       className={`fixed top-0 z-10 left-0 px-4  h-screen `}
@@ -295,7 +310,7 @@ const LeftSidebar = () => {
         </Link>
         <div className="flex-grow">
           <div className="flex-grow">
-            {sidebarItems.map((item, index) => {
+            {filteredSidebarItems.map((item, index) => {
               return (
                 <div
                   onClick={() => sidebarHandler(item.textType)}
