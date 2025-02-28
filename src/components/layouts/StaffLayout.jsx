@@ -92,14 +92,9 @@ const StaffLayout = () => {
             onClick={() => setCollapsed(!collapsed)}
             className="text-lg w-12 h-12"
           />
-
-          <Search
-            placeholder="Search..."
-            onSearch={(value) => console.log(value)}
-            style={{ width: 200 }}
-            className="ml-4"
-          />
-
+          <marquee scrollAmount="12" className="text-xl font-bold mx-8">
+            Welcome Staff, Have a nice day!
+          </marquee>
           {/* Avatar */}
           <div className="ml-auto">
             <Avatar size="large" src="https://i.pravatar.cc/150" />
