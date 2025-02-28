@@ -176,6 +176,10 @@ const browserRouter = createBrowserRouter([
         path: "staff",
         element: <ManageStaff />,
       },
+      {
+        path: "campaign",
+        element: <ManageCampaign />,
+      },
     ],
   },
   {

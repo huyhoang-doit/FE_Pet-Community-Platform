@@ -46,7 +46,7 @@ const Donate = () => {
         const year = d.getFullYear();
         const hour = String(d.getHours()).padStart(2, "0");
         const minute = String(d.getMinutes()).padStart(2, "0");
-        return `${day}-${month}-${year} ${hour}:${minute} GMT+7`;
+        return `${day}-${month}-${year} ${hour}:${minute}`;
       },
     },
     {
@@ -89,20 +89,20 @@ const Donate = () => {
 
   const getAllDonations = async (page = 1, search = "") => {
     try {
-      const response = await getAllDonationsAPI(
+      const { data } = await getAllDonationsAPI(
         page,
         search ? 1000 : limit,
         search
       );
-      if (response.data?.data) {
-        setTotalResults(
-          search ? response.data.data.length : response.data.data.totalResults
-        );
+      if (data?.data.results) {
+        console.log(data.data);
+        setTotalResults(data.data.totalResults);
       }
-
-      const donationsData = Array.isArray(response.data?.data)
-        ? response.data.data
+      
+      const donationsData = Array.isArray(data?.data.results)
+        ? data.data.results
         : [];
+        
       setDonations(donationsData);
     } catch (error) {
       console.error("Error fetching donations:", error);

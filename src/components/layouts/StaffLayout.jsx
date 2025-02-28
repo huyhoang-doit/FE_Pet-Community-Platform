@@ -1,31 +1,22 @@
-import { handleLogoutAPI } from "@/apis/auth";
-import { setAuthUser, setChatUsers } from "@/redux/authSlice";
-import { setPostPage, setPosts, setSelectedPost } from "@/redux/postSlice";
 import {
-  AlertOutlined,
   LogoutOutlined,
   MenuFoldOutlined,
   MenuUnfoldOutlined,
-  PieChartOutlined,
-  TeamOutlined,
-  UploadOutlined,
-  UserOutlined,
 } from "@ant-design/icons";
-import { Button, Layout, Menu, theme, Avatar } from "antd";
+import { Button, Layout, Menu, theme, Input, Avatar } from "antd";
 import { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
 import { Outlet, useNavigate, useLocation } from "react-router-dom";
-import { toast } from "sonner";
+import { MdOutlineManageAccounts } from "react-icons/md";
+import { PiPawPrintLight } from "react-icons/pi";
 
 const { Header, Sider, Content } = Layout;
+const { Search } = Input;
 
-const AdminLayout = () => {
-  const { user } = useSelector((store) => store.auth);
-  const dispatch = useDispatch();
+const StaffLayout = () => {
   const [collapsed, setCollapsed] = useState(() => {
     return localStorage.getItem("sidebar-collapsed") === "true";
   });
-  
+
   const navigate = useNavigate();
   const location = useLocation();
   const {
@@ -37,23 +28,9 @@ const AdminLayout = () => {
   }, [collapsed]);
 
   // Xử lý logout
-  const handleLogout = async () => {
-    try {
-      const res = await handleLogoutAPI();
-      if (res.status === 200) {
-        dispatch(setAuthUser(null));
-        dispatch(setSelectedPost(null));
-        dispatch(setPosts([]));
-        dispatch(setChatUsers([]));
-        dispatch(setPostPage(1));
-        localStorage.removeItem("access_token");
-        localStorage.removeItem("refresh_token");
-        navigate("/");
-        toast.success(res.data.message);
-      }
-    } catch (error) {
-      toast.error(error.response.data.message);
-    }
+  const handleLogout = () => {
+    localStorage.removeItem("access_token");
+    navigate("/login");
   };
 
   return (
@@ -68,14 +45,14 @@ const AdminLayout = () => {
         <div className="h-full flex flex-col">
           {/* Logo */}
           <div className="p-3 text-white text-center font-bold">
-            Admin Panel
+            Staff Services Panel
           </div>
 
-          {/* Menu */}
+          {/* Menu chính */}
           <Menu
             theme="dark"
             mode="inline"
-            selectedKeys={[location.pathname]}
+            selectedKeys={[location.pathname]} // Đánh dấu menu active theo URL
             onClick={({ key }) => {
               if (key === "logout") {
                 handleLogout();
@@ -85,26 +62,21 @@ const AdminLayout = () => {
             }}
             items={[
               {
-                key: "/admin/",
-                icon: <PieChartOutlined />,
-                label: "Dashboard",
+                key: "/staff/approvePet",
+                icon: <PiPawPrintLight className="w-4 h-4" />,
+                label: "Approve Pet",
               },
-              { key: "/admin/users", icon: <UserOutlined />, label: "Users" },
-              { key: "/admin/staff", icon: <TeamOutlined />, label: "Staffs" },
               {
-                key: "/admin/donate",
-                icon: <UploadOutlined />,
-                label: "Donate",
-              },{
-                key: "/admin/campaign",
-                icon: <AlertOutlined />,
-                label: "Campaign",
+                key: "/staff/managePet",
+                icon: <MdOutlineManageAccounts className="w-4 h-4" />,
+                label: "Manage Pet",
               },
+
               { type: "divider" }, // Dòng phân cách
               {
                 key: "logout",
                 icon: <LogoutOutlined />,
-                label: <span className="text-red-500">Logout</span>,
+                label: <span className="text-red-500">Logout</span>, // Màu đỏ để nổi bật
               },
             ]}
             className="flex-1"
@@ -112,21 +84,20 @@ const AdminLayout = () => {
         </div>
       </Sider>
 
-      {/* Main Layout */}
       <Layout className="h-full">
-        {/* Header */}
         <Header className="bg-white shadow-md px-4 flex items-center">
-          {/* Nút thu gọn/mở rộng Sidebar */}
           <Button
             type="text"
             icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
             onClick={() => setCollapsed(!collapsed)}
             className="text-lg w-12 h-12"
           />
-
+          <marquee scrollAmount="12" className="text-xl font-bold mx-8">
+            Welcome Staff, Have a nice day!
+          </marquee>
           {/* Avatar */}
           <div className="ml-auto">
-            <Avatar style={{border: '1px solid gray'}} size="large" src={user.profilePicture} />
+            <Avatar size="large" src="https://i.pravatar.cc/150" />
           </div>
         </Header>
 
@@ -145,4 +116,4 @@ const AdminLayout = () => {
   );
 };
 
-export default AdminLayout;
+export default StaffLayout;

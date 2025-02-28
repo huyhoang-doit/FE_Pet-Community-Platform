@@ -1,4 +1,4 @@
-import { Modal, Pagination, Select } from "antd";
+import { Input, Modal, Pagination, Select } from "antd";
 import { useEffect, useState } from "react";
 import LightGallery from "lightgallery/react";
 import "lightgallery/css/lightgallery.css";
@@ -13,7 +13,7 @@ import lgRotate from "lightgallery/plugins/rotate";
 import lgShare from "lightgallery/plugins/share";
 import lgAutoplay from "lightgallery/plugins/autoplay";
 import { useFormik } from "formik";
-import { getPetApprovedAPI } from "@/apis/pet";
+import { deletePetAPI, getPetApprovedAPI } from "@/apis/pet";
 import { Button } from "@/components/ui/button";
 import EditPetModal from "./EditPetModal";
 import CreateAdoptPostModal from "./CreateAdoptPostModal";
@@ -23,9 +23,14 @@ const ManagePet = () => {
   const { Option } = Select;
   const [itemsPerPage] = useState(4);
   const [currentPage, setCurrentPage] = useState(1);
+  const [filteredPets, setFilteredPets] = useState(pets);
   const [editingPet, setEditingPet] = useState(null);
+
   const [petCreatePost, setPetCreatePost] = useState(null);
   const [openCreatePost, setOpenCreatePost] = useState(false);
+
+  const { Search } = Input;
+
 
   useEffect(() => {
     const fetchData = async () => {
@@ -50,13 +55,34 @@ const ManagePet = () => {
       );
     }
   };
+  const handleSearch = (value) => {
+    if (!value) {
+      setFilteredPets(pets);
+      return;
+    }
+
+    const newFilteredPets = pets.filter((pet) =>
+      pet.breed.toLowerCase().includes(value.toLowerCase())
+    );
+    setFilteredPets(newFilteredPets);
+  };
+
+  useEffect(() => {
+    setFilteredPets(pets);
+  }, [pets]);
+
   return (
     <div className="container mx-auto px-4 py-8">
-      {" "}
       <div className="flex justify-between items-center mb-6">
         <h1 className="font-bold text-xl mb-4 dark:text-slate-300">
           Manage Pets In System
         </h1>
+        <Search
+          placeholder="Search by breed..."
+          onChange={(e) => handleSearch(e.target.value)}
+          style={{ width: 200 }}
+          className="ml-4"
+        />
         <Select
           defaultValue=""
           onChange={handleSortCategory}
@@ -101,7 +127,7 @@ const ManagePet = () => {
               </tr>
             </thead>
             <tbody>
-              {pets
+              {filteredPets
                 .slice(
                   (currentPage - 1) * itemsPerPage,
                   currentPage * itemsPerPage
@@ -203,9 +229,6 @@ const ManagePet = () => {
                           Create post
                         </Button>
                       ) : null}
-                      {/* <Button className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600">
-                        Delete
-                      </Button> */}
                     </td>
                   </tr>
                 ))}

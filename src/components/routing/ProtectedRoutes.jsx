@@ -32,12 +32,14 @@ const ProtectedRoutes = ({ children, allowedRoles = [] }) => {
     } catch (error) {
       logoutHandler();
     }
+    
 
     if (
       user &&
       allowedRoles.length > 0 &&
       !allowedRoles.includes(decoded.role)
     ) {
+
       toast.error("You are not authorized to access this page");
       navigate("/");
     }
