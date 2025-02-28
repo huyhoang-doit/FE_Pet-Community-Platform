@@ -21,9 +21,9 @@ const ProtectedRoutes = ({ children, allowedRoles = [] }) => {
       // logoutHandler();
       return;
     }
+    const decoded = jwtDecode(accessToken);
 
     try {
-      const decoded = jwtDecode(accessToken);
       const currentTime = Date.now() / 1000;
 
       if (decoded.exp < currentTime) {
@@ -33,7 +33,11 @@ const ProtectedRoutes = ({ children, allowedRoles = [] }) => {
       logoutHandler();
     }
 
-    if (user && allowedRoles.length > 0 && !allowedRoles.includes(user.role)) {
+    if (
+      user &&
+      allowedRoles.length > 0 &&
+      !allowedRoles.includes(decoded.role)
+    ) {
       toast.error("You are not authorized to access this page");
       navigate("/");
     }
