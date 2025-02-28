@@ -11,7 +11,11 @@ import { MdOutlineManageAccounts } from "react-icons/md";
 import { PiPawPrintLight } from "react-icons/pi";
 import { GoNote } from "react-icons/go";
 import { IoHomeOutline } from "react-icons/io5";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { handleLogoutAPI } from "@/apis/auth";
+import { setAuthUser, setChatUsers } from "@/redux/authSlice";
+import { setPostPage, setPosts, setSelectedPost } from "@/redux/postSlice";
+import { toast } from "sonner";
 
 const { Header, Sider, Content } = Layout;
 const { Search } = Input;
@@ -23,6 +27,7 @@ const StaffSideBarLayout = () => {
   const { user } = useSelector((store) => store.auth);
   const navigate = useNavigate();
   const location = useLocation();
+  const dispatch = useDispatch();
   const {
     token: { borderRadiusLG },
   } = theme.useToken();
@@ -93,10 +98,23 @@ const StaffSideBarLayout = () => {
     localStorage.setItem("sidebar-collapsed", collapsed);
   }, [collapsed]);
 
-  // Xử lý logout
-  const handleLogout = () => {
-    localStorage.removeItem("access_token");
-    navigate("/login");
+  const handleLogout = async () => {
+    try {
+      const res = await handleLogoutAPI();
+      if (res.status === 200) {
+        dispatch(setAuthUser(null));
+        dispatch(setSelectedPost(null));
+        dispatch(setPosts([]));
+        dispatch(setChatUsers([]));
+        dispatch(setPostPage(1));
+        localStorage.removeItem("access_token");
+        localStorage.removeItem("refresh_token");
+        navigate("/");
+        toast.success(res.data.message);
+      }
+    } catch (error) {
+      toast.error(error.response.data.message);
+    }
   };
 
   return (

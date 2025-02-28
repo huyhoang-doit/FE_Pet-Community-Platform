@@ -9,7 +9,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { toast } from "sonner";
 import { setPosts } from "@/redux/postSlice";
 import { Badge } from "../../ui/badge";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import VerifiedBadge from "../../core/VerifiedBadge";
 import { bookmarkAPI, likeOrDislikeAPI } from "@/apis/post";
 import { setAuthUser } from "@/redux/authSlice";
@@ -18,7 +18,6 @@ import { calculateTimeAgo } from "@/utils/calculateTimeAgo";
 import { Button } from "@/components/ui/button";
 
 const AdoptionPost = ({ post }) => {
-  console.log("🚀 ~ AdoptionPost ~ post:", post);
   const { user } = useSelector((store) => store.auth);
   const [liked, setLiked] = useState(post.likes.includes(user?.id) || false);
   const [bookmarked, setBookmarked] = useState(
@@ -26,7 +25,9 @@ const AdoptionPost = ({ post }) => {
   );
   const [postLike, setPostLike] = useState(post.likes.length);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const pet = post.pet;
+  const userRole = user.role;
 
   // const changeEventHandler = (e) => {
   //   const inputText = e.target.value;
@@ -37,33 +38,33 @@ const AdoptionPost = ({ post }) => {
   //   }
   // };
 
-  const likeOrDislikeHandler = async () => {
-    try {
-      const action = liked ? "dislike" : "like";
-      const res = await likeOrDislikeAPI(post._id, action);
-      if (res.data.success) {
-        const updatedLikes = liked ? postLike - 1 : postLike + 1;
-        setPostLike(updatedLikes);
-        setLiked(!liked);
+  // const likeOrDislikeHandler = async () => {
+  //   try {
+  //     const action = liked ? "dislike" : "like";
+  //     const res = await likeOrDislikeAPI(post._id, action);
+  //     if (res.data.success) {
+  //       const updatedLikes = liked ? postLike - 1 : postLike + 1;
+  //       setPostLike(updatedLikes);
+  //       setLiked(!liked);
 
-        // apne post ko update krunga
-        const updatedPostData = posts.map((p) =>
-          p._id === post._id
-            ? {
-                ...p,
-                likes: liked
-                  ? p.likes.filter((id) => id !== user.id)
-                  : [...p.likes, user.id],
-              }
-            : p
-        );
-        dispatch(setPosts(updatedPostData));
-        toast.success(res.data.message);
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  };
+  //       // apne post ko update krunga
+  //       const updatedPostData = posts.map((p) =>
+  //         p._id === post._id
+  //           ? {
+  //               ...p,
+  //               likes: liked
+  //                 ? p.likes.filter((id) => id !== user.id)
+  //                 : [...p.likes, user.id],
+  //             }
+  //           : p
+  //       );
+  //       dispatch(setPosts(updatedPostData));
+  //       toast.success(res.data.message);
+  //     }
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // };
 
   // const commentHandler = async () => {
   //   try {
@@ -101,23 +102,49 @@ const AdoptionPost = ({ post }) => {
   //   }
   // };
 
-  const bookmarkHandler = async () => {
-    try {
-      const res = await bookmarkAPI(post._id);
-      if (res.data.success) {
-        setBookmarked(!bookmarked);
-        const updatedUser = {
-          ...user,
-          bookmarks: bookmarked
-            ? user.bookmarks.filter((id) => id !== post._id)
-            : [...user.bookmarks, post._id],
-        };
-        dispatch(setAuthUser(updatedUser));
-        toast.success(res.data.message);
-      }
-    } catch (error) {
-      console.log(error);
+  // const bookmarkHandler = async () => {
+  //   try {
+  //     const res = await bookmarkAPI(post._id);
+  //     if (res.data.success) {
+  //       setBookmarked(!bookmarked);
+  //       const updatedUser = {
+  //         ...user,
+  //         bookmarks: bookmarked
+  //           ? user.bookmarks.filter((id) => id !== post._id)
+  //           : [...user.bookmarks, post._id],
+  //       };
+  //       dispatch(setAuthUser(updatedUser));
+  //       toast.success(res.data.message);
+  //     }
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // };
+
+  const renderActionButton = (post) => {
+    if (userRole === "services_staff") {
+      return (
+        <Button
+          className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
+          onClick={() => navigate("/staff-services/manageAdoptionPost")}
+        >
+          Quản lý bài đăng
+        </Button>
+      );
+    } else if (userRole === "user") {
+      return (
+        <Button
+          className="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600"
+          onClick={() => navigate(`/chat/${post.author?.id}`)}
+        >
+          <div className="flex items-center gap-2">
+            <Send className="cursor-pointer hover:text-gray-600" size={16} />
+            <span>Liên hệ nhận nuôi</span>
+          </div>
+        </Button>
+      );
     }
+    return null;
   };
 
   return (
@@ -216,7 +243,14 @@ const AdoptionPost = ({ post }) => {
         <div className="flex items-center justify-start gap-2">
           <HandHeart style={{ width: 20, height: 20, color: "#16a085" }} />
           <span className="text-sm font-medium text-gray-900">
-            Tình trạng: {post.adopt_status}
+            Tình trạng:{" "}
+            {post.adopt_status === "Available"
+              ? "Chưa được nhận nuôi"
+              : post.adopt_status === "Adopted"
+              ? "Đã được nhận nuôi"
+              : post.adopt_status === "Pending"
+              ? "Đã được liên hệ nhận nuôi"
+              : "Không xác định"}
           </span>
         </div>
       </div>
@@ -258,7 +292,7 @@ const AdoptionPost = ({ post }) => {
 
       <div className="flex items-center justify-between mt-1">
         <div className="flex items-center justify-between my-2">
-          <div className="flex items-center gap-3">
+          {/* <div className="flex items-center gap-3">
             {liked ? (
               <FaHeart
                 onClick={likeOrDislikeHandler}
@@ -286,15 +320,22 @@ const AdoptionPost = ({ post }) => {
                 size={24}
               />
             )}
-          </div>
+          </div> */}
         </div>
 
-        <Button className="button--primary button rippleButton">
+        {/* <Button
+          className="button--primary button rippleButton"
+          onClick={() => {
+            navigate(`/chat/${post.author?.id}`);
+          }}
+        >
           <div className="flex items-center gap-2">
             <Send className="cursor-pointer hover:text-gray-600" size={16} />
             <span className="button-text"> Liên Hệ Nhận Nuôi</span>
           </div>
-        </Button>
+        </Button> */}
+
+        {renderActionButton(post)}
       </div>
     </div>
   );

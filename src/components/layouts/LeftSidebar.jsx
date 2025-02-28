@@ -56,6 +56,7 @@ const LeftSidebar = () => {
   const { isDisplayText, showSearchTab, showNotificationTab } = useSelector(
     (store) => store.sidebar
   );
+  const userRole = user.role;
 
   const logoutHandler = async () => {
     try {
@@ -234,7 +235,6 @@ const LeftSidebar = () => {
       text: "Tìm kiếm",
       textType: "Search",
     },
-    // { icon: <TrendingUp />, text: "Khám phá", textType: "Explore" },
     {
       icon: isActiveTab("Messages") ? (
         <RiMessengerFill size={24} />
@@ -267,15 +267,30 @@ const LeftSidebar = () => {
     },
   ];
 
+  const allowedStaffItems = [
+    "Home",
+    "Forum",
+    "Adopt",
+    "Messages",
+    "Notifications",
+    "Create",
+    "Profile",
+  ];
+
+  const filteredSidebarItems =
+    userRole !== "user"
+      ? sidebarItems.filter((item) => allowedStaffItems.includes(item.textType))
+      : sidebarItems;
+
   return (
     <div
-      className={`fixed top-0 z-10 left-0 px-4 border-r border-gray-300 h-screen`}
+      className={`fixed top-0 z-10 left-0 px-4  h-screen `}
       style={{
         width: sidebarWidth,
         transition: "width 0.3s ease",
       }}
     >
-      <div className="flex flex-col h-full">
+      <div className="flex flex-col h-full border-r border-gray-300">
         <Link to="/" style={{ height: "120px" }}>
           <h1 className="my-8 pl-3 font-bold text-xl">
             {sidebarWidth === "340px" && isDisplayText ? (
@@ -295,7 +310,7 @@ const LeftSidebar = () => {
         </Link>
         <div className="flex-grow">
           <div className="flex-grow">
-            {sidebarItems.map((item, index) => {
+            {filteredSidebarItems.map((item, index) => {
               return (
                 <div
                   onClick={() => sidebarHandler(item.textType)}

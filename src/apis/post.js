@@ -48,8 +48,34 @@ export const addPostsAPI = async (formData) => {
   );
 };
 
+// Adoption post
+
+export const addAdoptPostsAPI = async (formData) => {
+  return await authorizedAxiosInstance.post(
+    `${BASE_URL}/adoption-post/`,
+    formData,
+    {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    }
+  );
+};
+
 export const fetchAllAdoptionPostsAPI = async (page, limit) => {
   return await authorizedAxiosInstance.get(
     `${BASE_URL}/adoption-post/all?sortBy=createdAt:desc&limit=${limit}&page=${page}`
+  );
+};
+
+export const updateAdoptPostsAPI = async (postId, formData) => {
+  return await authorizedAxiosInstance.put(
+    `${BASE_URL}/adoption-post/${postId}`,
+    formData,
+    {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    }
   );
 };

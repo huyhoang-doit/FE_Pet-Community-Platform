@@ -16,7 +16,7 @@ import { useFormik } from "formik";
 import { getPetApprovedAPI } from "@/apis/pet";
 import { Button } from "@/components/ui/button";
 import EditPetModal from "./EditPetModal";
-import CreateAuctionPostModal from "./CreateAdoptPostModal";
+import CreateAdoptPostModal from "./CreateAdoptPostModal";
 
 const ManagePet = () => {
   const [pets, setPets] = useState([]);
@@ -24,7 +24,8 @@ const ManagePet = () => {
   const [itemsPerPage] = useState(4);
   const [currentPage, setCurrentPage] = useState(1);
   const [editingPet, setEditingPet] = useState(null);
-  const [createPost, setCreatePost] = useState(false);
+  const [petCreatePost, setPetCreatePost] = useState(null);
+  const [openCreatePost, setOpenCreatePost] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -185,24 +186,26 @@ const ManagePet = () => {
                       )}
                     </td>
                     <td className="flex gap-4 px-6 py-4 capitalize text-sm text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-700 border-r">
-                      {!pet.isAddPost ? (
-                        <Button
-                          onClick={() => setCreatePost(pet)}
-                          className="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600"
-                        >
-                          Create post
-                        </Button>
-                      ) : null}
-
                       <Button
                         onClick={() => setEditingPet(pet)}
                         className="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600"
                       >
                         Edit
                       </Button>
-                      <Button className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600">
+                      {!pet.isAddPost ? (
+                        <Button
+                          onClick={() => {
+                            setOpenCreatePost(true);
+                            setPetCreatePost(pet);
+                          }}
+                          className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-green-600"
+                        >
+                          Create post
+                        </Button>
+                      ) : null}
+                      {/* <Button className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600">
                         Delete
-                      </Button>
+                      </Button> */}
                     </td>
                   </tr>
                 ))}
@@ -232,20 +235,11 @@ const ManagePet = () => {
           }
         />
       )}
-      {createPost && (
-        <CreateAuctionPostModal
-          visible={!!createPost}
-          pet={createPost}
-          onClose={() => setCreatePost(null)}
-          onUpdate={() =>
-            setPets((prev) =>
-              prev.map((p) =>
-                p._id === createPost._id ? { ...p, ...createPost } : p
-              )
-            )
-          }
-        />
-      )}
+      <CreateAdoptPostModal
+        open={openCreatePost}
+        setOpen={setOpenCreatePost}
+        pet={petCreatePost}
+      />
     </div>
   );
 };
