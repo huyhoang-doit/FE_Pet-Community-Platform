@@ -1,7 +1,7 @@
 /* eslint-disable react/prop-types */
 import { useEffect, useRef, useState } from "react";
-import { Dialog, DialogContent, DialogHeader } from "@/components//ui/dialog";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components//ui/avatar";
+import { Dialog, DialogContent, DialogHeader } from "@/components/ui/dialog";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Textarea } from "@/components/ui/textarea";
 import { readFileAsDataURL } from "@/lib/utils";
 import { Loader2, SmilePlus } from "lucide-react";
@@ -42,6 +42,7 @@ const CreatePost = ({ open, setOpen }) => {
       }, 0);
     }
   };
+
   const fileChangeHandler = async (e) => {
     const files = e.target.files;
     if (files.length > 0) {
@@ -90,76 +91,94 @@ const CreatePost = ({ open, setOpen }) => {
         setOpenEmojiPicker(false);
       }
     };
-
     document.addEventListener("mousedown", handleClickOutside);
-
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
   return (
     <Dialog open={open}>
-      <DialogContent onInteractOutside={() => setOpen(false)}>
-        <DialogHeader className="text-center font-semibold">
-          Create New Post
+      <DialogContent
+        onInteractOutside={() => setOpen(false)}
+        className="sm:max-w-md md:max-w-lg w-full mx-auto p-6 bg-white rounded-lg shadow-xl"
+      >
+        <DialogHeader className="text-center">
+          <h2 className="text-xl font-semibold text-gray-900">
+            Tạo bài viết mới
+          </h2>
         </DialogHeader>
-        <div className="flex gap-3 items-center">
-          <Avatar>
-            <AvatarImage src={user?.profilePicture} alt="img" />
-            <AvatarFallback>CN</AvatarFallback>
+
+        <div className="flex items-center gap-4 mb-4">
+          <Avatar className="w-10 h-10">
+            <AvatarImage src={user?.profilePicture} alt="User" />
+            <AvatarFallback className="bg-gray-200 text-gray-600">
+              {user?.username?.[0] || "U"}
+            </AvatarFallback>
           </Avatar>
           <div>
-            <h1 className="font-semibold text-xs">{user?.username}</h1>
-            <span className="text-gray-600 text-xs">{user?.bio}</span>
+            <h3 className="text-sm font-semibold text-gray-800">
+              {user?.username}
+            </h3>
+            <p className="text-xs text-gray-500">
+              {user?.bio || "Không có tiểu sử"}
+            </p>
           </div>
         </div>
-        <div className="relative">
+
+        <div className="relative mb-4">
           <div
             className={`absolute z-10 transition-all duration-300 ease-in-out ${
               emojiPicker
                 ? "opacity-100 scale-100"
                 : "opacity-0 scale-95 pointer-events-none"
             }`}
-            style={{ top: "100%", left: "0" }}
+            style={{ bottom: "100%", left: "0" }} // Position above textarea
             ref={emojiPickerRef}
           >
             <EmojiPicker open={emojiPicker} onEmojiClick={onEmojiClick} />
           </div>
 
-          <div className="flex items-center gap-2 border p-2 rounded-md shadow-sm">
+          <div className="relative flex items-center gap-2 border border-gray-200 rounded-md shadow-sm bg-gray-50">
             <Textarea
               value={caption}
               ref={textareaRef}
               onChange={(e) => setCaption(e.target.value)}
-              className="focus-visible:ring-2 focus-visible:ring-blue-500 border-none flex-grow"
-              placeholder="Write a caption..."
+              className="min-h-[80px] resize-none border-none bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0 placeholder:text-gray-400 text-gray-800"
+              placeholder="Bạn đang nghĩ gì?"
             />
-            <div
-              className="cursor-pointer p-2 rounded-full hover:bg-gray-200 transition-colors"
+            <Button
+              variant="ghost"
+              size="icon"
+              className="absolute right-2 top-2 hover:bg-gray-200"
               onClick={() => setOpenEmojiPicker(!emojiPicker)}
             >
-              <SmilePlus size={18} strokeWidth={1} />
-            </div>
+              <SmilePlus
+                size={18}
+                strokeWidth={1.5}
+                className="text-gray-600"
+              />
+            </Button>
           </div>
         </div>
 
-        {imagePreview && imagePreview.length > 0 && (
-          <div className="w-full h-64 flex flex-wrap items-center justify-center space-x-4">
-            {imagePreview.map((preview, index) => (
-              <div
-                key={index}
-                className="w-32 h-32 flex items-center justify-center"
-              >
-                <img
-                  src={preview}
-                  alt={`preview_img_${index}`}
-                  className="object-cover h-full w-full rounded-md"
-                />
-              </div>
-            ))}
+        {imagePreview.length > 0 && (
+          <div className="mb-4 max-h-64 overflow-y-auto rounded-md border border-gray-200 p-2 bg-gray-50">
+            <div className="flex flex-wrap gap-2">
+              {imagePreview.map((preview, index) => (
+                <div
+                  key={index}
+                  className="relative w-24 h-24 flex-shrink-0 rounded-md overflow-hidden shadow-sm"
+                >
+                  <img
+                    src={preview}
+                    alt={`preview_img_${index}`}
+                    className="object-cover w-full h-full"
+                  />
+                </div>
+              ))}
+            </div>
           </div>
         )}
+
         <input
           ref={imageRef}
           type="file"
@@ -167,27 +186,30 @@ const CreatePost = ({ open, setOpen }) => {
           className="hidden"
           onChange={fileChangeHandler}
         />
-        <Button
-          onClick={() => imageRef.current.click()}
-          className="w-fit mx-auto bg-[#0095F6] hover:bg-[#258bcf] "
-        >
-          Select from computer
-        </Button>
-        {imagePreview &&
-          (loading ? (
-            <Button>
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              Please wait
-            </Button>
-          ) : (
-            <Button
-              onClick={createPostHandler}
-              type="submit"
-              className="w-full"
-            >
-              Post
-            </Button>
-          ))}
+
+        <div className="flex flex-col gap-3">
+          <Button
+            onClick={() => imageRef.current.click()}
+            className="w-full bg-blue-500 hover:bg-blue-600 text-white font-medium rounded-md py-2 transition-colors"
+          >
+            Chọn ảnh từ máy tính
+          </Button>
+
+          <Button
+            onClick={createPostHandler}
+            disabled={loading || (!caption && imagePreview.length === 0)}
+            className="w-full bg-green-500 hover:bg-green-600 text-white font-medium rounded-md py-2 flex items-center justify-center transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {loading ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Đang đăng...
+              </>
+            ) : (
+              "Đăng bài"
+            )}
+          </Button>
+        </div>
       </DialogContent>
     </Dialog>
   );

@@ -5,7 +5,7 @@ import VerifiedBadge from "../core/VerifiedBadge";
 import ProcessDonate from "../features/donate/ProcessDonate";
 import TopDonate from "../features/donate/TopDonate";
 import SuggestedUsers from "../features/users/SuggestedUsers";
-import AdoptionCreatePost from "../features/adoptions/AdoptionCreatePost";
+import StaffActions from "./StaffActions";
 
 const RightSidebar = () => {
   const { user } = useSelector((store) => store.auth);
@@ -32,10 +32,10 @@ const RightSidebar = () => {
           </span>
         </div>
       </div>
-      {userRole !== "service_staff" && campaign && (
+      {!["services_staff", "forum_staff"].includes(userRole) && campaign && (
         <ProcessDonate campaign={campaign} />
       )}
-      {userRole === "service_staff" && <AdoptionCreatePost />}
+      {["services_staff", "forum_staff"].includes(userRole) && <StaffActions />}
       {topDonate.length > 0 && <TopDonate topDonate={topDonate} />}
       <SuggestedUsers />
     </div>

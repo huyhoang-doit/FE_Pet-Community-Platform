@@ -23,8 +23,9 @@ import User from "./components/pages/AdminPages/User";
 import Donate from "./components/pages/AdminPages/Donate";
 import ManageStaff from "./components/pages/AdminPages/ManageStaff";
 import { SubmitPet } from "./components/submitPet";
-import { ApprovePet } from "./components/pages/StaffPages";
-import StaffLayout from "./components/layouts/StaffLayout";
+import { ApprovePet, ManagePet } from "./components/pages/StaffPages";
+import StaffSideBarLayout from "./components/layouts/StaffSideBarLayout";
+import ManageAdoptionPost from "./components/pages/StaffPages/Services/ManageAdoptionPost";
 
 const browserRouter = createBrowserRouter([
   {
@@ -178,18 +179,50 @@ const browserRouter = createBrowserRouter([
     ],
   },
   {
-    path: "/staff",
+    path: "/staff-forum",
+    element: (
+      <ProtectedRoutes allowedRoles={["forum_staff"]}>
+        <StaffSideBarLayout>
+          <ManageStaff />
+        </StaffSideBarLayout>
+      </ProtectedRoutes>
+    ),
+    children: [
+      {
+        path: "managePost",
+        element: <ApprovePet />,
+      },
+      {
+        path: "manageBlog",
+        element: <ManagePet />,
+      },
+      {
+        path: "approvePost",
+        element: <ManagePet />,
+      },
+    ],
+  },
+  {
+    path: "/staff-services",
     element: (
       <ProtectedRoutes allowedRoles={["services_staff"]}>
-        <StaffLayout>
+        <StaffSideBarLayout>
           <ManageStaff />
-        </StaffLayout>
+        </StaffSideBarLayout>
       </ProtectedRoutes>
     ),
     children: [
       {
         path: "approvePet",
         element: <ApprovePet />,
+      },
+      {
+        path: "managePet",
+        element: <ManagePet />,
+      },
+      {
+        path: "manageAdoptionPost",
+        element: <ManageAdoptionPost />,
       },
     ],
   },
