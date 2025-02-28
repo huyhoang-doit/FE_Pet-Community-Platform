@@ -2,12 +2,10 @@ import {
   LogoutOutlined,
   MenuFoldOutlined,
   MenuUnfoldOutlined,
-  UploadOutlined,
 } from "@ant-design/icons";
 import { Button, Layout, Menu, theme, Input, Avatar } from "antd";
 import { useEffect, useState } from "react";
 import { Outlet, useNavigate, useLocation } from "react-router-dom";
-import { FaPaw } from "react-icons/fa";
 import { MdOutlineManageAccounts } from "react-icons/md";
 import { PiPawPrintLight } from "react-icons/pi";
 

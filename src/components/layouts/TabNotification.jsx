@@ -23,6 +23,7 @@ const TabNotification = () => {
         const yesterday = new Date(today);
         yesterday.setDate(today.getDate() - 1);
         let dateString;
+
         if (date.toDateString() === today.toDateString()) {
           dateString = "Hôm nay";
         } else if (date.toDateString() === yesterday.toDateString()) {
@@ -30,6 +31,7 @@ const TabNotification = () => {
         } else {
           dateString = date.toLocaleDateString(); // Ngày/Tháng/Năm
         }
+
         if (!acc[dateString]) {
           acc[dateString] = []; // Khởi tạo mảng cho ngày mới
         }
@@ -37,12 +39,16 @@ const TabNotification = () => {
         return acc;
       }, {})
     ).sort((a, b) => {
-      if (a[0] === "Hôm nay") return -1;
-      if (b[0] === "Hôm nay") return 1;
-      if (a[0] === "Hôm qua") return -1;
-      if (b[0] === "Hôm qua") return 1;
-      return 0;
-    });
+      const order = ["Hôm nay", "Hôm qua", "25/1", "24/1", "22/1"];
+      const dateA = a[0] === "Hôm nay" ? 0 : a[0] === "Hôm qua" ? 1 : new Date(a[0]).getTime();
+      const dateB = b[0] === "Hôm nay" ? 0 : b[0] === "Hôm qua" ? 1 : new Date(b[0]).getTime();
+
+      // Sắp xếp theo thứ tự đã định trước
+      const orderA = order.indexOf(a[0]);
+      const orderB = order.indexOf(b[0]);
+
+      return orderA - orderB || dateB - dateA; // Sắp xếp theo thứ tự đã định trước và sau đó theo ngày
+    }).reverse();
   };
 
   // ... existing code ...
