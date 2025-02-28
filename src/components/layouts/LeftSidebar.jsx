@@ -269,13 +269,13 @@ const LeftSidebar = () => {
 
   return (
     <div
-      className={`fixed top-0 z-10 left-0 px-4 border-r border-gray-300 h-screen`}
+      className={`fixed top-0 z-10 left-0 px-4  h-screen `}
       style={{
         width: sidebarWidth,
         transition: "width 0.3s ease",
       }}
     >
-      <div className="flex flex-col h-full">
+      <div className="flex flex-col h-full border-r border-gray-300">
         <Link to="/" style={{ height: "120px" }}>
           <h1 className="my-8 pl-3 font-bold text-xl">
             {sidebarWidth === "340px" && isDisplayText ? (

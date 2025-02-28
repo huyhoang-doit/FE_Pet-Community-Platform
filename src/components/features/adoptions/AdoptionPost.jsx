@@ -9,7 +9,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { toast } from "sonner";
 import { setPosts } from "@/redux/postSlice";
 import { Badge } from "../../ui/badge";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import VerifiedBadge from "../../core/VerifiedBadge";
 import { bookmarkAPI, likeOrDislikeAPI } from "@/apis/post";
 import { setAuthUser } from "@/redux/authSlice";
@@ -18,7 +18,6 @@ import { calculateTimeAgo } from "@/utils/calculateTimeAgo";
 import { Button } from "@/components/ui/button";
 
 const AdoptionPost = ({ post }) => {
-  console.log("🚀 ~ AdoptionPost ~ post:", post);
   const { user } = useSelector((store) => store.auth);
   const [liked, setLiked] = useState(post.likes.includes(user?.id) || false);
   const [bookmarked, setBookmarked] = useState(
@@ -26,6 +25,7 @@ const AdoptionPost = ({ post }) => {
   );
   const [postLike, setPostLike] = useState(post.likes.length);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const pet = post.pet;
 
   // const changeEventHandler = (e) => {
@@ -289,7 +289,12 @@ const AdoptionPost = ({ post }) => {
           </div>
         </div>
 
-        <Button className="button--primary button rippleButton">
+        <Button
+          className="button--primary button rippleButton"
+          onClick={() => {
+            navigate(`/chat/${post.author?.id}`);
+          }}
+        >
           <div className="flex items-center gap-2">
             <Send className="cursor-pointer hover:text-gray-600" size={16} />
             <span className="button-text"> Liên Hệ Nhận Nuôi</span>
