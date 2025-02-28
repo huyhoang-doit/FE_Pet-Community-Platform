@@ -5,25 +5,30 @@ import "lightgallery/css/lightgallery.css";
 import lgThumbnail from "lightgallery/plugins/thumbnail";
 import lgZoom from "lightgallery/plugins/zoom";
 import { fetchAllAdoptionPostsAPI } from "@/apis/post";
-import EditAdoptPostModal from "./EditAdoptPostModal";
+import EditAdoptPostModal from "./EditAdoptPostModal"; // Adjust path
+import CreateAdoptionFormModal from "./CreateAdoptionFormModal"; // Adjust path
 
 const { Option } = Select;
 
 const ManageAdoptionPost = () => {
   const [posts, setPosts] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
+  const [statusSort, setStatusSort] = useState(null);
+  const [sortBy, setSortBy] = useState("createdAt:desc");
   const [totalResults, setTotalResults] = useState(0);
-  const itemsPerPage = 4; // Matches API's limit
+  const itemsPerPage = 4;
   const [editModalOpen, setEditModalOpen] = useState(false);
+  const [formModalOpen, setFormModalOpen] = useState(false);
   const [selectedPost, setSelectedPost] = useState(null);
 
-  // Fetch posts when page changes
   useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await fetchAllAdoptionPostsAPI(
           currentPage,
-          itemsPerPage
+          itemsPerPage,
+          sortBy,
+          statusSort
         );
         const { results, totalResults } = response.data.data;
         setPosts(results);
@@ -33,26 +38,32 @@ const ManageAdoptionPost = () => {
       }
     };
     fetchData();
-  }, [currentPage]);
+  }, [currentPage, statusSort, sortBy]);
 
-  // Handle sorting by creation date
   const handleSortCategory = (value) => {
-    setPosts((prevPosts) => {
-      const sortedPosts = [...prevPosts];
-      if (value === "asc") {
-        sortedPosts.sort(
-          (a, b) => new Date(a.createdAt) - new Date(b.createdAt)
-        );
-      } else if (value === "desc") {
-        sortedPosts.sort(
-          (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
-        );
-      }
-      return sortedPosts;
-    });
+    switch (value) {
+      case "createdAt_asc":
+        setSortBy("createdAt:asc");
+        break;
+      case "createdAt_desc":
+        setSortBy("createdAt:desc");
+        break;
+      case "status_available":
+        setStatusSort("Available");
+        break;
+      case "status_pending":
+        setStatusSort("Pending");
+        break;
+      case "status_adopted":
+        setStatusSort("Adopted");
+        break;
+      default:
+        setSortBy("createdAt:desc");
+        setStatusSort(null);
+        break;
+    }
   };
 
-  // Handle page change
   const handlePageChange = (page) => {
     setCurrentPage(page);
   };
@@ -62,6 +73,11 @@ const ManageAdoptionPost = () => {
     setEditModalOpen(true);
   };
 
+  const handleFormClick = (post) => {
+    setSelectedPost(post);
+    setFormModalOpen(true);
+  };
+
   const handleUpdatePost = (updatedPost) => {
     setPosts((prevPosts) =>
       prevPosts.map((p) => (p._id === updatedPost._id ? updatedPost : p))
@@ -69,25 +85,33 @@ const ManageAdoptionPost = () => {
     setEditModalOpen(false);
   };
 
+  const handleFormSubmitted = (formData) => {
+    console.log("Form submitted:", formData);
+    setFormModalOpen(false);
+  };
+
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="flex justify-between items-center mb-6">
         <h1 className="font-bold text-xl mb-4 dark:text-slate-300">
-          Manage Adoption Posts
+          Quản lý bài đăng nhận nuôi
         </h1>
         <Select
           defaultValue=""
           onChange={handleSortCategory}
-          style={{ width: "200px" }}
+          style={{ width: "250px" }}
         >
-          <Option value="">No Sort</Option>
-          <Option value="asc">Sort by Date (ASC)</Option>
-          <Option value="desc">Sort by Date (DESC)</Option>
+          <Option value="">Không sắp xếp</Option>
+          <Option value="createdAt_asc">Ngày tạo (Tăng dần)</Option>
+          <Option value="createdAt_desc">Ngày tạo (Giảm dần)</Option>
+          <Option value="status_available">Chỉ hiện Chưa nhận nuôi</Option>
+          <Option value="status_pending">Chỉ hiện Đã liên hệ</Option>
+          <Option value="status_adopted">Chỉ hiện Đã nhận nuôi</Option>
         </Select>
       </div>
 
       {posts.length === 0 ? (
-        <p className="text-gray-500">No adoption posts available</p>
+        <p className="text-gray-500">Không có bài đăng nhận nuôi nào</p>
       ) : (
         <div className="overflow-x-auto w-full">
           <table className="min-w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md">
@@ -126,11 +150,11 @@ const ManageAdoptionPost = () => {
                   <td className="px-6 py-4 text-sm text-gray-700 dark:text-gray-300 border-b border-gray-200 dark:border-gray-700 border-r">
                     {(currentPage - 1) * itemsPerPage + index + 1}
                   </td>
+                  <td className="px-6 py-4 text-sm text-gray-700 dark:text-gray-300 border-b border-gray-200 dark:border-gray-700 border-r"></td>
                   <td className="px-6 py-4 text-sm text-gray-700 dark:text-gray-300 border-b border-gray-200 dark:border-gray-700 border-r">
-                    {post._id}
-                  </td>
-                  <td className="px-6 py-4 text-sm text-gray-700 dark:text-gray-300 border-b border-gray-200 dark:border-gray-700 border-r">
-                    {post.caption}
+                    <div className="line-clamp-2 overflow-hidden">
+                      {post.caption}
+                    </div>
                   </td>
                   <td className="px-6 py-4 text-sm text-gray-700 dark:text-gray-300 border-b border-gray-200 dark:border-gray-700 border-r">
                     <LightGallery speed={500} plugins={[lgThumbnail, lgZoom]}>
@@ -141,7 +165,7 @@ const ManageAdoptionPost = () => {
                           className="h-12 w-12 object-cover rounded-md cursor-pointer"
                         />
                       ) : (
-                        <span className="text-gray-400">No Image</span>
+                        <span className="text-gray-400">Không có ảnh</span>
                       )}
                     </LightGallery>
                   </td>
@@ -150,14 +174,20 @@ const ManageAdoptionPost = () => {
                       className={`font-bold ${
                         post.adopt_status === "Available"
                           ? "text-green-500"
-                          : "text-gray-500"
+                          : post.adopt_status === "Pending"
+                          ? "text-yellow-500"
+                          : "text-blue-500"
                       }`}
                     >
-                      {post.adopt_status || "Unknown"}
+                      {post.adopt_status === "Available"
+                        ? "Chưa nhận nuôi"
+                        : post.adopt_status === "Pending"
+                        ? "Đã liên hệ"
+                        : "Đã nhận nuôi"}
                     </span>
                   </td>
                   <td className="px-6 py-4 text-sm text-gray-700 dark:text-gray-300 border-b border-gray-200 dark:border-gray-700 border-r">
-                    {post.author?.username || "Unknown"}
+                    {post.author?.username || "Không rõ"}
                   </td>
                   <td className="px-6 py-4 text-sm text-gray-700 dark:text-gray-300 border-b border-gray-200 dark:border-gray-700 border-r">
                     {post.location || "N/A"}
@@ -165,24 +195,24 @@ const ManageAdoptionPost = () => {
                   <td className="px-6 py-4 text-sm text-gray-700 dark:text-gray-300 border-b border-gray-200 dark:border-gray-700 border-r">
                     {post.createdAt
                       ? new Date(post.createdAt).toLocaleDateString("vi-VN")
-                      : "Unknown"}
+                      : "Không rõ"}
                   </td>
-
-                  <td className="flex px-6 py-4 text-sm text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-700 border-r">
+                  <td className="flex gap-2 px-6 py-4 text-sm text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-700 border-r">
                     <Button
                       onClick={() => handleEditClick(post)}
                       className="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600"
                     >
-                      Edit
+                      Sửa
                     </Button>
+                    {post.adopt_status === "Available" && (
+                      <Button
+                        onClick={() => handleFormClick(post)}
+                        className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
+                      >
+                        Tạo form gửi
+                      </Button>
+                    )}
                   </td>
-                  {/* Uncomment and implement delete functionality if needed */}
-                  {/* <Button
-                      onClick={() => console.log(`Delete post: ${post._id}`)}
-                      className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600"
-                    >
-                      Delete
-                    </Button> */}
                 </tr>
               ))}
             </tbody>
@@ -199,12 +229,21 @@ const ManageAdoptionPost = () => {
           showSizeChanger={false}
         />
       </div>
+
       {editModalOpen && (
         <EditAdoptPostModal
           open={editModalOpen}
           setOpen={setEditModalOpen}
           post={selectedPost}
           onUpdate={handleUpdatePost}
+        />
+      )}
+      {formModalOpen && (
+        <CreateAdoptionFormModal
+          open={formModalOpen}
+          setOpen={setFormModalOpen}
+          post={selectedPost}
+          onSubmit={handleFormSubmitted}
         />
       )}
     </div>
