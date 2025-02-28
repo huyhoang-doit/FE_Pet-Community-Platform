@@ -26,6 +26,7 @@ import { SubmitPet } from "./components/submitPet";
 import { ApprovePet, ManagePet } from "./components/pages/StaffPages";
 import StaffSideBarLayout from "./components/layouts/StaffSideBarLayout";
 import ManageAdoptionPost from "./components/pages/StaffPages/Services/ManageAdoptionPost";
+import ManageSendPets from "./components/pages/StaffPages/Services/ManageSendPet";
 
 const browserRouter = createBrowserRouter([
   {
@@ -227,6 +228,10 @@ const browserRouter = createBrowserRouter([
       {
         path: "manageAdoptionPost",
         element: <ManageAdoptionPost />,
+      },
+      {
+        path: "manageSendPets",
+        element: <ManageSendPets />,
       },
     ],
   },

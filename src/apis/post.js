@@ -62,10 +62,18 @@ export const addAdoptPostsAPI = async (formData) => {
   );
 };
 
-export const fetchAllAdoptionPostsAPI = async (page, limit) => {
-  return await authorizedAxiosInstance.get(
-    `${BASE_URL}/adoption-post/all?sortBy=createdAt:desc&limit=${limit}&page=${page}`
-  );
+export const fetchAllAdoptionPostsAPI = async (
+  page,
+  limit,
+  sortBy = "createdAt:desc",
+  adoptStatus = null
+) => {
+  let url = `${BASE_URL}/adoption-post/all?limit=${limit}&page=${page}&sortBy=${sortBy}`;
+  if (adoptStatus) {
+    url += `&adopt_status=${adoptStatus}`;
+  }
+
+  return await authorizedAxiosInstance.get(url);
 };
 
 export const updateAdoptPostsAPI = async (postId, formData) => {

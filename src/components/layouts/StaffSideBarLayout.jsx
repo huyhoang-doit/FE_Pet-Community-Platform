@@ -7,7 +7,9 @@ import {
 import { Button, Layout, Menu, theme, Input, Avatar } from "antd";
 import { useEffect, useState } from "react";
 import { Outlet, useNavigate, useLocation } from "react-router-dom";
-import { MdOutlineManageAccounts } from "react-icons/md";
+import { TbDogBowl } from "react-icons/tb";
+import { LuDog } from "react-icons/lu";
+import { BsPostcard } from "react-icons/bs";
 import { PiPawPrintLight } from "react-icons/pi";
 import { GoNote } from "react-icons/go";
 import { IoHomeOutline } from "react-icons/io5";
@@ -36,7 +38,7 @@ const StaffSideBarLayout = () => {
     {
       key: "/adopt",
       icon: <IoHomeOutline className="w-4 h-4" />,
-      label: "Home",
+      label: "Trang chủ",
       roles: ["services_staff"],
     },
     {
@@ -48,19 +50,25 @@ const StaffSideBarLayout = () => {
     {
       key: "/staff-services/approvePet",
       icon: <PiPawPrintLight className="w-4 h-4" />,
-      label: "Approve Pet",
+      label: "Tiếp nhận thú cưng",
       roles: ["services_staff"],
     },
     {
       key: "/staff-services/managePet",
-      icon: <MdOutlineManageAccounts className="w-4 h-4" />,
-      label: "Manage Pet",
+      icon: <LuDog className="w-4 h-4" />,
+      label: "Thú cưng",
       roles: ["services_staff"],
     },
     {
       key: "/staff-services/manageAdoptionPost",
-      icon: <MdOutlineManageAccounts className="w-4 h-4" />,
-      label: "Manage Post",
+      icon: <BsPostcard className="w-4 h-4" />,
+      label: "Bài đăng",
+      roles: ["services_staff"],
+    },
+    {
+      key: "/staff-services/manageSendPets",
+      icon: <TbDogBowl className="w-4 h-4" />,
+      label: "Thú cưng về nhà",
       roles: ["services_staff"],
     },
     {
