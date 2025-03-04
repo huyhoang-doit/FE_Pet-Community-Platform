@@ -4,9 +4,10 @@ import LightGallery from "lightgallery/react";
 import "lightgallery/css/lightgallery.css";
 import lgThumbnail from "lightgallery/plugins/thumbnail";
 import lgZoom from "lightgallery/plugins/zoom";
-import { fetchAllAdoptionPostsAPI } from "@/apis/post";
-import EditAdoptPostModal from "./EditAdoptPostModal"; // Adjust path
-import CreateAdoptionFormModal from "./CreateAdoptionFormModal"; // Adjust path
+import { addAdoptionForm, fetchAllAdoptionPostsAPI } from "@/apis/post";
+import EditAdoptPostModal from "./EditAdoptPostModal";
+import CreateAdoptionFormModal from "./CreateAdoptionFormModal";
+import { toast } from "sonner";
 
 const { Option } = Select;
 
@@ -85,9 +86,16 @@ const ManageAdoptionPost = () => {
     setEditModalOpen(false);
   };
 
-  const handleFormSubmitted = (formData) => {
-    console.log("Form submitted:", formData);
-    setFormModalOpen(false);
+  const handleFormSubmitted = async (formData) => {
+    try {
+      const { data } = await addAdoptionForm(formData);
+      if (data.status === 201) {
+        toast.success(data.message);
+        setFormModalOpen(false);
+      }
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Error creating form!");
+    }
   };
 
   return (

@@ -67,7 +67,7 @@ const StaffSideBarLayout = () => {
       roles: ["services_staff"],
     },
     {
-      key: "/staff-services/manageSendPets",
+      key: "/staff-services/manageAdoptionForms",
       icon: <TbDogBowl className="w-4 h-4" />,
       label: "Thú cưng về nhà",
       roles: ["services_staff"],
