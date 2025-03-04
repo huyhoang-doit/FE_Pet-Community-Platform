@@ -2,7 +2,6 @@ import {
   LogoutOutlined,
   MenuFoldOutlined,
   MenuUnfoldOutlined,
-  UploadOutlined,
 } from "@ant-design/icons";
 import { Button, Layout, Menu, theme, Input, Avatar } from "antd";
 import { useEffect, useState } from "react";
@@ -15,7 +14,9 @@ import { GoNote } from "react-icons/go";
 import { IoHomeOutline } from "react-icons/io5";
 import { useDispatch, useSelector } from "react-redux";
 import { handleLogoutAPI } from "@/apis/auth";
+import { FaListCheck } from "react-icons/fa6";
 import { setAuthUser, setChatUsers } from "@/redux/authSlice";
+import { MdOutlinePostAdd } from "react-icons/md";
 import { setPostPage, setPosts, setSelectedPost } from "@/redux/postSlice";
 import { toast } from "sonner";
 
@@ -44,7 +45,7 @@ const StaffSideBarLayout = () => {
     {
       key: "/forum",
       icon: <IoHomeOutline className="w-4 h-4" />,
-      label: "Home",
+      label: "Trang chủ",
       roles: ["forum_staff"],
     },
     {
@@ -73,20 +74,20 @@ const StaffSideBarLayout = () => {
     },
     {
       key: "/staff-forum/manageBlog",
-      icon: <GoNote className="w-4 h-4" />,
-      label: "Manage Blog",
+      icon: <MdOutlinePostAdd className="w-5 h-5" />,
+      label: "Blogs",
       roles: ["forum_staff"],
     },
     {
       key: "/staff-forum/managePost",
       icon: <GoNote className="w-4 h-4" />,
-      label: "Manage Post",
+      label: "Quản lý bài đăng",
       roles: ["forum_staff"],
     },
     {
       key: "/staff-forum/ApprovePost",
-      icon: <GoNote className="w-4 h-4" />,
-      label: "Approve Post",
+      icon: <FaListCheck className="w-4 h-4" />,
+      label: "Xác nhận bài đăng",
       roles: ["forum_staff"],
     },
     { type: "divider" },
