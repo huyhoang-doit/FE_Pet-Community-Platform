@@ -99,7 +99,7 @@ const EditProfile = () => {
   };
 
   return (
-    <div className="flex max-w-2xl mx-auto pl-10">
+    <div className="flex max-w-2xl mx-auto">
       <section className="flex flex-col gap-6 w-full my-8">
         <h1 className="font-bold text-xl">Chỉnh sửa trang cá nhân</h1>
         <div className="flex items-center justify-between bg-gray-100 rounded-xl p-4">

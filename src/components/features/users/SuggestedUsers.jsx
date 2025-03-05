@@ -23,7 +23,7 @@ const SuggestedUsers = () => {
         <h1 className="font-bold text-gray-600">Gợi ý cho bạn</h1>
         <span className="font-semibold cursor-pointer">Xem tất cả</span>
       </div>
-      {suggestedUsers.map((user) => {
+      {suggestedUsers.slice(0, 5).map((user) => {
         return (
           <div
             key={user.id}

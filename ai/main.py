@@ -77,6 +77,8 @@ def detect_pets():
 
     if result:
         result['_id'] = str(result['_id'])
+        if 'breed' in result:
+            result['breed'] = str(result['breed'])
         return jsonify({'detected_objects': result, 'name': detected_classes})
     else:
         return jsonify({'message': 'Không tìm thấy kết quả phù hợp trong cơ sở dữ liệu', 'name': detected_classes})

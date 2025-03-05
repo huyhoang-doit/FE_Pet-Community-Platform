@@ -7,11 +7,20 @@ const MainLayout = () => {
   const isBlogRoute = location.pathname.includes("/blog");
 
   return (
-    <div>
-      {!isRootRoute && !isBlogRoute && <LeftSidebar />}
-      <div>
-        <Outlet />
-      </div>
+    <div className="min-h-screen">
+      {!isRootRoute && !isBlogRoute && (
+        <div className="grid grid-cols-[auto,1fr]">
+          <LeftSidebar />
+          <main className="min-h-screen w-full">
+            <Outlet />
+          </main>
+        </div>
+      )}
+      {(isRootRoute || isBlogRoute) && (
+        <main className="min-h-screen w-full">
+          <Outlet />
+        </main>
+      )}
     </div>
   );
 };

@@ -1,5 +1,6 @@
 export const dogBreeds = [
   "-- Vui lòng chọn giống chó --",
+  'Pembroke',
   "Domestic Dog",
   "Affenpinscher",
   "Afghan Hound",

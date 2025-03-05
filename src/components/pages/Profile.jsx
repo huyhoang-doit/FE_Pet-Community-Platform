@@ -7,10 +7,12 @@ import { Button } from "../ui/button";
 import { Badge } from "../ui/badge";
 import {
   AtSign,
-  ContactRound,
   Grid3x3,
   Heart,
   MessageCircle,
+  Gift,
+  Calendar,
+  Receipt,
 } from "lucide-react";
 import { setUserProfile } from "@/redux/authSlice";
 import { toast } from "sonner";
@@ -23,6 +25,7 @@ import { followOrUnfollowAPI } from "@/apis/user";
 import VerifiedBadge from "../core/VerifiedBadge";
 import UserListItem from "../features/users/UserListItem";
 import useFetchData from "@/hooks/useFetchData";
+import { getDonationByUserIdAPI } from "@/apis/donate";
 
 const Profile = () => {
   useFetchData()
@@ -46,6 +49,7 @@ const Profile = () => {
   const [showFollowModal, setShowFollowModal] = useState(false);
   const [modalType, setModalType] = useState("");
   const [showPostModal, setShowPostModal] = useState(false);
+  const [donations, setDonations] = useState([])
 
   const handleTabChange = (tab) => {
     setActiveTab(tab);
@@ -55,6 +59,7 @@ const Profile = () => {
     setNumberFollowers(userProfile?.followers.length);
     setNumberFollowing(userProfile?.following.length);
     setIsFollowing(userProfile?.followers.includes(user?.id));
+    getDonation(userProfile.id)
   }, [userProfile, user]);
 
   const followOrUnfollowHandler = async () => {
@@ -107,11 +112,20 @@ const Profile = () => {
     }
   };
 
+  const getDonation = async (userId) => {
+    const {data} = await getDonationByUserIdAPI(userId, 1, 5)
+    setDonations(data.data.results)
+  }
+
   const displayedPost =
-    activeTab === "posts" ? userProfile?.posts : userProfile?.bookmarks;
+    activeTab === "posts" 
+      ? userProfile?.posts 
+      : activeTab === "saved" 
+      ? userProfile?.bookmarks
+      : donations;
 
   return (
-    <div className="flex max-w-5xl justify-center mx-auto pl-10">
+    <div className="flex max-w-8xl justify-center mx-auto">
       <div className="flex flex-col gap-20 p-8 w-full">
         <div className="grid grid-cols-2">
           <section className="flex items-center justify-center">
@@ -240,53 +254,119 @@ const Profile = () => {
             >
               <FaBookmark size={16} /> ĐÃ LƯU
             </span>
-            <span className="py-3 cursor-pointer flex items-center gap-2 text-gray-500">
-              <ContactRound size={18} /> ĐƯỢC GẮN THẺ
+            <span
+              className={`py-3 cursor-pointer flex items-center gap-2 ${
+                activeTab === "donations" ? "font-bold" : "text-gray-500"
+              }`}
+              onClick={() => handleTabChange("donations")}
+            >
+              <Gift size={18} /> LỊCH SỬ QUYÊN GÓP
             </span>
           </div>
-          <div className="grid grid-cols-3 gap-1 min-h-[200px]">
-            {displayedPost?.map((post) => {
-              return (
-                <div
-                  key={post._id}
-                  className="relative group cursor-pointer"
-                  onClick={() => {
-                    handlePostClick(post);
-                  }}
-                >
-                  {post.image?.[0] ? (
-                    <img
-                      src={post.image[0]}
-                      alt="postimage"
-                      className="rounded-sm w-full aspect-square object-cover"
-                    />
-                  ) : (
-                    post.video?.[0] && (
-                      <video
-                        src={post.video[0]}
-                        autoPlay
-                        muted
-                        loop
-                        className="rounded-sm w-full aspect-square object-cover"
-                      />
-                    )
-                  )}
-
-                  <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                    <div className="flex items-center text-white space-x-4">
-                      <button className="flex items-center gap-2 hover:text-gray-300">
-                        <Heart />
-                        <span>{post?.likes.length}</span>
-                      </button>
-                      <button className="flex items-center gap-2 hover:text-gray-300">
-                        <MessageCircle />
-                        <span>{post?.comments.length}</span>
-                      </button>
-                    </div>
+          <div className="grid grid-cols-4 gap-4 min-h-[200px]">
+            {activeTab === "donations" ? (
+              donations?.length > 0 ? (
+                <div className="col-span-4">
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-sm text-left">
+                      <thead className="text-xs uppercase bg-gray-100">
+                        <tr>
+                          <th className="px-6 py-4 font-medium text-gray-900">Ngày</th>
+                          <th className="px-6 py-4 font-medium text-gray-900">Số tiền</th>
+                          <th className="px-6 py-4 font-medium text-gray-900">Chiến dịch</th>
+                          <th className="px-6 py-4 font-medium text-gray-900">Mã giao dịch</th>
+                          <th className="px-6 py-4 font-medium text-gray-900">Trạng thái</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-gray-200">
+                        {donations.map((donation) => (
+                          <tr 
+                            key={donation._id}
+                            className="bg-white hover:bg-gray-50 transition-colors duration-200"
+                          >
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              <div className="flex items-center gap-2">
+                                <Calendar size={14} className="text-gray-500" />
+                                <span>{new Date(donation.createdAt).toLocaleDateString('vi-VN')}</span>
+                              </div>
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              <span className="font-medium text-green-600">
+                                {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(donation.amount)}
+                              </span>
+                            </td>
+                            <td className="px-6 py-4">
+                              <div className="flex items-center gap-2">
+                                <span className="font-medium text-gray-900 line-clamp-1">
+                                  {donation.campaign.title}
+                                </span>
+                              </div>
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              <div className="flex items-center gap-2">
+                                <Receipt size={14} className="text-gray-500" />
+                                <span className="text-gray-500">{donation.code}</span>
+                              </div>
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              <span style={{color: donation.status === "pending" ? "yellow" : donation.status === "completed" ? "green" : "red"}}>{donation.status.charAt(0).toUpperCase() + donation.status.slice(1)}</span>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
                   </div>
                 </div>
-              );
-            })}
+              ) : (
+                <div className="col-span-3 flex flex-col items-center justify-center text-gray-500 py-10">
+                  <Gift size={48} className="mb-4 text-gray-400" />
+                  <p>Chưa có lịch sử quyên góp nào</p>
+                </div>
+              )
+            ) : (
+              displayedPost?.map((post) => {
+                return (
+                  <div
+                    key={post._id}
+                    className="relative group cursor-pointer"
+                    onClick={() => {
+                      handlePostClick(post);
+                    }}
+                  >
+                    {post.image?.[0] ? (
+                      <img
+                        src={post.image[0]}
+                        alt="postimage"
+                        className="rounded-sm w-full aspect-square object-cover"
+                      />
+                    ) : (
+                      post.video?.[0] && (
+                        <video
+                          src={post.video[0]}
+                          autoPlay
+                          muted
+                          loop
+                          className="rounded-sm w-full aspect-square object-cover"
+                        />
+                      )
+                    )}
+
+                    <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                      <div className="flex items-center text-white space-x-4">
+                        <button className="flex items-center gap-2 hover:text-gray-300">
+                          <Heart />
+                          <span>{post?.likes.length}</span>
+                        </button>
+                        <button className="flex items-center gap-2 hover:text-gray-300">
+                          <MessageCircle />
+                          <span>{post?.comments.length}</span>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })
+            )}
             {!displayedPost?.length && (
               <div className="col-span-3 flex items-center justify-center text-gray-500">
                 Không có bài viết nào

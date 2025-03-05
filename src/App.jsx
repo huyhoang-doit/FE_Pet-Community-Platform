@@ -26,8 +26,8 @@ import { SubmitPet } from "./components/submitPet";
 import { ApprovePet, ManagePet } from "./components/pages/StaffPages";
 import StaffSideBarLayout from "./components/layouts/StaffSideBarLayout";
 import ManageAdoptionPost from "./components/pages/StaffPages/Services/ManageAdoptionPost";
-import ManageSendPets from "./components/pages/StaffPages/Services/ManageSendPet";
 import ManageAdoptionForms from "./components/pages/StaffPages/Services/ManageAdoptionForms";
+import ManageCampaign from "./components/pages/AdminPages/ManageCampaign";
 
 const browserRouter = createBrowserRouter([
   {
@@ -48,6 +48,14 @@ const browserRouter = createBrowserRouter([
       },
       {
         path: "/adopt",
+        element: (
+          <ProtectedRoutes>
+            <Home />
+          </ProtectedRoutes>
+        ),
+      },
+      {
+        path: "/adopt/:id",
         element: (
           <ProtectedRoutes>
             <Home />

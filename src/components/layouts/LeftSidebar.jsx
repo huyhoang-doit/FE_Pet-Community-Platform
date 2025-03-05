@@ -6,7 +6,6 @@ import {
   PlusSquare,
   Search,
   PawPrint,
-  TrendingUp,
 } from "lucide-react";
 import { MdForum, MdOutlineForum } from "react-icons/md";
 import { useState, useEffect, useRef } from "react";
@@ -284,10 +283,11 @@ const LeftSidebar = () => {
 
   return (
     <div
-      className={`fixed top-0 z-10 left-0 px-4  h-screen `}
+      className={`h-screen sticky top-0 px-4`}
       style={{
         width: sidebarWidth,
         transition: "width 0.3s ease",
+        paddingRight: "3px",
       }}
     >
       <div className="flex flex-col h-full border-r border-gray-300">
