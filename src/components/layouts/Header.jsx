@@ -35,7 +35,7 @@ function Header() {
   const menuItems = [
     {
       key: "profile",
-      label: <NavLink to={`/profile/${user?.username}`}>Profile</NavLink>,
+      label: <NavLink to={`/profile/${user?.username}`}>Hồ sơ</NavLink>,
     },
     user?.role.includes("services_staff") && {
       key: "approvePet",
@@ -78,11 +78,11 @@ function Header() {
         {!user ? (
           <div className="relative group py-7">
             <Button type="link">
-              <NavLink to="/login">Signin</NavLink>
+              <NavLink to="/login">Đăng nhập</NavLink>
             </Button>
             {" / "}
             <Button type="link">
-              <NavLink to="/signup">Signup</NavLink>
+              <NavLink to="/signup">Đăng ký</NavLink>
             </Button>
           </div>
         ) : (
