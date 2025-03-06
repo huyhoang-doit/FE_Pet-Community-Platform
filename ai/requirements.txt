@@ -7,4 +7,4 @@ torch
 ultralytics
 opencv-python
 numpy
-requests 
+requests

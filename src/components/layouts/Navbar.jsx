@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { FaChevronDown } from "react-icons/fa6";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import {
   Dialog,
   DialogContent,
@@ -12,12 +12,31 @@ import {
 } from "../ui/dialog";
 import ImageUpload from "@/cloud/UploadCloudinary";
 import { Button } from "antd";
+import { useSelector } from "react-redux";
 
 function Navbar() {
+  const navigate = useNavigate();
   const [search, setSearch] = useState("");
+  const [detectedBreed, setDetectedBreed] = useState(null);
+  const { user } = useSelector((state) => state.auth);
+  
   const handleKeyDown = (event) => {
     if (event.key === "Enter") {
       console.log("hello");
+    }
+  };
+
+  const handleImageAnalysisResult = (result) => {
+    console.log('result', result);
+    
+    if (result) {
+      setDetectedBreed(result);
+    }
+  };
+
+  const handleNavigateToAdopt = () => {
+    if (detectedBreed?.breed) {
+      navigate(`/adopt/${detectedBreed.breed}`);
     }
   };
 
@@ -113,11 +132,19 @@ function Navbar() {
                 </DialogDescription>
               </DialogHeader>
               <div className="grid gap-4 py-4">
-                <ImageUpload />
+                <ImageUpload onAnalysisResult={handleImageAnalysisResult} />
               </div>
-              <DialogFooter>
-                <Button type="submit">Đến trang kết quả</Button>
-              </DialogFooter>
+              {user && (
+                <DialogFooter>
+                  <Button 
+                    type="primary" 
+                  onClick={handleNavigateToAdopt}
+                  disabled={!detectedBreed?._id}
+                >
+                  Đến trang kết quả
+                  </Button>
+                </DialogFooter>
+              )}
             </DialogContent>
           </Dialog>
         </div>

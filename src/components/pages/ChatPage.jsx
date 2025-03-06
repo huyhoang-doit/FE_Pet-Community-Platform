@@ -63,10 +63,10 @@ const ChatPage = () => {
   }, []);
   
   return (
-    <div className="flex ml-[80px] h-screen">
+    <div className="flex ml-[20px] h-screen">
       <section className="w-full md:w-1/5 border-r border-r-gray-300">
-        <h1 className="font-bold my-8 text-xl pl-[20px]">{user?.username}</h1>
-        <div className="pl-[20px] flex items-center justify-between mb-4 pr-4">
+        <h1 className="font-bold my-8 text-xl">{user?.username}</h1>
+        <div className="flex items-center justify-between mb-4 pr-4">
           <span className="text-md font-bold">Tin nhắn</span>
           <span className="text-sm font-bold text-gray-500">
             Tin nhắn đang chờ
@@ -81,7 +81,7 @@ const ChatPage = () => {
                 key={suggestedUser.id}
                 onClick={() => dispatch(setSelectedUser(suggestedUser))}
                 className=
-                {`pl-[20px] flex gap-3 items-center cursor-pointer py-2 ${
+                {`flex gap-3 items-center cursor-pointer py-2 ${
                   isSelected ? 'bg-gray-100' : 'hover:bg-gray-50'
                 }`}
               >

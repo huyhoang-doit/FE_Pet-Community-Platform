@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-const ImageUpload = ({ onUpload }) => {
+const ImageUpload = ({ onAnalysisResult }) => {
   const [image, setImage] = useState(null);
   const [loading, setLoading] = useState(false);
   const [preview, setPreview] = useState(null);
@@ -28,7 +28,7 @@ const ImageUpload = ({ onUpload }) => {
       console.log(res);
       await detectImage(res?.secure_url);
 
-      onUpload(res.url);
+      // onUpload(res.url);
       setLoading(false);
     } catch (error) {
       setLoading(false);
@@ -66,6 +66,7 @@ const ImageUpload = ({ onUpload }) => {
 
       const result = await response.json();
       setInfor(result?.detected_objects);
+      onAnalysisResult(result?.detected_objects);
 
       // Xử lý kết quả trả về từ API tại đây nếu cần thiết
     } catch (error) {

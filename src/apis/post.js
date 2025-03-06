@@ -87,3 +87,34 @@ export const updateAdoptPostsAPI = async (postId, formData) => {
     }
   );
 };
+
+export const addAdoptionForm = async (formData) => {
+  const response = await authorizedAxiosInstance.post(
+    `${BASE_URL}/adoption-post/form`,
+    formData
+  );
+  console.log("addAdoptionForm response:", response);
+  return response;
+};
+
+export const fetchAllAdoptionFormsAPI = async (
+  page,
+  limit,
+  sortBy = "createdAt:desc",
+  status = null
+) => {
+  let url = `${BASE_URL}/adoption-post/form?limit=${limit}&page=${page}&sortBy=${sortBy}`;
+  if (status) {
+    url += `&status=${status}`;
+  }
+
+  return await authorizedAxiosInstance.get(url);
+};
+
+export const fetchAllAdoptionPostsByBreedAPI = async (page, breed) => {
+  const response = await authorizedAxiosInstance.get(
+    `${BASE_URL}/adoption-post/breed/${breed}?limit=4&page=${page}`
+  );
+  console.log("response", response);
+  return response;
+};
