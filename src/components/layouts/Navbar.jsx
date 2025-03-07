@@ -43,7 +43,7 @@ function Navbar() {
   const navBar = [
     {
       path: "/forum",
-      name: "Forum",
+      name: "Diễn dàn",
       isArrow: false,
     },
     {
@@ -52,38 +52,8 @@ function Navbar() {
     },
     {
       path: "/adopt",
-      name: "Adopt",
+      name: "Nhận nuôi",
     },
-    // {
-    //   path: "#",
-    //   name: "Girl",
-    //   isArrow: true,
-    //   dropdown: [
-    //     {
-    //       path: "#",
-    //       name: "About",
-    //     },
-    //     {
-    //       path: "#",
-    //       name: "Contact",
-    //     },
-    //   ],
-    // },
-    // {
-    //   path: "#",
-    //   name: "Accessories",
-    //   isArrow: true,
-    //   dropdown: [
-    //     {
-    //       path: "#",
-    //       name: "About",
-    //     },
-    //     {
-    //       path: "#",
-    //       name: "Contact",
-    //     },
-    //   ],
-    // },
   ];
   return (
     <>

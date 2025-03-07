@@ -18,15 +18,20 @@ export const deletePostAPI = async (postId) => {
   return await authorizedAxiosInstance.delete(`${BASE_URL}/post/${postId}`);
 };
 
+export const updatePostAPI = async (postId, data) => {
+  console.log(data);
+  return await authorizedAxiosInstance.put(`${BASE_URL}/post/${postId}`, data);
+};
+
 export const bookmarkAPI = async (postId) => {
   return await authorizedAxiosInstance.get(
     `${BASE_URL}/post/${postId}/bookmark`
   );
 };
 
-export const fetchAllPostsAPI = async (page) => {
+export const fetchAllPostsAPI = async (page = 1, limit = 4) => {
   return await authorizedAxiosInstance.get(
-    `${BASE_URL}/post/all?sortBy=createdAt:desc&limit=4&page=${page}`
+    `${BASE_URL}/post/all?sortBy=createdAt:desc&limit=${limit}&page=${page}`
   );
 };
 

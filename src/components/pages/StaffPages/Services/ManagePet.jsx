@@ -30,7 +30,6 @@ const ManagePet = () => {
 
   const { Search } = Input;
 
-
   useEffect(() => {
     const fetchData = async () => {
       try {
