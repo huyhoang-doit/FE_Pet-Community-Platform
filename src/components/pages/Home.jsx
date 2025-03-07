@@ -3,11 +3,13 @@ import RightSidebar from "../layouts/RightSidebar";
 import ForumFeeds from "./ForumFeeds";
 import AdoptFeeds from "./AdoptFeeds";
 import useFetchData from "@/hooks/useFetchData";
-
+import { useSelector } from "react-redux";
 const Home = () => {
   useFetchData();
 
   const location = useLocation();
+  const { adoptPosts } = useSelector((store) => store.adopt);
+  console.log('adoptPosts',adoptPosts)
 
   const renderFeed = () => {
     if (location.pathname.includes("/forum")) {

@@ -1,6 +1,5 @@
 import { Button, Pagination, Select } from "antd";
 import { useEffect, useState } from "react";
-
 import ViewAdoptionFormModal from "./ViewAdoptionFormModal";
 import PeriodicCheckModal from "./PeriodicCheckModal";
 import { toast } from "sonner";
@@ -11,7 +10,7 @@ const { Option } = Select;
 
 const ManageAdoptionForms = () => {
   const [forms, setForms] = useState([]);
-  const user = useSelector((state) => state.user);
+  const {user} = useSelector((store) => store.auth);
   const [currentPage, setCurrentPage] = useState(1);
   const [statusSort, setStatusSort] = useState(null);
   const [sortBy, setSortBy] = useState("createdAt:desc");
@@ -21,23 +20,24 @@ const ManageAdoptionForms = () => {
   const [checkModalOpen, setCheckModalOpen] = useState(false);
   const [selectedForm, setSelectedForm] = useState(null);
 
+  const fetchForms = async () => {
+    try {
+      const response = await fetchAllAdoptionFormsAPI(
+        currentPage,
+        itemsPerPage,
+        sortBy,
+        statusSort
+      );
+      const { results, totalResults } = response.data.data;
+      setForms(results);
+      setTotalResults(totalResults);
+    } catch (error) {
+      console.error("Error fetching adoption forms:", error);
+    }
+  };
+
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await fetchAllAdoptionFormsAPI(
-          currentPage,
-          itemsPerPage,
-          sortBy,
-          statusSort
-        );
-        const { results, totalResults } = response.data.data;
-        setForms(results);
-        setTotalResults(totalResults);
-      } catch (error) {
-        console.error("Error fetching adoption forms:", error);
-      }
-    };
-    fetchData();
+    fetchForms();
   }, [currentPage, statusSort, sortBy]);
 
   const handleSortCategory = (value) => {
@@ -62,6 +62,7 @@ const ManageAdoptionForms = () => {
         setStatusSort(null);
         break;
     }
+    setCurrentPage(1); // Reset to first page on sort change
   };
 
   const handlePageChange = (page) => {
@@ -80,23 +81,24 @@ const ManageAdoptionForms = () => {
 
   const handlePeriodicCheck = async (checkData) => {
     try {
-      // const { data } = await addPeriodicCheckAPI(selectedForm._id, checkData);
-      // if (data.status === 200) {
-      //   toast.success("Periodic check added successfully");
-      //   setForms((prevForms) =>
-      //     prevForms.map((f) =>
-      //       f._id === selectedForm._id
-      //         ? { ...f, periodicChecks: data.data.periodicChecks }
-      //         : f
-      //     )
-      //   );
-      //   setCheckModalOpen(false);
-      // }
+      fetchForms()
+        setCheckModalOpen(false);
+      
     } catch (error) {
       toast.error(
         error.response?.data?.message || "Error adding periodic check!"
       );
     }
+  };
+
+  const handleStatusUpdate = (formId, newStatus) => {
+    setForms((prevForms) =>
+      prevForms.map((form) =>
+        form._id === formId ? { ...form, status: newStatus } : form
+      )
+    );
+    setViewModalOpen(false);
+    fetchForms(); 
   };
 
   return (
@@ -128,7 +130,6 @@ const ManageAdoptionForms = () => {
               <tr>
                 {[
                   "#",
-
                   "Adopter Name",
                   "Email",
                   "Phone",
@@ -233,6 +234,7 @@ const ManageAdoptionForms = () => {
           open={viewModalOpen}
           setOpen={setViewModalOpen}
           form={selectedForm}
+          onStatusUpdate={handleStatusUpdate}
         />
       )}
       {checkModalOpen && (

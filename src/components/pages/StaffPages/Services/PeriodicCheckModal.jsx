@@ -2,11 +2,14 @@
 import { Modal, Form, Select, Input, Button, DatePicker } from "antd";
 import { useState, useEffect } from "react";
 import moment from "moment";
+import { addPeriodicCheckAPI } from "@/apis/post";
+import { toast } from "sonner";
 
 const { Option } = Select;
 const { TextArea } = Input;
 
 const PeriodicCheckModal = ({ open, setOpen, form, onSubmit, currentUser }) => {
+  console.log('nice',currentUser)
   const [formInstance] = Form.useForm();
   const [loading, setLoading] = useState(false);
 
@@ -29,8 +32,14 @@ const PeriodicCheckModal = ({ open, setOpen, form, onSubmit, currentUser }) => {
         checkDate: values.checkDate.toISOString(),
         status: values.status,
         notes: values.notes || "",
-        checkedBy: currentUser._id, // Assuming currentUser is passed with _id
+        checkedBy: currentUser.id,
       };
+      console.log('checkData',checkData)
+      const { data } = await addPeriodicCheckAPI(form._id, checkData);
+      console.log('data',data)
+      if (data.status === 200) {
+        toast.success("Periodic check added successfully");
+       }
       await onSubmit(checkData);
       setOpen(false);
     } catch (error) {

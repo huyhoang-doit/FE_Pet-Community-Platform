@@ -118,3 +118,16 @@ export const fetchAllAdoptionPostsByBreedAPI = async (page, breed) => {
   console.log("response", response);
   return response;
 };
+
+
+export const updateAdoptionFormStatusAPI = async (formId, status) => {
+  const response = await authorizedAxiosInstance.put(`${BASE_URL}/adoption-post/form/${formId}`, {
+    status,
+  });
+  return response;
+};
+
+export const addPeriodicCheckAPI = async (adoptionFormId, checkData) => {
+  return await authorizedAxiosInstance.post(`${BASE_URL}/adoption-post/form-check`, checkData);
+};
+

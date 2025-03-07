@@ -126,7 +126,7 @@ const ApprovePet = () => {
                       {pet.name}
                     </td>
                     <td className="px-6 py-4 capitalize text-sm text-gray-700 dark:text-gray-300 border-b border-gray-200 dark:border-gray-700 border-r">
-                      {pet.breed}
+                      {pet.breed.name}
                     </td>
                     <td className="px-6 py-4 capitalize text-sm text-gray-700 dark:text-gray-300 border-b border-gray-200 dark:border-gray-700 border-r">
                       {pet.health_status}
