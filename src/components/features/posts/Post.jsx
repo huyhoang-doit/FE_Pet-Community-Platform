@@ -209,10 +209,10 @@ const Post = ({ post }) => {
           <Carousel autoSlide={false}>
             {[
               ...post.image.map((image) => (
-                <img key={image} src={image} alt="carousel_img" />
+                <img key={image} src={image} alt="carousel_img" className="w-full aspect-[4/5] object-cover" />
               )),
               ...post.video.map((video) => (
-                <video key={video} src={video} autoPlay muted loop />
+                <video key={video} src={video} autoPlay muted loop className="w-full aspect-[4/5] object-cover" />
               )),
             ]}
           </Carousel>

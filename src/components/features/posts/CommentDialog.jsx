@@ -30,8 +30,7 @@ const CommentDialog = ({ open, setOpen }) => {
   useEffect(() => {
     if (selectedPost) {
       setComment(selectedPost.comments);
-      setLiked(selectedPost.likes.some(like => like.id === user?.id) || false);
-      // setLiked(selectedPost.likes.includes(user?.id) || false);
+      setLiked(selectedPost.likes.includes(user?.id) || false);
       setPostLike(selectedPost.likes.length);
       setBookmarked(user.bookmarks.includes(selectedPost?._id) || false);
     }
@@ -123,53 +122,57 @@ const CommentDialog = ({ open, setOpen }) => {
       >
         <div className="flex h-full">
           {/* Left side - Image */}
-          <div className="flex-1 flex justify-center items-center">
             {selectedPost &&
             (selectedPost.image?.length || 0) +
               (selectedPost.video?.length || 0) ===
               1 ? (
               selectedPost.image?.length === 1 ? (
-                <img
-                  src={selectedPost.image[0]}
-                  alt="post_img"
-                  className="max-h-screen w-auto object-contain"
-                />
+                <div className="w-full h-full flex justify-center items-center">
+                  <img
+                    className="max-h-full w-auto object-contain"
+                    src={selectedPost.image[0]}
+                    alt="post_img"
+                  />
+                </div>
               ) : (
-                <video
-                  src={selectedPost.video[0]}
-                  className="max-h-screen w-auto object-contain"
-                  autoPlay
-                  loop
-                />
+                <div className="w-full h-full flex justify-center items-center">
+                  <video
+                    className="max-h-full w-auto object-contain"
+                    src={selectedPost.video[0]}
+                    autoPlay
+                    muted
+                    loop
+                  />
+                </div>
               )
             ) : (
-              <Carousel
-                autoSlide={false}
-                containerClass="carousel-container"
-                itemClass="carousel-item"
-              >
-                {[
-                  ...(selectedPost?.image || []).map((image, index) => (
-                    <img
-                      key={`img-${index}`}
-                      src={image}
-                      alt={`post_img_${index}`}
-                    />
-                  )),
-                  ...(selectedPost?.video || []).map((video, index) => (
-                    <video
-                      key={`vid-${index}`}
-                      src={video}
-                      className="object-cover rounded-md"
-                      autoPlay
-                      muted
-                      loop
-                    />
-                  )),
-                ]}
-              </Carousel>
+              <div className="w-full h-full flex justify-center items-center">
+                <div className="w-full max-w-[800px] h-auto">
+                  <Carousel autoSlide={false}>
+                    {[
+                      ...(selectedPost?.image || []).map((image) => (
+                        <img 
+                          key={image}
+                          src={image} 
+                          alt="carousel_img"
+                          className="max-h-[calc(100vh-200px)] w-auto object-contain" 
+                        />
+                      )),
+                      ...(selectedPost?.video || []).map((video) => (
+                        <video 
+                          key={video}
+                          src={video} 
+                          autoPlay 
+                          muted 
+                          loop
+                          className="max-h-[calc(100vh-200px)] w-auto object-contain"
+                        />
+                      ))
+                    ]}
+                  </Carousel>
+                </div>
+              </div>
             )}
-          </div>
 
           {/* Right side - Details */}
           <div className="w-[400px] flex flex-col border-l">
