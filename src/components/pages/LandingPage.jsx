@@ -30,7 +30,10 @@ function LandingPage() {
             }`}
           >
             <div className="flex items-center">
-              <p>Furry friends, endless joy!</p>
+              <p>
+                Nhận nuôi không chỉ cứu một con vật, mà còn làm giàu trái tim
+                bạn!
+              </p>
             </div>
           </div>
           <div
@@ -40,7 +43,7 @@ function LandingPage() {
             }`}
           >
             <div className="flex items-center">
-              <p>Unconditional love, one paw at a time!</p>
+              <p>Trao yêu thương, nhận lại niềm vui!</p>
             </div>
           </div>
         </div>
@@ -56,7 +59,7 @@ function LandingPage() {
         <div className="flex items-center justify-start h-full">
           <div className="w-1/2">
             <h2 className="text-white text-6xl font-bold mx-10 px-10">
-              GOOD, CLEAN, FUNCTIONAL FOOD FOR CATS + DOGS
+              {"Yêu thú cưng – Trọn đời gắn kết!"}
             </h2>
           </div>
         </div>
@@ -66,12 +69,12 @@ function LandingPage() {
       <div className="bg-[#af1685] my-8 py-8">
         <div className="flex flex-col items-center justify-center text-white">
           <h2 className="text-3xl md:text-5xl font-semibold font-display text-[#f1b434]">
-            FLAVOR-PACKED & WORRY-FREE
+            YÊU THƯƠNG TRỌN VẸN & KHÔNG LO LẮNG
           </h2>
           <p className="w-1/2 text-center text-xl mt-4">
-            We use nutrient-rich, easy-to-digest ingredients from reliable
-            sourcing partners to craft meals and treats that are crazy delish.
-            So you can fill their bowls with (only) the good stuff.
+            Chúng tôi kết nối bạn với những người bạn bốn chân đang cần một mái
+            ấm. Mỗi thú cưng đều xứng đáng có một gia đình yêu thương. Hãy mở
+            lòng và mang đến cho chúng một cơ hội mới!
           </p>
         </div>
         <div>
@@ -89,11 +92,8 @@ function LandingPage() {
         </div>
       </div>
 
-      {/* Feedback */}
       <div className="bg-[#f1b434] text-center mb-5">
-        <h2 className="text-2xl font-bold text-black pt-5">
-          CUSTOMERS ARE SAYING
-        </h2>
+        <h2 className="text-2xl font-bold text-black pt-5">FOUNDER</h2>
         <div className="w-2/3 mx-auto">
           <SimpleSlider />
         </div>

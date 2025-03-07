@@ -31,7 +31,7 @@ const ManagePet = () => {
   const [sortBy, setSortBy] = useState("createdAt:desc"); // Default sort
   const { Search } = Input;
 
-  // Fetch pets with pagination and sorting
+Fetch pets with pagination and sorting
   const fetchPets = async (page = 1, limit = itemsPerPage, sort = sortBy) => {
     try {
       const response = await getPetApprovedAPI(page, limit, sort);
@@ -44,7 +44,6 @@ const ManagePet = () => {
     }
   };
 
-  // Fetch pets when page, sort, or editingPet changes
   useEffect(() => {
     fetchPets(currentPage, itemsPerPage, sortBy);
   }, [currentPage, sortBy, editingPet]);

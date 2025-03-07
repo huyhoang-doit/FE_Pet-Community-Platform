@@ -9,27 +9,18 @@ function SimpleSlider() {
   const data = [
     {
       image:
-        "https://iandloveandyou.com/cdn/shop/files/Princess.jpg?v=1655484313&width=400",
-      name: "John Doe",
-      content: "This is the content for John Doe.",
+        "https://councils.forbes.com/profile/_next/image?url=https%3A%2F%2Fs3.amazonaws.com%2Fcco-avatars%2F0de64224-e279-47c1-bf8b-07d9fa30146-1548781803825-1025.png&w=384&q=75",
+      name: "Milton Bartley",
     },
     {
       image:
-        "https://iandloveandyou.com/cdn/shop/files/Princess.jpg?v=1655484313&width=400",
-      name: "Jane Smith",
-      content: "This is the content for Jane Smith.",
+        "https://councils.forbes.com/profile/_next/image?url=https%3A%2F%2Fs3.amazonaws.com%2Fcco-avatars%2Fdf5420f1-cf08-4e18-9a4f-0351a76d3c03.png&w=384&q=75",
+      name: "Zohar Dayan",
     },
     {
       image:
-        "https://iandloveandyou.com/cdn/shop/files/Princess.jpg?v=1655484313&width=400",
-      name: "Michael Brown",
-      content: "This is the content for Michael Brown.",
-    },
-    {
-      image:
-        "https://iandloveandyou.com/cdn/shop/files/Princess.jpg?v=1655484313&width=400",
-      name: "Emily Davis",
-      content: "This is the content for Chris Wilson.",
+        "https://councils.forbes.com/profile/_next/image?url=https%3A%2F%2Fs3.amazonaws.com%2Fcco-avatars%2Ff22b4fe7-9ac9-4389-b6e9-05fc54134e88.png&w=384&q=75",
+      name: "Prashant Puri ",
     },
   ];
 
@@ -100,7 +91,6 @@ function SimpleSlider() {
               </div>
               <div className="text-center">
                 <h2 className="text-xl font-semibold mb-2">{item.name}</h2>
-                <p className="text-gray-700">{item.content}</p>
               </div>
             </div>
           </div>
