@@ -16,7 +16,7 @@ import { getPetApprovedAPI } from "@/apis/pet";
 import { Button } from "@/components/ui/button";
 import EditPetModal from "./EditPetModal";
 import CreateAdoptPostModal from "./CreateAdoptPostModal";
-import { CloudCog } from "lucide-react";
+// import { CloudCog } from "lucide-react";
 
 const ManagePet = () => {
   const [pets, setPets] = useState([]);
@@ -31,7 +31,6 @@ const ManagePet = () => {
   const [sortBy, setSortBy] = useState("createdAt:desc"); // Default sort
   const { Search } = Input;
 
-Fetch pets with pagination and sorting
   const fetchPets = async (page = 1, limit = itemsPerPage, sort = sortBy) => {
     try {
       const response = await getPetApprovedAPI(page, limit, sort);
@@ -70,7 +69,7 @@ Fetch pets with pagination and sorting
   const handlePostCreated = () => {
     setOpenCreatePost(false);
     setPetCreatePost(null);
-    fetchPets(currentPage, itemsPerPage, sortBy);        
+    fetchPets(currentPage, itemsPerPage, sortBy);
   };
 
   // Handle page change
