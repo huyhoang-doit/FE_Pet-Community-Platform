@@ -30,7 +30,7 @@ const ManagePet = () => {
   const [sortBy, setSortBy] = useState("createdAt:desc"); // Default sort
   const { Search } = Input;
 
-// Fetch pets with pagination and sorting
+Fetch pets with pagination and sorting
   const fetchPets = async (page = 1, limit = itemsPerPage, sort = sortBy) => {
     try {
       const response = await getPetApprovedAPI(page, limit, sort);
@@ -69,7 +69,7 @@ const ManagePet = () => {
   const handlePostCreated = () => {
     setOpenCreatePost(false);
     setPetCreatePost(null);
-    fetchPets(currentPage, itemsPerPage, sortBy);        
+    fetchPets(currentPage, itemsPerPage, sortBy);
   };
 
   // Handle page change
