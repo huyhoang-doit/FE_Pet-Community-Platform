@@ -29,8 +29,6 @@ const ManagePet = () => {
   const [openCreatePost, setOpenCreatePost] = useState(false);
   const [sortBy, setSortBy] = useState("createdAt:desc"); // Default sort
   const { Search } = Input;
-
-// Fetch pets with pagination and sorting
   const fetchPets = async (page = 1, limit = itemsPerPage, sort = sortBy) => {
     try {
       const response = await getPetApprovedAPI(page, limit, sort);
@@ -134,11 +132,7 @@ const ManagePet = () => {
             </thead>
             <tbody>
               {filteredPets
-                .slice(
-                  (currentPage - 1) * itemsPerPage,
-                  currentPage * itemsPerPage
-                )
-                .map((pet, index) => (
+               .map((pet, index) =>(
                   <tr
                     key={pet._id}
                     className={
@@ -148,7 +142,7 @@ const ManagePet = () => {
                     }
                   >
                     <td className="px-6 py-4 capitalize text-sm text-gray-700 dark:text-gray-300 border-b border-gray-200 dark:border-gray-700 border-r">
-                      {index + 1}
+                    {(currentPage - 1) * itemsPerPage + index + 1}
                     </td>
                     <td className="px-6 py-4 capitalize text-sm text-gray-700 dark:text-gray-300 border-b border-gray-200 dark:border-gray-700 border-r">
                       {pet.name}
