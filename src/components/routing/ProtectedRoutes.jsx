@@ -15,7 +15,7 @@ const ProtectedRoutes = ({ children, allowedRoles = [] }) => {
 
   useEffect(() => {
     const accessToken = localStorage.getItem("access_token");
-
+    console.log(accessToken);
     if (!accessToken) {
       navigate("/login");
       // logoutHandler();

@@ -94,7 +94,7 @@ const StaffSideBarLayout = () => {
     {
       key: "logout",
       icon: <LogoutOutlined />,
-      label: <span className="text-red-500">Logout</span>,
+      label: <span className="text-red-500">Đăng xuất</span>,
     },
   ];
 

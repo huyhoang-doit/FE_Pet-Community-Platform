@@ -69,7 +69,7 @@ export const addAdoptPostsAPI = async (formData) => {
 
 export const fetchAllAdoptionPostsAPI = async (
   page,
-  limit,
+  limit=5,
   sortBy = "createdAt:desc",
   adoptStatus = null
 ) => {

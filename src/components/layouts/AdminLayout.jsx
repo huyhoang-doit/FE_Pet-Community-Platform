@@ -89,24 +89,24 @@ const AdminLayout = () => {
               {
                 key: "/admin/",
                 icon: <PieChartOutlined />,
-                label: "Dashboard",
+                label: "Bảng điều khiển",
               },
-              { key: "/admin/users", icon: <UserOutlined />, label: "Users" },
-              { key: "/admin/staff", icon: <TeamOutlined />, label: "Staffs" },
+              { key: "/admin/users", icon: <UserOutlined />, label: "Người dùng" },
+              { key: "/admin/staff", icon: <TeamOutlined />, label: "Nhân viên" },
               {
                 key: "/admin/donate",
                 icon: <UploadOutlined />,
-                label: "Donate",
+                label: "Quyên góp",
               },{
                 key: "/admin/campaign",
                 icon: <AlertOutlined />,
-                label: "Campaign",
+                label: "Chiến dịch",
               },
               { type: "divider" }, // Dòng phân cách
               {
                 key: "logout",
                 icon: <LogoutOutlined />,
-                label: <span className="text-red-500">Logout</span>,
+                label: <span className="text-red-500">Đăng xuất</span>,
               },
             ]}
             className="flex-1"

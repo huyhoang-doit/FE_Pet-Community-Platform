@@ -102,7 +102,7 @@ const ManageCampaign = () => {
         <div className="flex items-center gap-10">
           Title
           <Search
-            placeholder="Search campaign..."
+            placeholder="Tìm kiếm chiến dịch..."
             onSearch={(value) => getAllCampaign(1, value)}
             style={{ width: 200 }}
             allowClear
@@ -113,37 +113,37 @@ const ManageCampaign = () => {
       key: "title",
     },
     {
-      title: "Image",
+      title: "Ảnh",
       dataIndex: "image",
       key: "image",
       render: (image) => <img width={200} src={image} />,
     },
     {
-      title: "Current Amount",
+      title: "Số tiền hiện tại",
       dataIndex: "currentAmount",
       key: "currentAmount",
       render: (currentAmount) => formatVND(currentAmount),
     },
     {
-      title: "Target Amount",
+      title: "Số tiền cần thiết",
       dataIndex: "targetAmount",
       key: "targetAmount",
       render: (targetAmount) => formatVND(targetAmount),
     },
     {
-      title: "Start Date",
+      title: "Ngày bắt đầu",
       dataIndex: "startDate",
       key: "startDate",
       render: (startDate) => formatDate(startDate),
     },
     {
-      title: "End Date",
+      title: "Ngày kết thúc",
       dataIndex: "endDate",
       key: "endDate",
       render: (endDate) => formatDate(endDate),
     },
     {
-      title: "Status",
+      title: "Trạng thái",
       dataIndex: "startDate",
       key: "status",
       render: (_, record) => {
@@ -172,7 +172,7 @@ const ManageCampaign = () => {
       },
     },
     {
-      title: "Action",
+      title: "Hành động",
       key: "action",
       render: (_, record) =>
         record.isActive ? (
@@ -197,7 +197,7 @@ const ManageCampaign = () => {
   return (
     <div className="p-4">
       <div className="flex justify-between items-center mb-4">
-        <h1 className="text-2xl font-bold mb-4">Campaign Management</h1>
+        <h1 className="text-2xl font-bold mb-4">Quản lý chiến dịch</h1>
         <Button
           type="primary"
           className="mb-4"

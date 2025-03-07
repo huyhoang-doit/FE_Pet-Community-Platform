@@ -55,7 +55,14 @@ const LeftSidebar = () => {
   const { isDisplayText, showSearchTab, showNotificationTab } = useSelector(
     (store) => store.sidebar
   );
-  const userRole = user.role;
+  const userRole = user?.role;
+
+  useEffect(() => {
+    
+    if (!user) {
+      navigate("/login");
+    }
+  }, [user, navigate]);
 
   const logoutHandler = async () => {
     try {
