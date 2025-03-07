@@ -28,6 +28,7 @@ import StaffSideBarLayout from "./components/layouts/StaffSideBarLayout";
 import ManageAdoptionPost from "./components/pages/StaffPages/Services/ManageAdoptionPost";
 import ManageAdoptionForms from "./components/pages/StaffPages/Services/ManageAdoptionForms";
 import ManageCampaign from "./components/pages/AdminPages/ManageCampaign";
+import ManageBlog from "@/components/pages/StaffPages/Services/ManageBlog";
 
 const browserRouter = createBrowserRouter([
   {
@@ -208,7 +209,7 @@ const browserRouter = createBrowserRouter([
       },
       {
         path: "manageBlog",
-        element: <ManagePet />,
+        element: <ManageBlog />,
       },
       {
         path: "approvePost",
