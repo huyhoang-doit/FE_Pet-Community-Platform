@@ -60,7 +60,7 @@ const CreateAdoptPostModal = ({ open, setOpen, pet }) => {
   };
 
   // Add emoji to caption
-  const handleEmojiClick = (emoji, setFieldValue, values) => {
+  const handleEmojiClick = (emoji, setFieldValue, values, onPostCreated) => {
     const textarea = captionRef.current;
     if (!textarea) return;
 
@@ -99,6 +99,7 @@ const CreateAdoptPostModal = ({ open, setOpen, pet }) => {
         setImagePreviews([]);
         toast.success(data.message);
         setOpen(false);
+        onPostCreated();
       }
     } catch (error) {
       toast.error(error.response?.data?.message || "Error creating post!");

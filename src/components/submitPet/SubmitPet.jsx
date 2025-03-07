@@ -1,10 +1,10 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import { dogBreeds } from "./dobBreeds";
 import { toast } from "sonner";
 import { readFileAsDataURL } from "@/lib/utils";
-import { submitPetAPI } from "@/apis/pet";
+import { getBreedsAPI, submitPetAPI } from "@/apis/pet";
 import { FaCloudUploadAlt } from "react-icons/fa";
 import { MdDelete } from "react-icons/md";
 import { motion } from "framer-motion";
@@ -44,10 +44,14 @@ const petValidationSchema = Yup.object({
   vaccinated: Yup.boolean().required("Vui lòng không để trống"),
 });
 
+
+
+
 const SubmitPet = () => {
   const [step, setStep] = useState(1);
   const [images, setImages] = useState([]);
   const [imagePreview, setImagePreview] = useState(null);
+  const [breeds, setBreeds] = useState([]);
 
   const fileChangeHandler = async (e, setFieldValue) => {
     const files = e.target.files;
@@ -59,6 +63,14 @@ const SubmitPet = () => {
       setImagePreview(firstImagePreview);
     }
   };
+  useEffect(() => {
+    const fetchBreeds = async () => {
+      const response = await getBreedsAPI();
+      console.log(response.data.data);
+      setBreeds(response.data.data);
+    };
+    fetchBreeds();
+  }, []);
 
   const submitData = async (values, { setSubmitting, resetForm }) => {
     try {
@@ -138,9 +150,9 @@ const SubmitPet = () => {
                     name="breed"
                     className=" w-full px-4 py-3 bg-[rgba(255,255,255,0.4)] shadow-md outline-none rounded-md border border-gray-200 focus:border-[#DA5BA9] focus:shadow-lg transition-all duration-300 ease-in-out"
                   >
-                    {dogBreeds.map((breed, index) => (
-                      <option key={index} value={breed}>
-                        {breed}
+                    {breeds.map((breed, index) => (
+                      <option key={index} value={breed._id}>
+                        {breed.name}
                       </option>
                     ))}
                   </Field>

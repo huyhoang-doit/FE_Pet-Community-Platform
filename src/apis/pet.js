@@ -16,9 +16,16 @@ export const submitPetAPI = async (formData) => {
 export const getPetNotApprovedAPI = async () => {
   return await authorizedAxiosInstance.get(`${BASE_URL}/pets/not-approved`);
 };
-export const getPetApprovedAPI = async () => {
-  return await authorizedAxiosInstance.get(`${BASE_URL}/pets/approved`);
+export const getPetApprovedAPI = async (
+  page,
+  limit,
+  sortBy = "createdAt:desc"
+) => {
+  const url = `${BASE_URL}/pets/approved?limit=${limit}&page=${page}&sortBy=${sortBy}`;
+  const response = await authorizedAxiosInstance.get(url);
+  return response;
 };
+
 export const updatePetAPI = async (petId, formData) => {
   console.log(petId);
   return await authorizedAxiosInstance.post(
@@ -36,4 +43,8 @@ export const approvePetAPI = async (petId) => {
   return await authorizedAxiosInstance.post(
     `${BASE_URL}/pets/approve/${petId}`
   );
+};
+
+export const getBreedsAPI = async () => {
+  return await authorizedAxiosInstance.get(`${BASE_URL}/pets/breeds`);
 };

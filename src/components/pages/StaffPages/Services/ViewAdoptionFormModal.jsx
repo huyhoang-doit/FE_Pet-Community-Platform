@@ -1,7 +1,13 @@
 /* eslint-disable react/prop-types */
-import { Modal, Descriptions, Divider, Image, Tag } from "antd";
+import { Modal, Descriptions, Divider, Image, Tag, Select, Button } from "antd";
+import { useState } from "react";
 import moment from "moment";
-const ViewAdoptionFormModal = ({ open, setOpen, form }) => {
+import { toast } from "sonner";
+import { updateAdoptionFormStatusAPI } from "@/apis/post";
+
+const { Option } = Select;
+
+const ViewAdoptionFormModal = ({ open, setOpen, form, onStatusUpdate }) => {
   if (!form) return null;
 
   const {
@@ -14,6 +20,30 @@ const ViewAdoptionFormModal = ({ open, setOpen, form }) => {
     periodicChecks,
     createdAt,
   } = form;
+
+  const [isEditing, setIsEditing] = useState(false);
+  const [newStatus, setNewStatus] = useState(status);
+
+  const handleStatusChange = (value) => {
+    setNewStatus(value);
+  };
+
+  const handleSaveStatus = async () => {
+    try {
+      const response = await updateAdoptionFormStatusAPI(form._id, newStatus);
+      if (response.status === 200) {
+        toast.success("Cập nhật trạng thái đơn nhận nuôi thành công");
+        setIsEditing(false);
+        if (onStatusUpdate) {
+          onStatusUpdate(form._id, newStatus); // Notify parent to refresh data
+        }
+      }
+    } catch (error) {
+      toast.error(
+        error.response?.data?.message || "Lỗi khi cập nhật trạng thái!"
+      );
+    }
+  };
 
   return (
     <Modal
@@ -130,21 +160,51 @@ const ViewAdoptionFormModal = ({ open, setOpen, form }) => {
               {message || "Không có"}
             </Descriptions.Item>
             <Descriptions.Item label="Trạng thái">
-              <Tag
-                color={
-                  status === "Pending"
-                    ? "yellow"
-                    : status === "Approved"
-                    ? "green"
-                    : "red"
-                }
-              >
-                {status === "Pending"
-                  ? "Đang chờ"
-                  : status === "Approved"
-                  ? "Đã duyệt"
-                  : "Đã từ chối"}
-              </Tag>
+              {isEditing ? (
+                <div className="flex items-center gap-2">
+                  <Select
+                    value={newStatus}
+                    onChange={handleStatusChange}
+                    style={{ width: 120 }}
+                  >
+                    <Option value="Pending">Đang chờ</Option>
+                    <Option value="Approved">Đã duyệt</Option>
+                    <Option value="Rejected">Đã từ chối</Option>
+                  </Select>
+                  <Button
+                    type="primary"
+                    onClick={handleSaveStatus}
+                    className="bg-blue-500 hover:bg-blue-600"
+                  >
+                    Lưu
+                  </Button>
+                  <Button onClick={() => setIsEditing(false)}>Hủy</Button>
+                </div>
+              ) : (
+                <div className="flex items-center gap-2">
+                  <Tag
+                    color={
+                      status === "Pending"
+                        ? "yellow"
+                        : status === "Approved"
+                        ? "green"
+                        : "red"
+                    }
+                  >
+                    {status === "Pending"
+                      ? "Đang chờ"
+                      : status === "Approved"
+                      ? "Đã duyệt"
+                      : "Đã từ chối"}
+                  </Tag>
+                  <Button
+                    onClick={() => setIsEditing(true)}
+                    className="bg-green-500 text-white hover:bg-green-600"
+                  >
+                    Chỉnh sửa
+                  </Button>
+                </div>
+              )}
             </Descriptions.Item>
             <Descriptions.Item label="Ngày tạo">
               {moment(createdAt).format("DD/MM/YYYY HH:mm")}

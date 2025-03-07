@@ -231,7 +231,7 @@ const AdoptionPost = ({ post }) => {
         <div className="flex items-center justify-start gap-2">
           <PawPrint style={{ width: 20, height: 20, color: "#ff5722" }} />
           <span className="text-sm font-medium text-gray-900">
-            Giống: {pet.breed}
+            Giống: {pet?.breed?.name}
           </span>
         </div>
         <div className="flex items-center justify-start gap-2">

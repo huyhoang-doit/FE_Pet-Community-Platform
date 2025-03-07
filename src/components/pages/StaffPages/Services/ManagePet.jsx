@@ -16,58 +16,67 @@ import { getPetApprovedAPI } from "@/apis/pet";
 import { Button } from "@/components/ui/button";
 import EditPetModal from "./EditPetModal";
 import CreateAdoptPostModal from "./CreateAdoptPostModal";
+import { CloudCog } from "lucide-react";
 
 const ManagePet = () => {
   const [pets, setPets] = useState([]);
+  const [totalPets, setTotalPets] = useState(0);
   const { Option } = Select;
   const [itemsPerPage] = useState(4);
   const [currentPage, setCurrentPage] = useState(1);
-  const [filteredPets, setFilteredPets] = useState(pets);
+  const [filteredPets, setFilteredPets] = useState([]);
   const [editingPet, setEditingPet] = useState(null);
-
   const [petCreatePost, setPetCreatePost] = useState(null);
   const [openCreatePost, setOpenCreatePost] = useState(false);
-
+  const [sortBy, setSortBy] = useState("createdAt:desc"); // Default sort
   const { Search } = Input;
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await getPetApprovedAPI();
-        setPets(response.data.data);
-      } catch (error) {
-        console.error("Error fetching pets:", error);
-      }
-    };
-    fetchData();
-  }, [editingPet]);
-
-  const handleSortCategory = (value) => {
-    if (value === "asc") {
-      setPets((prevPets) =>
-        [...prevPets].sort((a, b) => a.createdAt.localeCompare(b.createdAt))
-      );
-    } else if (value === "desc") {
-      setPets((prevPets) =>
-        [...prevPets].sort((a, b) => b.createdAt.localeCompare(a.createdAt))
-      );
+Fetch pets with pagination and sorting
+  const fetchPets = async (page = 1, limit = itemsPerPage, sort = sortBy) => {
+    try {
+      const response = await getPetApprovedAPI(page, limit, sort);
+      const fetchedPets = response.data.data.results;
+      setPets(fetchedPets);
+      setTotalPets(response.data.data.totalResults);
+      setFilteredPets(fetchedPets);
+    } catch (error) {
+      console.error("Error fetching pets:", error);
     }
   };
+
+  useEffect(() => {
+    fetchPets(currentPage, itemsPerPage, sortBy);
+  }, [currentPage, sortBy, editingPet]);
+
+  // Handle sort change
+  const handleSortCategory = (value) => {
+    setSortBy(value);
+    setCurrentPage(1); // Reset to first page when sorting changes
+  };
+
+  // Handle search
   const handleSearch = (value) => {
     if (!value) {
       setFilteredPets(pets);
       return;
     }
-
     const newFilteredPets = pets.filter((pet) =>
       pet.breed.toLowerCase().includes(value.toLowerCase())
     );
     setFilteredPets(newFilteredPets);
   };
 
-  useEffect(() => {
-    setFilteredPets(pets);
-  }, [pets]);
+  // Handle post creation completion
+  const handlePostCreated = () => {
+    setOpenCreatePost(false);
+    setPetCreatePost(null);
+    fetchPets(currentPage, itemsPerPage, sortBy);        
+  };
+
+  // Handle page change
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+  };
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -82,16 +91,16 @@ const ManagePet = () => {
           className="ml-4"
         />
         <Select
-          defaultValue=""
+          value={sortBy}
           onChange={handleSortCategory}
           style={{ width: "200px" }}
         >
-          <Option value="">No Sort</Option>
-          <Option value="asc">Sort by Date (ASC)</Option>
-          <Option value="desc">Sort by Date (DESC)</Option>
+          <Option value="createdAt:asc">Sort by Date (ASC)</Option>
+          <Option value="createdAt:desc">Sort by Date (DESC)</Option>
         </Select>
       </div>
-      {pets.length === 0 ? (
+
+      {filteredPets.length === 0 ? (
         <p className="text-gray-500">No pets waiting for approval.</p>
       ) : (
         <div className="overflow-x-auto w-full">
@@ -146,7 +155,7 @@ const ManagePet = () => {
                       {pet.name}
                     </td>
                     <td className="px-6 py-4 capitalize text-sm text-gray-700 dark:text-gray-300 border-b border-gray-200 dark:border-gray-700 border-r">
-                      {pet.breed}
+                      {pet.breed?.name}
                     </td>
                     <td className="px-6 py-4 capitalize text-sm text-gray-700 dark:text-gray-300 border-b border-gray-200 dark:border-gray-700 border-r">
                       <span
@@ -204,10 +213,6 @@ const ManagePet = () => {
                     </td>
                     <td className="px-6 py-4 capitalize text-sm text-gray-700 dark:text-gray-300 border-b border-gray-200 dark:border-gray-700 border-r">
                       {new Date(pet.createdAt).toLocaleDateString("vi-VN")}
-                      {console.log(
-                        "🚀 ~ ManagePet ~ pet.isAddPost:",
-                        pet.isAddPost
-                      )}
                     </td>
                     <td className="flex gap-4 px-6 py-4 capitalize text-sm text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-700 border-r">
                       <Button
@@ -234,32 +239,30 @@ const ManagePet = () => {
           </table>
         </div>
       )}
+
       <div className="mt-4 flex justify-end">
         <Pagination
           current={currentPage}
           pageSize={itemsPerPage}
-          total={pets.length}
-          onChange={setCurrentPage}
+          total={totalPets}
+          onChange={handlePageChange}
         />
       </div>
+
       {editingPet && (
         <EditPetModal
           visible={!!editingPet}
           pet={editingPet}
           onClose={() => setEditingPet(null)}
-          onUpdate={() =>
-            setPets((prev) =>
-              prev.map((p) =>
-                p._id === editingPet._id ? { ...p, ...editingPet } : p
-              )
-            )
-          }
+          onUpdate={() => fetchPets(currentPage, itemsPerPage, sortBy)}
         />
       )}
+
       <CreateAdoptPostModal
         open={openCreatePost}
         setOpen={setOpenCreatePost}
         pet={petCreatePost}
+        onPostCreated={handlePostCreated}
       />
     </div>
   );
