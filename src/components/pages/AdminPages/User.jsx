@@ -66,9 +66,9 @@ const User = () => {
     {
       title: (
         <div className="flex items-center gap-10">
-          Name
+          Tên người dùng
           <Search
-            placeholder="Search users..."
+            placeholder="Tìm kiếm người dùng..."
             onSearch={(value) => fetchUsers(1, value)}
             style={{ width: 200 }}
             allowClear
@@ -85,7 +85,7 @@ const User = () => {
       key: "email",
     },
     {
-      title: "Status",
+      title: "Trạng thái",
       dataIndex: "isBlocked",
       key: "status",
       render: (isBlocked) => (
@@ -95,7 +95,7 @@ const User = () => {
       ),
     },
     {
-      title: "Action",
+      title: "Hành động",
       key: "action",
       render: (_, record) =>
         !record.isBlocked ? (
@@ -117,7 +117,7 @@ const User = () => {
 
   return (
     <div className="p-4">
-      <h1 className="text-2xl font-bold mb-4">User Management</h1>
+      <h1 className="text-2xl font-bold mb-4">Quản lý người dùng</h1>
 
       <Spin spinning={loading}>
         <Table

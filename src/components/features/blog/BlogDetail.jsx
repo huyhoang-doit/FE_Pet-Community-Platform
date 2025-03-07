@@ -136,9 +136,10 @@ const BlogDetail = () => {
             />
 
             {/* Content */}
-            <div className={`${sharedClasses.textZinc700} space-y-4 mb-8`}>
-                {blog.content}
-            </div>
+            <div 
+                className={`${sharedClasses.textZinc700} space-y-4 mb-8 blog-content`}
+                dangerouslySetInnerHTML={{ __html: blog.content }}
+            />
 
             {/* Actions */}
             <div className="flex items-center gap-4 mb-6">

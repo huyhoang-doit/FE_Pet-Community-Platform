@@ -23,20 +23,20 @@ const Donate = () => {
 
   const columns = [
     {
-      title: "User",
+      title: "Người dùng",
       dataIndex: "user",
       key: "user",
       render: (user) => user?.username,
     },
     {
-      title: "Amount",
+      title: "Số tiền",
       dataIndex: "amount",
       key: "amount",
       sorter: (a, b) => a.amount - b.amount,
       render: (amount) => `${formatVND(amount)}`,
     },
     {
-      title: "Date",
+      title: "Ngày",
       dataIndex: "createdAt",
       key: "date",
       render: (date) => {
@@ -52,9 +52,9 @@ const Donate = () => {
     {
       title: (
         <div className="flex items-center gap-10">
-          Campain
+          Chiến dịch
           <Search
-            placeholder="Search users..."
+            placeholder="Tìm kiếm chiến dịch..."
             onSearch={(value) => getAllDonations(1, value)}
             style={{ width: 200 }}
             allowClear
@@ -66,7 +66,7 @@ const Donate = () => {
       render: (campaign) => campaign?.title,
     },
     {
-      title: "Status",
+      title: "Trạng thái",
       dataIndex: "status",
       key: "status",
       render: (status) => (
@@ -80,7 +80,7 @@ const Donate = () => {
       ),
     },
     {
-      title: "Message",
+      title: "Nội dung",
       dataIndex: "message",
       key: "message",
       width: 400,
@@ -118,14 +118,14 @@ const Donate = () => {
 
   return (
     <div className="p-4">
-      <h1 className="text-2xl font-bold mb-4">Donation Management</h1>
+      <h1 className="text-2xl font-bold mb-4">Quản lý quyên góp</h1>
       <Button
         type="primary"
         icon={<FileExcelOutlined />}
         onClick={exportToExcel}
         className="mb-4"
       >
-        Export to Excel
+        Xuất ra file Excel
       </Button>
       <Table
         columns={columns}

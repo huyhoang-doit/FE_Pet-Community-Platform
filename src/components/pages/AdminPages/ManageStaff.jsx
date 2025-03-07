@@ -59,9 +59,9 @@ const ManageStaff = () => {
     {
       title: (
         <div className="flex items-center gap-10">
-          Name
+          Tên nhân viên
           <Search
-            placeholder="Search users..."
+            placeholder="Tìm kiếm nhân viên..."
             onSearch={(value) => getAllStaff(1, value)}
             style={{ width: 200 }}
             allowClear
@@ -77,7 +77,7 @@ const ManageStaff = () => {
       key: "role",
     },
     {
-      title: "Status",
+      title: "Trạng thái",
       dataIndex: "isActived",
       key: "status",
       render: (isActived) => (
@@ -87,7 +87,7 @@ const ManageStaff = () => {
       ),
     },
     {
-      title: "Action",
+      title: "Hành động",
       key: "action",
       render: (_, record) =>
         record.status !== "banned" ? (
@@ -109,7 +109,7 @@ const ManageStaff = () => {
 
   return (
     <div className="p-4">
-      <h1 className="text-2xl font-bold mb-4">Staff Management</h1>
+      <h1 className="text-2xl font-bold mb-4">Quản lý nhân viên</h1>
       <Table
         columns={columns}
         dataSource={staffMembers}

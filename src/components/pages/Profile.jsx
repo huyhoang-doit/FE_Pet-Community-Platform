@@ -59,7 +59,7 @@ const Profile = () => {
     setNumberFollowers(userProfile?.followers.length);
     setNumberFollowing(userProfile?.following.length);
     setIsFollowing(userProfile?.followers.includes(user?.id));
-    getDonation(userProfile.id)
+    getDonation(userProfile?.id)
   }, [userProfile, user]);
 
   const followOrUnfollowHandler = async () => {

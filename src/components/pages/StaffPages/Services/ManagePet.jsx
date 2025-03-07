@@ -16,7 +16,6 @@ import { getPetApprovedAPI } from "@/apis/pet";
 import { Button } from "@/components/ui/button";
 import EditPetModal from "./EditPetModal";
 import CreateAdoptPostModal from "./CreateAdoptPostModal";
-import { CloudCog } from "lucide-react";
 
 const ManagePet = () => {
   const [pets, setPets] = useState([]);
@@ -68,7 +67,7 @@ const ManagePet = () => {
   const handlePostCreated = () => {
     setOpenCreatePost(false);
     setPetCreatePost(null);
-    fetchPets(currentPage, itemsPerPage, sortBy);        
+    fetchPets(currentPage, itemsPerPage, sortBy);
   };
 
   // Handle page change

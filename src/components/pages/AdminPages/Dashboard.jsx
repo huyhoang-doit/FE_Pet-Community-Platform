@@ -116,14 +116,14 @@ const Dashboard = () => {
 
   return (
     <div className="p-4">
-      <h1 className="text-2xl font-bold mb-4">Dashboard</h1>
+      <h1 className="text-2xl font-bold mb-4">Bảng điều khiển</h1>
 
       <div className="grid grid-cols-2 gap-4">
-        <Card title="Total Users" bordered={false} className="text-center">
+        <Card title="Tổng số người dùng" bordered={false} className="text-center">
           <p className="text-2xl font-bold">{totalUsers}</p>
         </Card>
         <Card
-          title={`Total Donations in ${currentMonthName}`}
+          title={`Tổng quyên góp trong tháng ${currentMonthName}`}
           bordered={false}
           className="text-center"
         >
@@ -131,7 +131,7 @@ const Dashboard = () => {
         </Card>
       </div>
 
-      <Card title="Monthly Donations" className="mt-4">
+      <Card title="Quyên góp hàng tháng" className="mt-4">
         <Line data={donationsData} />
       </Card>
 
