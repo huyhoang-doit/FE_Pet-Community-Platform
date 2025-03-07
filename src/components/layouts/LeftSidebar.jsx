@@ -389,7 +389,7 @@ const LeftSidebar = () => {
       <div
         ref={notificationRef}
         className={`notification-area fixed top-0 left-[80px] h-screen border-l-gray-300 bg-white z-20 overflow-y-auto transition-width duration-300 ease-in-out ${
-          showNotificationTab ? "w-[370px] border-x" : "w-0"
+          showNotificationTab ? "w-[15%] border-x" : "w-0"
         }`}
       >
         <div className="h-full w-full">
@@ -399,7 +399,7 @@ const LeftSidebar = () => {
       <div
         ref={searchRef}
         className={`search-area fixed top-0 left-[80px] h-screen border-l-gray-300 bg-white z-20 overflow-y-auto transition-width duration-300 ease-in-out ${
-          showSearchTab ? "w-[370px] border-x" : "w-0"
+          showSearchTab ? "w-[15%] border-x" : "w-0"
         }`}
       >
         <div className="h-full w-full">{showSearchTab && <TabSearch />}</div>

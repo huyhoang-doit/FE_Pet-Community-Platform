@@ -5,7 +5,7 @@ import {
 } from "@ant-design/icons";
 import { Button, Layout, Menu, theme, Input, Avatar } from "antd";
 import { useEffect, useState } from "react";
-import { Outlet, useNavigate, useLocation } from "react-router-dom";
+import { Outlet, useNavigate, useLocation, Link } from "react-router-dom";
 import { TbDogBowl } from "react-icons/tb";
 import { LuDog } from "react-icons/lu";
 import { BsPostcard } from "react-icons/bs";
@@ -137,10 +137,14 @@ const StaffSideBarLayout = () => {
       >
         <div className="h-full flex flex-col">
           {/* Logo */}
-          <div className="p-3 text-white text-center font-bold">
-            {userRole === "services_staff"
-              ? "Staff Services Panel"
-              : "Staff Forum Panel"}
+          <div className="flex justify-center items-center h-16">
+            <Link to="/">
+              <img
+                src="/assets/images/logo.png"
+                alt="logo"
+                className="w-100 h-10"
+              />
+            </Link>
           </div>
           {/* Menu chính */}
           <Menu

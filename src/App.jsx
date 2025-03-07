@@ -30,6 +30,7 @@ import ManageAdoptionForms from "./components/pages/StaffPages/Services/ManageAd
 import ManageCampaign from "./components/pages/AdminPages/ManageCampaign";
 import ManagePost from "./components/pages/StaffPages/Forum/ManagePost";
 import ManageBlog from "@/components/pages/StaffPages/Services/ManageBlog";
+import CampaignDetail from "./components/features/donate/CampaignDetail";
 
 const browserRouter = createBrowserRouter([
   {
@@ -85,6 +86,14 @@ const browserRouter = createBrowserRouter([
         element: (
           <ProtectedRoutes>
             <EditProfile />
+          </ProtectedRoutes>
+        ),
+      },
+      {
+        path: "/donate/:id",
+        element: (
+          <ProtectedRoutes>
+            <CampaignDetail />
           </ProtectedRoutes>
         ),
       },

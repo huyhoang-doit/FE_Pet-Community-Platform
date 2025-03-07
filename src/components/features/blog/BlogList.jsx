@@ -67,7 +67,7 @@ const BlogList = () => {
   };
 
   return (
-    <div className="container-fluid mx-auto p-6 bg-gray-100 min-h-screen">
+    <div className="container-fluid mx-auto bg-gray-100 min-h-screen">
       <div className="mb-6">
         <Header />
       </div>
@@ -111,7 +111,8 @@ const BlogList = () => {
                 >
                   <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
                     <h2 className="text-3xl font-bold">{blogs[0].title}</h2>
-                    <p className="text-lg mt-2 line-clamp-2">{blogs[0].content}</p>
+                    
+                    <p className="text-lg mt-2 line-clamp-2" dangerouslySetInnerHTML={{ __html: blogs[0].content }}></p>
                   </div>
                 </Card>
               </div>
@@ -136,7 +137,7 @@ const BlogList = () => {
                   >
                     <div className="p-4">
                       <h3 className="text-xl font-semibold">{blog.title}</h3>
-                      <p className="text-gray-600 line-clamp-2">{blog.content}</p>
+                      <p className="text-gray-600 line-clamp-2" dangerouslySetInnerHTML={{ __html: blog.content }}></p>
                       <div className="flex items-center gap-4">
                         <Button
                           type="link"

@@ -20,3 +20,13 @@ export const createCampaignAPI = async (values) => {
 export const deleteCampaignAPI = async (id) => {
   return await authorizedAxiosInstance.delete(`${BASE_URL}/campaign/${id}`);
 }
+
+export const getCampaignByIdAPI = async (id) => {
+  return await authorizedAxiosInstance.get(`${BASE_URL}/campaign/${id}`);
+}
+
+export const getDonationsByCampaignIdAPI = async (id) => {
+  return await authorizedAxiosInstance.get(`${BASE_URL}/campaign/${id}/donations`);
+}
+
+

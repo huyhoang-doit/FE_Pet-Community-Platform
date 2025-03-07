@@ -1,5 +1,4 @@
 import { Link, NavLink, useNavigate } from "react-router-dom";
-import { FaCartShopping, FaHeart } from "react-icons/fa6";
 import { useDispatch, useSelector } from "react-redux";
 import { handleLogoutAPI } from "@/apis/auth";
 import { setAuthUser, setChatUsers } from "@/redux/authSlice";
@@ -94,26 +93,6 @@ function Header() {
             />
           </Dropdown>
         )}
-
-        {/* Wishlist */}
-        <div className="relative">
-          <Link to="/wishlist">
-            <FaHeart className="cursor-pointer text-xl" />
-            <p className="absolute top-[-0.5rem] right-[-0.5rem] bg-red-600 text-white w-4 h-4 flex items-center justify-center rounded-full">
-              0
-            </p>
-          </Link>
-        </div>
-
-        {/* Cart */}
-        <div className="relative">
-          <Link to="/cart">
-            <FaCartShopping className="cursor-pointer text-xl" />
-            <p className="absolute top-[-0.5rem] right-[-0.5rem] bg-red-600 text-white w-4 h-4 flex items-center justify-center rounded-full">
-              0
-            </p>
-          </Link>
-        </div>
       </div>
     </header>
   );
