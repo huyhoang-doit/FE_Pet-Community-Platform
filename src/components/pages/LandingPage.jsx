@@ -92,11 +92,8 @@ function LandingPage() {
         </div>
       </div>
 
-      {/* Feedback */}
       <div className="bg-[#f1b434] text-center mb-5">
-        <h2 className="text-2xl font-bold text-black pt-5">
-          CUSTOMERS ARE SAYING
-        </h2>
+        <h2 className="text-2xl font-bold text-black pt-5">FOUNDER</h2>
         <div className="w-2/3 mx-auto">
           <SimpleSlider />
         </div>
