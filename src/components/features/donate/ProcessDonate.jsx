@@ -218,7 +218,7 @@ const ProcessDonate = ({ campaign }) => {
               </DialogContent>
             </Dialog>
             <Link
-              to="/donate/danh-cap-mat-troi.3/"
+              to={`/donate/${campaign?._id}`}
               className="button button rippleButton"
             >
               <span className="button-text">Xem</span>

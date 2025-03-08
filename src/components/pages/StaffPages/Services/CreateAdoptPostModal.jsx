@@ -14,7 +14,7 @@ import * as Yup from "yup";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import { MdDelete } from "react-icons/md";
 
-const CreateAdoptPostModal = ({ open, setOpen, pet }) => {
+const CreateAdoptPostModal = ({ open, setOpen, pet, onPostCreated }) => {
   const dispatch = useDispatch();
   const { user } = useSelector((store) => store.auth);
   const { posts } = useSelector((store) => store.post);
@@ -60,7 +60,7 @@ const CreateAdoptPostModal = ({ open, setOpen, pet }) => {
   };
 
   // Add emoji to caption
-  const handleEmojiClick = (emoji, setFieldValue, values, onPostCreated) => {
+  const handleEmojiClick = (emoji, setFieldValue, values, ) => {
     const textarea = captionRef.current;
     if (!textarea) return;
 
@@ -93,10 +93,12 @@ const CreateAdoptPostModal = ({ open, setOpen, pet }) => {
     try {
       setLoading(true);
       const { data } = await addAdoptPostsAPI(formData);
+      console.log(data);
       if (data.status === 201) {
         dispatch(setPosts([data.data, ...posts]));
         resetForm();
         setImagePreviews([]);
+        console.log("data", data);
         toast.success(data.message);
         setOpen(false);
         onPostCreated();

@@ -14,7 +14,7 @@ import {
 import { Button, Layout, Menu, theme, Avatar } from "antd";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Outlet, useNavigate, useLocation } from "react-router-dom";
+import { Outlet, useNavigate, useLocation, Link } from "react-router-dom";
 import { toast } from "sonner";
 
 const { Header, Sider, Content } = Layout;
@@ -67,8 +67,10 @@ const AdminLayout = () => {
       >
         <div className="h-full flex flex-col">
           {/* Logo */}
-          <div className="p-3 text-white text-center font-bold">
-            Admin Panel
+          <div className="flex justify-center items-center h-16"> 
+            <Link to="/">
+              <img src='/assets/images/logo.png' alt="logo" className="w-100 h-10" />
+            </Link>
           </div>
 
           {/* Menu */}
@@ -87,24 +89,24 @@ const AdminLayout = () => {
               {
                 key: "/admin/",
                 icon: <PieChartOutlined />,
-                label: "Dashboard",
+                label: "Bảng điều khiển",
               },
-              { key: "/admin/users", icon: <UserOutlined />, label: "Users" },
-              { key: "/admin/staff", icon: <TeamOutlined />, label: "Staffs" },
+              { key: "/admin/users", icon: <UserOutlined />, label: "Người dùng" },
+              { key: "/admin/staff", icon: <TeamOutlined />, label: "Nhân viên" },
               {
                 key: "/admin/donate",
                 icon: <UploadOutlined />,
-                label: "Donate",
+                label: "Quyên góp",
               },{
                 key: "/admin/campaign",
                 icon: <AlertOutlined />,
-                label: "Campaign",
+                label: "Chiến dịch",
               },
               { type: "divider" }, // Dòng phân cách
               {
                 key: "logout",
                 icon: <LogoutOutlined />,
-                label: <span className="text-red-500">Logout</span>,
+                label: <span className="text-red-500">Đăng xuất</span>,
               },
             ]}
             className="flex-1"

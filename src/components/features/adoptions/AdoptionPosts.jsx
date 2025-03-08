@@ -1,5 +1,4 @@
 import { Fragment, useEffect, useRef, useState } from "react";
-import { useDispatch } from "react-redux";
 import { toast } from "sonner";
 import AdoptionPost from "./AdoptionPost";
 import {
@@ -12,7 +11,6 @@ const AdoptionPosts = () => {
   const { id } = useParams();
   const [adoptPosts, setAdoptPosts] = useState([]);
   const [page, setPage] = useState(1);
-  const dispatch = useDispatch();
   const [hasMorePosts, setHasMorePosts] = useState(true);
   const loaderRef = useRef(null);
   const isInitialLoad = useRef(true);
@@ -62,12 +60,6 @@ const AdoptionPosts = () => {
     try {
       const nextPage = page + 1;
       setPage(nextPage);
-      const { data } = await fetchAllAdoptionPostsAPI(nextPage);
-      if (data.data.results.length === 0) {
-        setHasMorePosts(false);
-        return;
-      }
-      dispatch(setAdoptPosts([...adoptPosts, ...data.data.results]));
     } catch (error) {
       toast.error("Failed to load more posts");
     }
