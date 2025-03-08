@@ -16,7 +16,7 @@ import { getPetApprovedAPI } from "@/apis/pet";
 import { Button } from "@/components/ui/button";
 import EditPetModal from "./EditPetModal";
 import CreateAdoptPostModal from "./CreateAdoptPostModal";
-import { CloudCog } from "lucide-react";
+
 
 const ManagePet = () => {
   const [pets, setPets] = useState([]);
@@ -31,7 +31,7 @@ const ManagePet = () => {
   const [sortBy, setSortBy] = useState("createdAt:desc"); // Default sort
   const { Search } = Input;
 
-Fetch pets with pagination and sorting
+
   const fetchPets = async (page = 1, limit = itemsPerPage, sort = sortBy) => {
     try {
       const response = await getPetApprovedAPI(page, limit, sort);
@@ -70,7 +70,7 @@ Fetch pets with pagination and sorting
   const handlePostCreated = () => {
     setOpenCreatePost(false);
     setPetCreatePost(null);
-    fetchPets(currentPage, itemsPerPage, sortBy);        
+    fetchPets(currentPage, itemsPerPage, sortBy);
   };
 
   // Handle page change
@@ -159,17 +159,16 @@ Fetch pets with pagination and sorting
                     </td>
                     <td className="px-6 py-4 capitalize text-sm text-gray-700 dark:text-gray-300 border-b border-gray-200 dark:border-gray-700 border-r">
                       <span
-                        className={`${
-                          pet.health_status === "Healthy"
+                        className={`${pet.health_status === "Healthy"
                             ? "text-green-500 font-bold"
                             : pet.health_status === "Sick"
-                            ? "text-red-500 font-bold"
-                            : pet.health_status === "Injured"
-                            ? "text-orange-500 font-bold"
-                            : pet.health_status === "Recovering"
-                            ? "text-blue-500 font-bold"
-                            : "text-gray-700 dark:text-gray-300 font-bold"
-                        }`}
+                              ? "text-red-500 font-bold"
+                              : pet.health_status === "Injured"
+                                ? "text-orange-500 font-bold"
+                                : pet.health_status === "Recovering"
+                                  ? "text-blue-500 font-bold"
+                                  : "text-gray-700 dark:text-gray-300 font-bold"
+                          }`}
                       >
                         {pet.health_status}
                       </span>
