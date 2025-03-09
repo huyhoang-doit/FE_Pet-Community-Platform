@@ -21,7 +21,7 @@ const PostDetail = () => {
   }, [id]);
 
   return (
-    <div className="my-8 w-full max-w-[850px] ml-[35%] border">
+    <div className="my-8 w-full max-w-[850px] ml-[15%] border">
       <div className="flex h-[600px] bg-white">
         {/* Left side - Image */}
         <div className="w-[60%] bg-black ">

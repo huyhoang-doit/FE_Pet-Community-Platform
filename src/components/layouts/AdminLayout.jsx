@@ -1,6 +1,6 @@
 import { handleLogoutAPI } from "@/apis/auth";
-import { setAuthUser, setChatUsers } from "@/redux/authSlice";
-import { setPostPage, setPosts, setSelectedPost } from "@/redux/postSlice";
+import { setAuthUser } from "@/redux/authSlice";
+import { setPosts, setSelectedPost } from "@/redux/postSlice";
 import {
   AlertOutlined,
   LogoutOutlined,
@@ -44,8 +44,6 @@ const AdminLayout = () => {
         dispatch(setAuthUser(null));
         dispatch(setSelectedPost(null));
         dispatch(setPosts([]));
-        dispatch(setChatUsers([]));
-        dispatch(setPostPage(1));
         localStorage.removeItem("access_token");
         localStorage.removeItem("refresh_token");
         navigate("/");

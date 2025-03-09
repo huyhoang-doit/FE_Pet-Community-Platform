@@ -1,16 +1,21 @@
 import { Fragment, useEffect, useRef, useState } from "react";
 import Post from "./Post";
 import { useDispatch, useSelector } from "react-redux";
-import { setPostPage, setPosts } from "@/redux/postSlice";
+import { clearPosts, setPosts } from "@/redux/postSlice";
 import { fetchAllPostsAPI } from "@/apis/post";
 import { toast } from "sonner";
 
 const Posts = () => {
-  const { posts, page } = useSelector((store) => store.post);
+  const [page, setPage] = useState(0);
+  const { posts } = useSelector((store) => store.post);
   const dispatch = useDispatch();
   const [hasMorePosts, setHasMorePosts] = useState(true);
   const loaderRef = useRef(null);
   const isInitialLoad = useRef(true);
+
+  useEffect(() => {
+    dispatch(clearPosts());
+  }, []);
 
   useEffect(() => {
     const originalScrollRestoration = history.scrollRestoration;
@@ -40,7 +45,7 @@ const Posts = () => {
   const handleLoadMore = async () => {
     try {
       const nextPage = page + 1;
-      dispatch(setPostPage(nextPage));
+      setPage(nextPage);
       const { data } = await fetchAllPostsAPI(nextPage);
       if (data.data.results.length === 0) {
         setHasMorePosts(false);

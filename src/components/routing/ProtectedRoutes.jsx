@@ -4,8 +4,8 @@ import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
 import { handleLogoutAPI } from "@/apis/auth";
-import { setAuthUser, setChatUsers } from "@/redux/authSlice";
-import { setPostPage, setPosts, setSelectedPost } from "@/redux/postSlice";
+import { setAuthUser } from "@/redux/authSlice";
+import { setPosts, setSelectedPost } from "@/redux/postSlice";
 import { toast } from "sonner";
 
 const ProtectedRoutes = ({ children, allowedRoles = [] }) => {
@@ -15,31 +15,20 @@ const ProtectedRoutes = ({ children, allowedRoles = [] }) => {
 
   useEffect(() => {
     const accessToken = localStorage.getItem("access_token");
-    console.log(accessToken);
     if (!accessToken) {
+      console.log("logout at line 18 ProtectedRoutes");
+
       navigate("/login");
-      // logoutHandler();
+      logoutHandler();
       return;
     }
     const decoded = jwtDecode(accessToken);
-
-    try {
-      const currentTime = Date.now() / 1000;
-
-      if (decoded.exp < currentTime) {
-        logoutHandler();
-      }
-    } catch (error) {
-      logoutHandler();
-    }
-    
 
     if (
       user &&
       allowedRoles.length > 0 &&
       !allowedRoles.includes(decoded.role)
     ) {
-
       toast.error("You are not authorized to access this page");
       navigate("/");
     }
@@ -52,8 +41,6 @@ const ProtectedRoutes = ({ children, allowedRoles = [] }) => {
         dispatch(setAuthUser(null));
         dispatch(setSelectedPost(null));
         dispatch(setPosts([]));
-        dispatch(setChatUsers([]));
-        dispatch(setPostPage(1));
         localStorage.removeItem("access_token");
         localStorage.removeItem("refresh_token");
         navigate("/");
