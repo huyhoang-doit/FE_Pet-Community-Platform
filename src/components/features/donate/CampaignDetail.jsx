@@ -96,7 +96,7 @@ const CampaignDetail = () => {
                         alt={
                           donor?.user?.lastName + " " + donor?.user?.firstName
                         }
-                        className="w-full h-full rounded-full object-cover"
+                        className="w-full h-full rounded-full object-cover border border-gray-300"
                       />
                     )}
                   </div>

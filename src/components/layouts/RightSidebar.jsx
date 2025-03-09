@@ -6,13 +6,15 @@ import ProcessDonate from "../features/donate/ProcessDonate";
 import TopDonate from "../features/donate/TopDonate";
 import SuggestedUsers from "../features/users/SuggestedUsers";
 import StaffActions from "./StaffActions";
+import { Button } from "../ui/button";
+import { ArrowRight } from "lucide-react";
 
 const RightSidebar = () => {
   const { user } = useSelector((store) => store.auth);
   const userRole = user?.role ? user.role : "user";
-  const { campaign } = useSelector((store) => store.campaign);
+  const { campaigns } = useSelector((store) => store.campaign);
   const { topDonate } = useSelector((store) => store.donate);
-
+  
   return (
     <div className="my-10 pr-6">
       <div className="flex items-center gap-2">
@@ -32,8 +34,17 @@ const RightSidebar = () => {
           </span>
         </div>
       </div>
-      {!["services_staff", "forum_staff"].includes(userRole) && campaign && (
-        <ProcessDonate campaign={campaign} />
+      {!["services_staff", "forum_staff"].includes(userRole) && campaigns?.length > 0 && (
+        <>
+          <ProcessDonate campaigns={campaigns} />
+          <div className="mt-4">
+            <Link to="/campaigns">
+              <Button variant="outline" className="w-full">
+                Xem tất cả chiến dịch hiện tại <ArrowRight className="w-4 h-4 ml-2" />
+              </Button>
+            </Link>
+          </div>
+        </>
       )}
       {["services_staff", "forum_staff"].includes(userRole) && <StaffActions />}
       {topDonate.length > 0 && <TopDonate topDonate={topDonate} />}
