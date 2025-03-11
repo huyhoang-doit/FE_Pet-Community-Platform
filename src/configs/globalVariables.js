@@ -17,7 +17,7 @@ if (buildMode === 'development') {
 
 if (buildMode === 'production') {
     BASE_URL = 'https://api.petlove.io.vn/api/v1'
-    FE_URL = 'http://localhost:4173'
+    FE_URL = 'https://petlove.io.vn'
     BASE_WS = 'https://api.petlove.io.vn'
 }
 
