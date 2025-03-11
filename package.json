@@ -4,10 +4,10 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "cross-env NODE_ENV=development vite",
-    "build": "vite build",
+    "dev": "cross-env VITE_BUILD_MODE=development vite",
+    "build": "cross-env VITE_BUILD_MODE=production vite build --base=./",
     "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
-    "preview": "vite preview"
+    "preview": "cross-env VITE_BUILD_MODE=production vite preview"
   },
   "dependencies": {
     "@ant-design/icons": "^5.6.1",
