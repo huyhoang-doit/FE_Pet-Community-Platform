@@ -15,9 +15,9 @@ import { IoHomeOutline } from "react-icons/io5";
 import { useDispatch, useSelector } from "react-redux";
 import { handleLogoutAPI } from "@/apis/auth";
 import { FaListCheck } from "react-icons/fa6";
-import { setAuthUser, setChatUsers } from "@/redux/authSlice";
+import { setAuthUser } from "@/redux/authSlice";
 import { MdOutlinePostAdd } from "react-icons/md";
-import { setPostPage, setPosts, setSelectedPost } from "@/redux/postSlice";
+import { setPosts, setSelectedPost } from "@/redux/postSlice";
 import { toast } from "sonner";
 
 const { Header, Sider, Content } = Layout;
@@ -114,8 +114,6 @@ const StaffSideBarLayout = () => {
         dispatch(setAuthUser(null));
         dispatch(setSelectedPost(null));
         dispatch(setPosts([]));
-        dispatch(setChatUsers([]));
-        dispatch(setPostPage(1));
         localStorage.removeItem("access_token");
         localStorage.removeItem("refresh_token");
         navigate("/");

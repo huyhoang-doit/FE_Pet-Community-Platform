@@ -1,16 +1,26 @@
 import * as XLSX from "xlsx";
-import { Table, Button, Tag } from "antd";
+import { Table, Button, Tag, Select } from "antd";
 import { FileExcelOutlined } from "@ant-design/icons";
 import { useEffect, useState } from "react";
 import Search from "antd/es/input/Search";
-import { getAllDonationsAPI } from "@/apis/admin";
 import { formatVND } from "@/utils/formatVND";
+import { getAllDonateAPI } from "@/apis/donate";
+import { fetchCampaignsAPI } from "@/apis/campaign";
 
 const Donate = () => {
   const [donations, setDonations] = useState([]);
   const [limit] = useState(5);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalResults, setTotalResults] = useState(0);
+  // eslint-disable-next-line no-unused-vars
+  const [searchDescription, setSearchDescription] = useState("");
+  const [selectedCampaign, setSelectedCampaign] = useState(null);
+  const [campaigns, setCampaigns] = useState([]);
+
+  useEffect(() => {
+    getCampaignOptions();
+  }, []);
+
   const exportToExcel = () => {
     const ws = XLSX.utils.json_to_sheet(donations);
     const wb = XLSX.utils.book_new();
@@ -19,6 +29,16 @@ const Donate = () => {
       wb,
       `donations-${new Date().toISOString().slice(0, 10)}.xlsx`
     );
+  };
+
+  const getCampaignOptions = async () => {
+    try {
+      const { data } = await fetchCampaignsAPI(1, "");
+      setCampaigns(data.data.results);
+    } catch (error) {
+      console.error("Error fetching campaigns:", error);
+      return [];
+    }
   };
 
   const columns = [
@@ -53,11 +73,18 @@ const Donate = () => {
       title: (
         <div className="flex items-center gap-10">
           Chiến dịch
-          <Search
-            placeholder="Tìm kiếm chiến dịch..."
-            onSearch={(value) => getAllDonations(1, value)}
+          <Select
+            placeholder="Chọn chiến dịch"
             style={{ width: 200 }}
+            options={campaigns?.map((campaign) => ({
+              label: campaign.title,
+              value: campaign._id,
+            }))}
             allowClear
+            onChange={(value) => {
+              setSelectedCampaign(value);
+              getAllDonations(1, "", value);
+            }}
           />
         </div>
       ),
@@ -80,29 +107,43 @@ const Donate = () => {
       ),
     },
     {
-      title: "Nội dung",
-      dataIndex: "message",
-      key: "message",
+      title: (
+        <div className="flex items-center gap-10">
+          Nội dung
+          <Search
+            placeholder="Tìm kiếm nội dung..."
+            onSearch={(value) => {
+              setSearchDescription(value);
+              getAllDonations(1, value, selectedCampaign);
+            }}
+            style={{ width: 200 }}
+            allowClear
+          />
+        </div>
+      ),
+      dataIndex: "description",
+      key: "description",
       width: 400,
     },
   ];
 
-  const getAllDonations = async (page = 1, search = "") => {
+  const getAllDonations = async (page = 1, description = "", campaign = "") => {
     try {
-      const { data } = await getAllDonationsAPI(
+      const { data } = await getAllDonateAPI(
         page,
-        search ? 1000 : limit,
-        search
+        limit,
+        description,
+        campaign
       );
       if (data?.data.results) {
         console.log(data.data);
         setTotalResults(data.data.totalResults);
       }
-      
+
       const donationsData = Array.isArray(data?.data.results)
         ? data.data.results
         : [];
-        
+
       setDonations(donationsData);
     } catch (error) {
       console.error("Error fetching donations:", error);

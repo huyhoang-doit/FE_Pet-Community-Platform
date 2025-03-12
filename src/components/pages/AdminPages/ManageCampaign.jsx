@@ -22,6 +22,7 @@ import { formatVND } from "@/utils/formatVND";
 import { formatDate } from "@/utils/formatDateTime";
 import { PlusOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
+import { Link } from "react-router-dom";
 
 const ManageCampaign = () => {
   const [campaigns, setCampaigns] = useState([]);
@@ -52,8 +53,6 @@ const ManageCampaign = () => {
   };
 
   const handleDelete = async (id) => {
-    console.log(id);
-
     try {
       const response = await deleteCampaignAPI(id);
       if (response?.status === 200) {
@@ -125,7 +124,7 @@ const ManageCampaign = () => {
       render: (currentAmount) => formatVND(currentAmount),
     },
     {
-      title: "Số tiền cần thiết",
+      title: "Mục tiêu",
       dataIndex: "targetAmount",
       key: "targetAmount",
       render: (targetAmount) => formatVND(targetAmount),
@@ -176,16 +175,21 @@ const ManageCampaign = () => {
       key: "action",
       render: (_, record) =>
         record.isActive ? (
-          <Popconfirm
-            title="Are you sure to stop this campaign?"
-            onConfirm={() => handleDelete(record?._id)}
-            okText="Yes"
-            cancelText="No"
-          >
-            <Button type="primary" danger>
-              Delete
-            </Button>
-          </Popconfirm>
+          <>
+            <Link to={`/donate/${record?._id}`} target="_blank" className="mr-2">
+              <Button type="primary">View</Button>
+            </Link>
+            <Popconfirm
+              title="Are you sure to stop this campaign?"
+              onConfirm={() => handleDelete(record?._id)}
+              okText="Yes"
+              cancelText="No"
+            >
+              <Button type="primary" danger>
+                Delete
+              </Button>
+            </Popconfirm>
+          </>
         ) : (
           <Button type="primary" danger disabled>
             Delete

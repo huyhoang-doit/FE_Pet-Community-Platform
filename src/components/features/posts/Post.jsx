@@ -29,12 +29,12 @@ const Post = ({ post }) => {
   const [open, setOpen] = useState(false);
   const { user } = useSelector((store) => store.auth);
   const { posts } = useSelector((store) => store.post);
-  const [liked, setLiked] = useState(post.likes.includes(user?.id) || false);
+  const [liked, setLiked] = useState(post?.likes?.includes(user?.id) || false);
   const [bookmarked, setBookmarked] = useState(
-    user.bookmarks.includes(post?._id) || false
+    user?.bookmarks?.includes(post?._id) || false
   );
-  const [postLike, setPostLike] = useState(post.likes.length);
-  const [comment, setComment] = useState(post.comments);
+  const [postLike, setPostLike] = useState(post?.likes?.length);
+  const [comment, setComment] = useState(post?.comments);
   const dispatch = useDispatch();
 
   const changeEventHandler = (e) => {
@@ -144,13 +144,13 @@ const Post = ({ post }) => {
               <span className="font-medium text-sm">
                 {post.author?.username}
               </span>
-              {post.author.isVerified && <VerifiedBadge size={14} />}
+              {post?.author?.isVerified && <VerifiedBadge size={14} />}
             </div>
           </Link>
           <span className="text-sm text-gray-500">
             • {calculateTimeAgo(post.createdAt)}
           </span>
-          {user?.id === post.author.id && (
+          {user?.id === post?.author?.id && (
             <Badge variant="secondary">Author</Badge>
           )}
         </div>
@@ -171,7 +171,7 @@ const Post = ({ post }) => {
             <Button variant="ghost" className="cursor-pointer w-fit">
               Add to favorites
             </Button>
-            {user && user?.id === post?.author.id && (
+            {user && user?.id === post?.author?.id && (
               <Button
                 onClick={deletePostHandler}
                 variant="ghost"
@@ -184,8 +184,8 @@ const Post = ({ post }) => {
         </Dialog>
       </div>
 
-      {post.image.length + post.video.length === 1 ? (
-        post.image.length === 1 ? (
+      {post?.image?.length + post?.video?.length === 1 ? (
+        post?.image?.length === 1 ? (
           <div className="border border-gray-200 rounded-sm p-1 my-2 bg-black">
             <img
               className="w-full aspect-[4/5] object-cover"
@@ -208,11 +208,23 @@ const Post = ({ post }) => {
         <div className="border border-gray-200 rounded-sm p-1 my-2 bg-black">
           <Carousel autoSlide={false}>
             {[
-              ...post.image.map((image) => (
-                <img key={image} src={image} alt="carousel_img" className="w-full aspect-[4/5] object-cover" />
+              ...(post?.image ?? []).map((image) => (
+                <img
+                  key={image}
+                  src={image}
+                  alt="carousel_img"
+                  className="w-full aspect-[4/5] object-cover"
+                />
               )),
-              ...post.video.map((video) => (
-                <video key={video} src={video} autoPlay muted loop className="w-full aspect-[4/5] object-cover" />
+              ...(post?.video ?? []).map((video) => (
+                <video
+                  key={video}
+                  src={video}
+                  autoPlay
+                  muted
+                  loop
+                  className="w-full aspect-[4/5] object-cover"
+                />
               )),
             ]}
           </Carousel>
@@ -265,8 +277,8 @@ const Post = ({ post }) => {
             to={`/profile/${post.author?.username}`}
             className="font-medium inline-flex items-center gap-1"
           >
-            {post.author?.username}
-            {post.author.isVerified && (
+            {post?.author?.username}
+            {post?.author?.isVerified && (
               <VerifiedBadge size={14} style={{ display: "inline-block" }} />
             )}
           </Link>
@@ -276,7 +288,7 @@ const Post = ({ post }) => {
         </span>
       </span>
       <br />
-      {comment.length > 0 && (
+      {comment?.length > 0 && (
         <span
           onClick={() => {
             dispatch(setSelectedPost(post));
@@ -284,7 +296,7 @@ const Post = ({ post }) => {
           }}
           className="cursor-pointer text-sm text-gray-400"
         >
-          View all {comment.length} comments
+          View all {comment?.length} comments
         </span>
       )}
       <CommentDialog open={open} setOpen={setOpen} />

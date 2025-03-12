@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
-import { setChatUsers, setSelectedUser } from "@/redux/authSlice";
+import { setSelectedUser } from "@/redux/authSlice";
 import { Input } from "../ui/input";
 import { MessageCircleCode } from "lucide-react";
 import { setMessages } from "@/redux/chatSlice";
 import { useParams } from "react-router-dom";
-import { getProfileByIdAPI } from "@/apis/user";
+import { getChatUserAPI, getProfileByIdAPI } from "@/apis/user";
 import { sendMessageAPI } from "@/apis/message";
 import { calculateTimeAgo } from "@/utils/calculateTimeAgo";
 import { Button } from "../ui/button";
@@ -15,9 +15,18 @@ import Messages from "../features/messages/Messages";
 const ChatPage = () => {
   const { id } = useParams();
   const [textMessage, setTextMessage] = useState("");
-  const { user, selectedUser, chatUsers } = useSelector((store) => store.auth);
+  const { user, selectedUser } = useSelector((store) => store.auth);
   const { onlineUsers, messages } = useSelector((store) => store.chat);
   const dispatch = useDispatch();
+  const [chatUsers, setChatUsers] = useState([]);
+
+  useEffect(() => {
+    const fetchChatUsers = async () => {
+      const { data } = await getChatUserAPI();
+      setChatUsers(data.data);
+    };
+    fetchChatUsers();
+  }, []);
 
   useEffect(() => {
     if (id) {
@@ -36,19 +45,20 @@ const ChatPage = () => {
         dispatch(setMessages([...messages, data.newMessage]));
         setTextMessage("");
 
-        const isExistingChat = chatUsers.some(
-          (user) => user.id === receiverId
-        );
-        
+        const isExistingChat = chatUsers.some((user) => user.id === receiverId);
+
         if (!isExistingChat) {
-          dispatch(setChatUsers([{ 
-            ...selectedUser,
-            lastMessage: {
-              content: textMessage,
-              time: new Date().toISOString(),
-              from: user.id,
+          setChatUsers([
+            {
+              ...selectedUser,
+              lastMessage: {
+                content: textMessage,
+                time: new Date().toISOString(),
+                from: user.id,
+              },
             },
-          }, ...chatUsers]));
+            ...chatUsers,
+          ]);
         }
       }
     } catch (error) {
@@ -61,7 +71,7 @@ const ChatPage = () => {
       dispatch(setSelectedUser(null));
     };
   }, []);
-  
+
   return (
     <div className="flex ml-[20px] h-screen">
       <section className="w-full md:w-1/5 border-r border-r-gray-300">
@@ -80,9 +90,8 @@ const ChatPage = () => {
               <div
                 key={suggestedUser.id}
                 onClick={() => dispatch(setSelectedUser(suggestedUser))}
-                className=
-                {`flex gap-3 items-center cursor-pointer py-2 ${
-                  isSelected ? 'bg-gray-100' : 'hover:bg-gray-50'
+                className={`flex gap-3 items-center cursor-pointer py-2 ${
+                  isSelected ? "bg-gray-100" : "hover:bg-gray-50"
                 }`}
               >
                 <div className="relative">

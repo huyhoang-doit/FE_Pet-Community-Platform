@@ -31,6 +31,7 @@ import ManageCampaign from "./components/pages/AdminPages/ManageCampaign";
 import ManagePost from "./components/pages/StaffPages/Forum/ManagePost";
 import ManageBlog from "@/components/pages/StaffPages/Services/ManageBlog";
 import CampaignDetail from "./components/features/donate/CampaignDetail";
+import Campaigns from "./pages/Campaigns";
 
 const browserRouter = createBrowserRouter([
   {
@@ -160,6 +161,14 @@ const browserRouter = createBrowserRouter([
         element: (
           <ProtectedRoutes>
             <SubmitPet />
+          </ProtectedRoutes>
+        ),
+      },
+      {
+        path: "/campaigns",
+        element: (
+          <ProtectedRoutes>
+            <Campaigns />
           </ProtectedRoutes>
         ),
       },

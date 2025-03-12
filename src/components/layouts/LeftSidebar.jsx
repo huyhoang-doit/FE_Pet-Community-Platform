@@ -13,8 +13,8 @@ import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { toast } from "sonner";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { setAuthUser, setChatUsers } from "@/redux/authSlice";
-import { setPostPage, setPosts, setSelectedPost } from "@/redux/postSlice";
+import { setAuthUser } from "@/redux/authSlice";
+import { setPosts, setSelectedPost } from "@/redux/postSlice";
 import {
   setIsDisplayText,
   setShowNotificationTab,
@@ -58,8 +58,10 @@ const LeftSidebar = () => {
   const userRole = user?.role;
 
   useEffect(() => {
-    
     if (!user) {
+      dispatch(setAuthUser(null));
+      localStorage.removeItem("access_token");
+      localStorage.removeItem("refresh_token");
       navigate("/login");
     }
   }, [user, navigate]);
@@ -71,8 +73,6 @@ const LeftSidebar = () => {
         dispatch(setAuthUser(null));
         dispatch(setSelectedPost(null));
         dispatch(setPosts([]));
-        dispatch(setChatUsers([]));
-        dispatch(setPostPage(1));
         localStorage.removeItem("access_token");
         localStorage.removeItem("refresh_token");
         navigate("/");
@@ -396,7 +396,7 @@ const LeftSidebar = () => {
       <div
         ref={notificationRef}
         className={`notification-area fixed top-0 left-[80px] h-screen border-l-gray-300 bg-white z-20 overflow-y-auto transition-width duration-300 ease-in-out ${
-          showNotificationTab ? "w-[15%] border-x" : "w-0"
+          showNotificationTab ? "w-[20%] border-x" : "w-0"
         }`}
       >
         <div className="h-full w-full">
@@ -406,7 +406,7 @@ const LeftSidebar = () => {
       <div
         ref={searchRef}
         className={`search-area fixed top-0 left-[80px] h-screen border-l-gray-300 bg-white z-20 overflow-y-auto transition-width duration-300 ease-in-out ${
-          showSearchTab ? "w-[15%] border-x" : "w-0"
+          showSearchTab ? "w-[20%] border-x" : "w-0"
         }`}
       >
         <div className="h-full w-full">{showSearchTab && <TabSearch />}</div>

@@ -125,7 +125,7 @@ const Profile = () => {
       : donations;
 
   return (
-    <div className="flex max-w-8xl justify-center mx-auto">
+    <div className="flex max-w-8xl justify-center mx-auto" style={{padding: "0 100px"}}>
       <div className="flex flex-col gap-20 p-8 w-full">
         <div className="grid grid-cols-2">
           <section className="flex items-center justify-center">
