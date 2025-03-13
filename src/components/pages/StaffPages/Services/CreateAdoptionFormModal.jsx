@@ -203,35 +203,33 @@ const CreateAdoptionFormModal = ({ open, setOpen, post, onSubmit }) => {
 
         {/* Pet Information */}
         <div className="mb-6 p-4 bg-gray-50 rounded-md">
-          <h3 className="text-lg font-medium text-gray-800 mb-2">
-            Thông tin thú cưng
-          </h3>
-          <div className="grid grid-cols-2 gap-2 text-sm text-gray-700">
-            <p>
-              <span className="font-semibold">Tên thú cưng:</span>{" "}
-              {post.pet?.name || "Không rõ"}
-            </p>
-            <p>
-              <span className="font-semibold">Loài:</span>{" "}
-              {post.pet?.species || post.pet?.breed || "Không rõ"}
-            </p>
-            <p>
-              <span className="font-semibold">Tuổi:</span>{" "}
-              {post.pet?.age || "Không rõ"}
-            </p>
-            <p>
-              <span className="font-semibold">Giới tính:</span>{" "}
-              {post.pet?.gender || "Không rõ"}
-            </p>
-          </div>
-          {post.image?.length > 0 && (
-            <img
-              src={post.image[0]}
-              alt={post.pet?.name || "Pet"}
-              className="mt-2 w-24 h-24 object-cover rounded-md"
-            />
-          )}
-        </div>
+  <h3 className="text-lg font-medium text-gray-800 mb-2">Thông tin thú cưng</h3>
+  <div className="grid grid-cols-2 gap-2 text-sm text-gray-700">
+    <p>
+      <span className="font-semibold">Tên thú cưng:</span>{" "}
+      {post.pet?.name || "Không rõ"}
+    </p>
+    <p>
+      <span className="font-semibold">Loài:</span>{" "}
+      {post.pet?.species || post.pet?.breed?.name || "Không rõ"}
+    </p>
+    <p>
+      <span className="font-semibold">Tuổi:</span>{" "}
+      {post.pet?.age || "Không rõ"}
+    </p>
+    <p>
+      <span className="font-semibold">Giới tính:</span>{" "}
+      {post.pet?.gender || "Không rõ"}
+    </p>
+  </div>
+  {post.image?.length > 0 && (
+    <img
+      src={post.image[0]}
+      alt={post.pet?.name || "Pet"}
+      className="mt-2 w-24 h-24 object-cover rounded-md"
+    />
+  )}
+</div>
 
         {/* User Search */}
         <div className="mb-6">
@@ -335,7 +333,7 @@ const CreateAdoptionFormModal = ({ open, setOpen, post, onSubmit }) => {
                   <SelectValue placeholder="Chọn tỉnh/thành phố" />
                 </SelectTrigger>
                 <SelectContent>
-                  {provinces.map((prov) => (
+                  {provinces?.map((prov) => (
                     <SelectItem key={prov.code} value={prov.code.toString()}>
                       {prov.name}
                     </SelectItem>
@@ -356,7 +354,7 @@ const CreateAdoptionFormModal = ({ open, setOpen, post, onSubmit }) => {
                   <SelectValue placeholder="Chọn quận/huyện" />
                 </SelectTrigger>
                 <SelectContent>
-                  {districts.map((dist) => (
+                  {districts?.map((dist) => (
                     <SelectItem key={dist.code} value={dist.code.toString()}>
                       {dist.name}
                     </SelectItem>
@@ -374,7 +372,7 @@ const CreateAdoptionFormModal = ({ open, setOpen, post, onSubmit }) => {
                   <SelectValue placeholder="Chọn phường/xã" />
                 </SelectTrigger>
                 <SelectContent>
-                  {wards.map((w) => (
+                  {wards?.map((w) => (
                     <SelectItem key={w.code} value={w.code.toString()}>
                       {w.name}
                     </SelectItem>
