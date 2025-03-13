@@ -157,3 +157,9 @@ export const addPeriodicCheckAPI = async (adoptionFormId, checkData) => {
   }
 };
 
+export const likeOrDislikeAdoptionPostAPI = async (postId, action) => {
+  return await authorizedAxiosInstance.put(
+    `${BASE_URL}/adoption-post/${postId}/${action}`
+  );
+};
+
