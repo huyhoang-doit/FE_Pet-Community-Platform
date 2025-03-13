@@ -1,10 +1,12 @@
-import { Button, Pagination, Select } from "antd";
+import { Button, Pagination, Select, Modal, Timeline, Tag, Descriptions } from "antd";
 import { useEffect, useState } from "react";
 import ViewAdoptionFormModal from "./ViewAdoptionFormModal";
 import PeriodicCheckModal from "./PeriodicCheckModal";
 import { toast } from "sonner";
 import { fetchAllAdoptionFormsAPI } from "@/apis/post";
 import { useSelector } from "react-redux";
+import moment from "moment";
+import { CheckCircleOutlined, ExclamationCircleOutlined, CloseCircleOutlined } from "@ant-design/icons";
 
 const { Option } = Select;
 
@@ -99,6 +101,89 @@ const ManageAdoptionForms = () => {
     );
     setViewModalOpen(false);
     fetchForms(); 
+  };
+
+  const isCheckNeeded = (form) => {
+    if (!form.next_check_date) return false;
+    const now = moment();
+    const checkDate = moment(form.next_check_date);
+    return now.isSameOrAfter(checkDate, 'day');
+  };
+
+  const [viewResultsModalOpen, setViewResultsModalOpen] = useState(false);
+  const [selectedChecks, setSelectedChecks] = useState([]);
+
+  const handleViewResults = (form) => {
+    setSelectedForm(form);
+    setSelectedChecks(form.periodicChecks || []);
+    setViewResultsModalOpen(true);
+  };
+
+  const renderCheckStatus = (check) => {
+    const statusConfig = {
+      'Good': {
+        color: 'success',
+        icon: <CheckCircleOutlined />,
+        text: 'Tốt'
+      },
+      'Needs Attention': {
+        color: 'warning',
+        icon: <ExclamationCircleOutlined />,
+        text: 'Cần chú ý'
+      },
+      'Critical': {
+        color: 'error',
+        icon: <CloseCircleOutlined />,
+        text: 'Nghiêm trọng'
+      }
+    };
+
+    const status = statusConfig[check.status];
+
+    return (
+      <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm mb-6 border border-gray-200 dark:border-gray-700">
+        <Descriptions
+          title={
+            <div className="flex items-center gap-2 mb-4">
+              <span className="text-lg font-semibold">Chi tiết kiểm tra</span>
+              <Tag icon={status?.icon} color={status?.color}>
+                {status?.text}
+              </Tag>
+            </div>
+          }
+          bordered
+          column={1}
+          className="w-full"
+        >
+          <Descriptions.Item label="Ngày kiểm tra">
+            {moment(check.checkDate).format('DD/MM/YYYY HH:mm')}
+          </Descriptions.Item>
+          <Descriptions.Item label="Người kiểm tra">
+            {check.checkedBy?.username || 'N/A'}
+          </Descriptions.Item>
+          <Descriptions.Item label="Ghi chú">
+            {check.notes || 'Không có ghi chú'}
+          </Descriptions.Item>
+        </Descriptions>
+
+        {check.image_url && (
+          <div className="mt-4">
+            <p className="font-medium mb-2">Hình ảnh kiểm tra:</p>
+            <div className="relative group">
+              <img 
+                src={check.image_url} 
+                alt="Check result" 
+                className="w-full max-w-lg rounded-lg cursor-pointer transition-transform hover:scale-105"
+                onClick={() => window.open(check.image_url, '_blank')}
+              />
+              <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-10 transition-opacity rounded-lg flex items-center justify-center">
+                <span className="text-white opacity-0 group-hover:opacity-100">Nhấn để xem ảnh đầy đủ</span>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+    );
   };
 
   return (
@@ -203,13 +288,27 @@ const ManageAdoptionForms = () => {
                         Xem đơn
                       </Button>
                     ) : (
-                      <Button
-                        onClick={() => handleCheckClick(form)}
-                        className="bg-purple-500 text-white px-4 py-2 rounded-md hover:bg-purple-600"
-                        disabled={form.periodicChecks.length >= 3}
-                      >
-                        Kiểm tra ({form.periodicChecks.length}/3)
-                      </Button>
+                      <div className="flex gap-2">
+                        <Button
+                          onClick={() => handleCheckClick(form)}
+                          className={`${
+                            isCheckNeeded(form) 
+                              ? 'bg-red-500 hover:bg-red-600' 
+                              : 'bg-purple-500 hover:bg-purple-600'
+                          } text-white px-4 py-2 rounded-md`}
+                          disabled={form.periodicChecks.length >= 3}
+                        >
+                          {isCheckNeeded(form) ? 'Cần kiểm tra!' : 'Kiểm tra'} ({form.periodicChecks.length}/3)
+                        </Button>
+                        {form.periodicChecks.length > 0 && (
+                          <Button
+                            onClick={() => handleViewResults(form)}
+                            className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
+                          >
+                            Xem kết quả
+                          </Button>
+                        )}
+                      </div>
                     )}
                   </td>
                 </tr>
@@ -246,6 +345,42 @@ const ManageAdoptionForms = () => {
           currentUser={user}
         />
       )}
+
+      <Modal
+        title={
+          <div className="flex items-center gap-2">
+            <span className="text-xl">Lịch sử kiểm tra định kỳ</span>
+            <Tag color="processing">{selectedForm?.pet?.name || 'N/A'}</Tag>
+          </div>
+        }
+        open={viewResultsModalOpen}
+        onCancel={() => setViewResultsModalOpen(false)}
+        footer={null}
+        width={800}
+        className="periodic-check-modal"
+      >
+        <div className="max-h-[70vh] overflow-y-auto px-4">
+          {selectedChecks.length > 0 ? (
+            <Timeline
+              mode="left"
+              items={selectedChecks.map((check, index) => ({
+                color: check.status === 'Good' ? 'green' : check.status === 'Needs Attention' ? 'yellow' : 'red',
+                label: moment(check.checkDate).format('DD/MM/YYYY'),
+                children: (
+                  <div key={check._id || index}>
+                    <h3 className="font-bold mb-4 text-lg">Đợt kiểm tra #{index + 1}</h3>
+                    {renderCheckStatus(check)}
+                  </div>
+                )
+              }))}
+            />
+          ) : (
+            <div className="text-center py-8">
+              <p className="text-gray-500 text-lg">Chưa có kết quả kiểm tra nào</p>
+            </div>
+          )}
+        </div>
+      </Modal>
     </div>
   );
 };
