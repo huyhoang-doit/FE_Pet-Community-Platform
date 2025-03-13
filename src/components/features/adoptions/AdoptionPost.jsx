@@ -11,11 +11,13 @@ import { setPosts } from "@/redux/postSlice";
 import { Badge } from "../../ui/badge";
 import { Link, useNavigate } from "react-router-dom";
 import VerifiedBadge from "../../core/VerifiedBadge";
-import { bookmarkAPI, likeOrDislikeAPI } from "@/apis/post";
+import { bookmarkAPI, likeOrDislikeAdoptionPostAPI, likeOrDislikeAPI } from "@/apis/post";
 import { setAuthUser } from "@/redux/authSlice";
 import Carousel from "../../ui/carousel";
 import { calculateTimeAgo } from "@/utils/calculateTimeAgo";
 import { Button } from "@/components/ui/button";
+import { FaShare } from "react-icons/fa";
+import ShareButton from "./ShareButton";
 
 const AdoptionPost = ({ post }) => {
   const { user } = useSelector((store) => store.auth);
@@ -28,6 +30,7 @@ const AdoptionPost = ({ post }) => {
   const navigate = useNavigate();
   const pet = post.pet;
   const userRole = user.role;
+  const { posts } = useSelector((store) => store.adopt);
 
   // const changeEventHandler = (e) => {
   //   const inputText = e.target.value;
@@ -120,6 +123,35 @@ const AdoptionPost = ({ post }) => {
   //     console.log(error);
   //   }
   // };
+
+  console.log(post)
+  const likeOrDislikeHandler = async () => {
+    try {
+      const action = liked ? "dislike" : "like";
+      const res = await likeOrDislikeAdoptionPostAPI(post._id, action);
+      if (res.data.success) {
+        const updatedLikes = liked ? postLike - 1 : postLike + 1;
+        setPostLike(updatedLikes);
+        setLiked(!liked);
+
+        // apne post ko update krunga
+        const updatedPostData = posts.map((p) =>
+          p._id === post._id
+            ? {
+                ...p,
+                likes: liked
+                  ? p.likes.filter((id) => id !== user.id)
+                  : [...p.likes, user.id],
+              }
+            : p
+        );
+        dispatch(setPosts(updatedPostData));
+        toast.success(res.data.message);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   const renderActionButton = (post) => {
     if (userRole === "services_staff") {
@@ -292,7 +324,7 @@ const AdoptionPost = ({ post }) => {
 
       <div className="flex items-center justify-between mt-1">
         <div className="flex items-center justify-between my-2">
-          {/* <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3">
             {liked ? (
               <FaHeart
                 onClick={likeOrDislikeHandler}
@@ -306,21 +338,9 @@ const AdoptionPost = ({ post }) => {
                 className="cursor-pointer hover:text-gray-600"
               />
             )}
+            <ShareButton post={post} />
 
-            {bookmarked ? (
-              <FaBookmark
-                onClick={bookmarkHandler}
-                className="cursor-pointer hover:text-gray-600"
-                size={24}
-              />
-            ) : (
-              <LuBookmark
-                onClick={bookmarkHandler}
-                className="cursor-pointer hover:text-gray-600"
-                size={24}
-              />
-            )}
-          </div> */}
+          </div>
         </div>
 
         {/* <Button
@@ -337,6 +357,7 @@ const AdoptionPost = ({ post }) => {
 
         {renderActionButton(post)}
       </div>
+      <span className="font-medium">{postLike} likes</span>
     </div>
   );
 };
