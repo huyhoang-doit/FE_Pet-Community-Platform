@@ -5,65 +5,115 @@ import {
   LinkedinShareButton,
   WhatsappShareButton,
   TelegramShareButton,
-  EmailShareButton
+  EmailShareButton,
 } from "react-share";
-import { FaFacebook, FaTwitter, FaLinkedin, FaWhatsapp, FaTelegram, FaEnvelope } from "react-icons/fa";
+import {
+  FaFacebook,
+  FaTwitter,
+  FaLinkedin,
+  FaWhatsapp,
+  FaTelegram,
+  FaEnvelope,
+} from "react-icons/fa";
 import { Send } from "lucide-react";
+import {shareAdoptionPostAPI} from "../../../apis/post";
+import { toast } from "sonner";
 
 const ShareButton = ({ post }) => {
   const postUrl = `${window.location.origin}/post/${post._id}`;
   const postTitle = post.title;
 
+  const [isOpen, setIsOpen] = React.useState(false);
+
+  const handleShare = async (platform) => {
+    try {
+      await shareAdoptionPostAPI(post._id, platform);
+    } catch (error) {
+        throw error;
+    }
+  };
+
   return (
-    <div className="relative inline-block">
+    <>
       <Send
         size={22}
         className="cursor-pointer hover:text-gray-600"
-        onClick={() => document.getElementById(`share-${post._id}`).classList.toggle("hidden")}
+        onClick={() => setIsOpen(true)}
       />
 
-      {/* Dropdown Menu */}
-      <div
-        id={`share-${post._id}`}
-        className="hidden absolute bg-white border rounded-md shadow-md p-2 right-0 mt-1 z-10"
-      >
-        <FacebookShareButton url={postUrl} quote={postTitle}>
-          <div className="flex items-center gap-2 px-3 py-1 hover:bg-gray-100 cursor-pointer">
-            <FaFacebook className="text-blue-600" /> Facebook
-          </div>
-        </FacebookShareButton>
+      {/* Modal Overlay */}
+      {isOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg shadow-xl w-80 p-4">
+            {/* Modal Header */}
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-lg font-semibold">Share Post</h3>
+              <button
+                onClick={() => setIsOpen(false)}
+                className="text-gray-500 hover:text-gray-700"
+              >
+                ✕
+              </button>
+            </div>
 
-        <TwitterShareButton url={postUrl} title={postTitle}>
-          <div className="flex items-center gap-2 px-3 py-1 hover:bg-gray-100 cursor-pointer">
-            <FaTwitter className="text-blue-400" /> Twitter
-          </div>
-        </TwitterShareButton>
+            {/* Share Buttons */}
+            <div className="grid grid-cols-2 gap-2">
+            <FacebookShareButton url={postUrl} quote={postTitle} onClick={() => handleShare("Facebook")}>
+                <div className="flex items-center gap-2 p-3 hover:bg-gray-50 rounded-lg transition-colors">
+                  <FaFacebook className="text-blue-600 text-xl" />
+                  <span>Facebook</span>
+                </div>
+              </FacebookShareButton>
 
-        <LinkedinShareButton url={postUrl} title={postTitle}>
-          <div className="flex items-center gap-2 px-3 py-1 hover:bg-gray-100 cursor-pointer">
-            <FaLinkedin className="text-blue-700" /> LinkedIn
-          </div>
-        </LinkedinShareButton>
+              <TwitterShareButton url={postUrl} title={postTitle} onClick={() => handleShare("Twitter")}>
+                <div className="flex items-center gap-2 p-3 hover:bg-gray-50 rounded-lg transition-colors">
+                  <FaTwitter className="text-blue-400 text-xl" />
+                  <span>Twitter</span>
+                </div>
+              </TwitterShareButton>
 
-        <WhatsappShareButton url={postUrl} title={postTitle} separator=" - ">
-          <div className="flex items-center gap-2 px-3 py-1 hover:bg-gray-100 cursor-pointer">
-            <FaWhatsapp className="text-green-500" /> WhatsApp
-          </div>
-        </WhatsappShareButton>
+              <LinkedinShareButton url={postUrl} title={postTitle} onClick={() => handleShare("LinkedIn")}>
+                <div className="flex items-center gap-2 p-3 hover:bg-gray-50 rounded-lg transition-colors">
+                  <FaLinkedin className="text-blue-700 text-xl" />
+                  <span>LinkedIn</span>
+                </div>
+              </LinkedinShareButton>
 
-        <TelegramShareButton url={postUrl} title={postTitle}>
-          <div className="flex items-center gap-2 px-3 py-1 hover:bg-gray-100 cursor-pointer">
-            <FaTelegram className="text-blue-500" /> Telegram
-          </div>
-        </TelegramShareButton>
+              <WhatsappShareButton
+                url={postUrl}
+                title={postTitle}
+                separator=" - "
+                onClick={() => handleShare("WhatsApp")}
+              >
+                <div className="flex items-center gap-2 p-3 hover:bg-gray-50 rounded-lg transition-colors">
+                  <FaWhatsapp className="text-green-500 text-xl" />
+                  <span>WhatsApp</span>
+                </div>
+              </WhatsappShareButton>
 
-        <EmailShareButton url={postUrl} subject={postTitle} body={`Check out this post: ${postUrl}`}>
-          <div className="flex items-center gap-2 px-3 py-1 hover:bg-gray-100 cursor-pointer">
-            <FaEnvelope className="text-red-500" /> Email
+              <TelegramShareButton url={postUrl} title={postTitle} onClick={() => handleShare("Telegram")}>
+                <div className="flex items-center gap-2 p-3 hover:bg-gray-50 rounded-lg transition-colors">
+                  <FaTelegram className="text-blue-500 text-xl" />
+                  <span>Telegram</span>
+                </div>
+              </TelegramShareButton>
+
+              <EmailShareButton
+                url={postUrl}
+                subject={postTitle}
+                body={`Check out this post: ${postUrl}`}
+                onClick={() => handleShare("Email")}
+              >
+                <div className="flex items-center gap-2 p-3 hover:bg-gray-50 rounded-lg transition-colors">
+                  <FaEnvelope className="text-red-500 text-xl" />
+                  <span>Email</span>
+                </div>
+              </EmailShareButton>
+            </div>
           </div>
-        </EmailShareButton>
-      </div>
-    </div>
+        </div>
+      )}
+    </>
   );
 };
 

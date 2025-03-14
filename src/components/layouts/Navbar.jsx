@@ -20,6 +20,7 @@ function Navbar() {
   const [detectedBreed, setDetectedBreed] = useState(null);
   const { user } = useSelector((state) => state.auth);
   
+  
   const handleKeyDown = (event) => {
     if (event.key === "Enter") {
       console.log("hello");
@@ -55,6 +56,10 @@ function Navbar() {
       name: "Nhận nuôi",
     },
   ];
+
+  const handleSearch = () => {
+    console.log(search);
+  }
   return (
     <>
       {navBar.map((item) => {
@@ -95,7 +100,8 @@ function Navbar() {
           className="p-3 sm:w-[664px] w-[320px] rounded-md outline-none border-none bg-gray-400/30"
           placeholder="Tìm kiếm chó cưng thích hợp với bạn ..."
         />
-        <div className="">
+
+        <div>
           <Dialog>
             <DialogTrigger asChild>
               <div className="w-6 h-6 translate-x-[-36px] cursor-pointer">
@@ -148,6 +154,11 @@ function Navbar() {
             </DialogContent>
           </Dialog>
         </div>
+        <Button
+        className="ml-2"
+        type="primary"
+        onClick={handleSearch}
+        >Search</Button>
       </div>
     </>
   );
