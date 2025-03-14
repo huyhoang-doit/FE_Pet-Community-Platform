@@ -124,7 +124,6 @@ const AdoptionPost = ({ post }) => {
   //   }
   // };
 
-  console.log(post)
   const likeOrDislikeHandler = async () => {
     try {
       const action = liked ? "dislike" : "like";
@@ -214,34 +213,6 @@ const AdoptionPost = ({ post }) => {
             <Badge variant="secondary">Author</Badge>
           )}
         </div>
-        {/* <Dialog>
-          <DialogTrigger asChild>
-            <MoreHorizontal className="cursor-pointer" />
-          </DialogTrigger>
-          <DialogContent className="flex flex-col items-center text-sm text-center">
-            {post?.author?.id !== user?.id && (
-              <Button
-                variant="ghost"
-                className="cursor-pointer w-fit text-[#ED4956] font-bold"
-              >
-                Unfollow
-              </Button>
-            )}
-
-            <Button variant="ghost" className="cursor-pointer w-fit">
-              Add to favorites
-            </Button>
-            {user && user?.id === post?.author.id && (
-              <Button
-                onClick={deletePostHandler}
-                variant="ghost"
-                className="cursor-pointer w-fit"
-              >
-                Delete
-              </Button>
-            )}
-          </DialogContent>
-        </Dialog> */}
       </div>
       <span className="text-sm">
         <div className="inline-flex mr-1">
@@ -294,6 +265,7 @@ const AdoptionPost = ({ post }) => {
               className="w-full h-full max-h-[400px] object-contain"
               src={post.image[0]}
               alt="post_img"
+              onClick={() => navigate(`/adoptDetail/${post._id}`)}
             />
           </div>
         ) : (
@@ -304,6 +276,7 @@ const AdoptionPost = ({ post }) => {
               autoPlay
               muted
               loop
+              onClick={() => navigate(`/adoptDetail/${post._id}`)}
             />
           </div>
         )

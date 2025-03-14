@@ -163,3 +163,16 @@ export const likeOrDislikeAdoptionPostAPI = async (postId, action) => {
   );
 };
 
+export const shareAdoptionPostAPI = async (postId, platform) => {
+  return await authorizedAxiosInstance.post(
+    `${BASE_URL}/adoption-post/${postId}/share`,
+    { postId, platform }
+  );
+}
+
+export const getAdoptionPostById = async (postId) => {
+  return await authorizedAxiosInstance.get(
+    `${BASE_URL}/adoption-post/${postId}`
+  );
+};
+
