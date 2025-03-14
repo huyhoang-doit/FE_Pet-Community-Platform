@@ -1,23 +1,21 @@
 import { fetchAllPostsAPI } from "@/apis/post";
 import { setPosts } from "@/redux/postSlice";
-import { useEffect } from "react";
+import { useCallback } from "react";
 import { useDispatch } from "react-redux";
 
 const useGetAllPost = () => {
   const dispatch = useDispatch();
-  useEffect(() => {
-    const fetchAllPost = async () => {
-      try {
-        const { data } = await fetchAllPostsAPI(1);
-
-        if (data.status === 200) {
-          dispatch(setPosts(data.data.results));
-        }
-      } catch (error) {
-        console.log(error);
+  const fetchAllPost = useCallback(async () => {
+    try {
+      const { data } = await fetchAllPostsAPI(1);
+      if (data.status === 200) {
+        dispatch(setPosts(data.data.results));
       }
-    };
-    fetchAllPost();
-  }, []);
+    } catch (error) {
+      console.error("Failed to fetch posts:", error);
+    }
+  }, [dispatch]);
+
+  return { fetchAllPost };
 };
 export default useGetAllPost;
