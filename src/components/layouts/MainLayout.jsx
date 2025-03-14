@@ -1,5 +1,6 @@
 import { Outlet, useLocation } from "react-router-dom";
 import LeftSidebar from "./LeftSidebar";
+import Chatbox from "../features/chatbox/ChatBox";
 
 const MainLayout = () => {
   const location = useLocation();
@@ -21,6 +22,9 @@ const MainLayout = () => {
           <Outlet />
         </main>
       )}
+      <div className="fixed bottom-4 right-4 z-50">
+        <Chatbox />
+      </div>
     </div>
   );
 };

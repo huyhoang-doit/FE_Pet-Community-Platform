@@ -132,7 +132,9 @@ const Dashboard = () => {
       </div>
 
       <Card title="Quyên góp hàng tháng" className="mt-4">
-        <Line data={donationsData} />
+        <Line data={donationsData} style={{
+          height: 400
+        }}/>
       </Card>
 
       <Card title="Top 5 Donors" className="mt-4">

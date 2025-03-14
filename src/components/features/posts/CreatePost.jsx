@@ -18,6 +18,7 @@ const CreatePost = ({ open, setOpen }) => {
   const [caption, setCaption] = useState("");
   const [imagePreview, setImagePreview] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [contentCheckResult, setContentCheckResult] = useState(null);
   const { user } = useSelector((store) => store.auth);
   const { posts } = useSelector((store) => store.post);
   const dispatch = useDispatch();
@@ -74,9 +75,11 @@ const CreatePost = ({ open, setOpen }) => {
         setImagePreview([]);
         toast.success(data.message);
         setOpen(false);
+        setContentCheckResult(null);
       }
     } catch (error) {
       toast.error(error.response.data.message);
+      setContentCheckResult(error.response.data.reason);
     } finally {
       setLoading(false);
     }
@@ -108,8 +111,8 @@ const CreatePost = ({ open, setOpen }) => {
         </DialogHeader>
 
         <div className="flex items-center gap-4 mb-4">
-          <Avatar className="w-10 h-10">
-            <AvatarImage src={user?.profilePicture} alt="User" />
+          <Avatar className="w-10 h-10 border border-gray-200">
+            <AvatarImage src={user?.profilePicture} alt="User"/>
             <AvatarFallback className="bg-gray-200 text-gray-600">
               {user?.username?.[0] || "U"}
             </AvatarFallback>
@@ -177,6 +180,10 @@ const CreatePost = ({ open, setOpen }) => {
               ))}
             </div>
           </div>
+        )}
+
+        {contentCheckResult && (
+          <div className="mb-4 text-red-500 text-sm">{contentCheckResult}</div>
         )}
 
         <input
