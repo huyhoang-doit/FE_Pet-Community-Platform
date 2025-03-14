@@ -48,3 +48,7 @@ export const approvePetAPI = async (petId) => {
 export const getBreedsAPI = async () => {
   return await authorizedAxiosInstance.get(`${BASE_URL}/pets/breeds`);
 };
+
+export const getBreedsByIdAPI = async (breedId) => {
+  return await authorizedAxiosInstance.get(`${BASE_URL}/pets/breeds/${breedId}`);
+};

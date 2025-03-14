@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
   FacebookShareButton,
   TwitterShareButton,
@@ -16,11 +16,11 @@ import {
   FaEnvelope,
 } from "react-icons/fa";
 import { Send } from "lucide-react";
-import {shareAdoptionPostAPI} from "../../../apis/post";
+import {getUserBehaviorAPI, shareAdoptionPostAPI} from "../../../apis/post";
 import { toast } from "sonner";
 
 const ShareButton = ({ post }) => {
-  const postUrl = `${window.location.origin}/post/${post._id}`;
+  const postUrl = `${window.location.origin}/adoptDetail/${post._id}`;
   const postTitle = post.title;
 
   const [isOpen, setIsOpen] = React.useState(false);

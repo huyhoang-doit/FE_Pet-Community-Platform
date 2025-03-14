@@ -69,7 +69,7 @@ export const addAdoptPostsAPI = async (formData) => {
 
 export const fetchAllAdoptionPostsAPI = async (
   page,
-  limit=5,
+  limit = 5,
   sortBy = "createdAt:desc",
   adoptStatus = null
 ) => {
@@ -120,25 +120,26 @@ export const fetchAllAdoptionPostsByBreedAPI = async (page, breed) => {
   const response = await authorizedAxiosInstance.get(
     `${BASE_URL}/adoption-post/breed/${breed}?limit=4&page=${page}`
   );
-  console.log("response", response);
-  return response;
+  return response.data.data;
 };
 
-
 export const updateAdoptionFormStatusAPI = async (formId, status) => {
-  const response = await authorizedAxiosInstance.put(`${BASE_URL}/adoption-form/form/${formId}`, {
-    status,
-  });
+  const response = await authorizedAxiosInstance.put(
+    `${BASE_URL}/adoption-form/form/${formId}`,
+    {
+      status,
+    }
+  );
   return response;
 };
 
 export const addPeriodicCheckAPI = async (adoptionFormId, checkData) => {
   try {
-    console.log('Sending periodic check data:', {
+    console.log("Sending periodic check data:", {
       adoptionFormId,
       formDataEntries: Array.from(checkData.entries()),
     });
-    
+
     const response = await authorizedAxiosInstance.post(
       `${BASE_URL}/adoption-form/check`,
       checkData,
@@ -148,11 +149,11 @@ export const addPeriodicCheckAPI = async (adoptionFormId, checkData) => {
         },
       }
     );
-    
-    console.log('Periodic check response:', response);
+
+    console.log("Periodic check response:", response);
     return response;
   } catch (error) {
-    console.error('Error in addPeriodicCheckAPI:', error.response || error);
+    console.error("Error in addPeriodicCheckAPI:", error.response || error);
     throw error;
   }
 };
@@ -168,7 +169,7 @@ export const shareAdoptionPostAPI = async (postId, platform) => {
     `${BASE_URL}/adoption-post/${postId}/share`,
     { postId, platform }
   );
-}
+};
 
 export const getAdoptionPostById = async (postId) => {
   return await authorizedAxiosInstance.get(
@@ -176,3 +177,8 @@ export const getAdoptionPostById = async (postId) => {
   );
 };
 
+export const getUserBehaviorAPI = async () => {
+  return await authorizedAxiosInstance.get(
+    `${BASE_URL}/adoption-post/user/user-behavior`
+  );
+};
