@@ -1,6 +1,6 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { getAdoptionPostById } from "@/apis/post";
+import { getAdoptionPostById, getUserBehaviorAPI } from "@/apis/post";
 import { FaRegHeart, FaHeart } from "react-icons/fa";
 import { PawPrint, MapPin, HandHeart, Share2, Send } from "lucide-react";
 import ShareButton from "./ShareButton";
@@ -29,6 +29,19 @@ const AdoptionDetail = () => {
     };
     fetchPost();
   }, [id]);
+
+  
+    useEffect(() => {
+      const fetchUserBehavior = async () => {
+        try {
+         const res = await getUserBehaviorAPI();
+         console.log(res)
+        } catch (error) {
+          console.error("Error fetching user behavior:", error);
+        }
+      };
+      fetchUserBehavior();
+    }, []);
 
   const handleClose = () => {
     navigate("/adopt"); // Quay lại trang tổng hợp khi nhấp nút "X"
