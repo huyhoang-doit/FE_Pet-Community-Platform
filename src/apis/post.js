@@ -69,7 +69,7 @@ export const addAdoptPostsAPI = async (formData) => {
 
 export const fetchAllAdoptionPostsAPI = async (
   page,
-  limit=5,
+  limit = 5,
   sortBy = "createdAt:desc",
   adoptStatus = null
 ) => {
@@ -95,7 +95,7 @@ export const updateAdoptPostsAPI = async (postId, formData) => {
 
 export const addAdoptionForm = async (formData) => {
   const response = await authorizedAxiosInstance.post(
-    `${BASE_URL}/adoption-post/form`,
+    `${BASE_URL}/adoption-form/create`,
     formData
   );
   console.log("addAdoptionForm response:", response);
@@ -108,7 +108,7 @@ export const fetchAllAdoptionFormsAPI = async (
   sortBy = "createdAt:desc",
   status = null
 ) => {
-  let url = `${BASE_URL}/adoption-post/form?limit=${limit}&page=${page}&sortBy=${sortBy}`;
+  let url = `${BASE_URL}/adoption-form/all?limit=${limit}&page=${page}&sortBy=${sortBy}`;
   if (status) {
     url += `&status=${status}`;
   }
@@ -120,19 +120,65 @@ export const fetchAllAdoptionPostsByBreedAPI = async (page, breed) => {
   const response = await authorizedAxiosInstance.get(
     `${BASE_URL}/adoption-post/breed/${breed}?limit=4&page=${page}`
   );
-  console.log("response", response);
-  return response;
+  return response.data.data;
 };
 
-
 export const updateAdoptionFormStatusAPI = async (formId, status) => {
-  const response = await authorizedAxiosInstance.put(`${BASE_URL}/adoption-post/form/${formId}`, {
-    status,
-  });
+  const response = await authorizedAxiosInstance.put(
+    `${BASE_URL}/adoption-form/form/${formId}`,
+    {
+      status,
+    }
+  );
   return response;
 };
 
 export const addPeriodicCheckAPI = async (adoptionFormId, checkData) => {
-  return await authorizedAxiosInstance.post(`${BASE_URL}/adoption-post/form-check`, checkData);
+  try {
+    console.log("Sending periodic check data:", {
+      adoptionFormId,
+      formDataEntries: Array.from(checkData.entries()),
+    });
+
+    const response = await authorizedAxiosInstance.post(
+      `${BASE_URL}/adoption-form/check`,
+      checkData,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      }
+    );
+
+    console.log("Periodic check response:", response);
+    return response;
+  } catch (error) {
+    console.error("Error in addPeriodicCheckAPI:", error.response || error);
+    throw error;
+  }
 };
 
+export const likeOrDislikeAdoptionPostAPI = async (postId, action) => {
+  return await authorizedAxiosInstance.put(
+    `${BASE_URL}/adoption-post/${postId}/${action}`
+  );
+};
+
+export const shareAdoptionPostAPI = async (postId, platform) => {
+  return await authorizedAxiosInstance.post(
+    `${BASE_URL}/adoption-post/${postId}/share`,
+    { postId, platform }
+  );
+};
+
+export const getAdoptionPostById = async (postId) => {
+  return await authorizedAxiosInstance.get(
+    `${BASE_URL}/adoption-post/${postId}`
+  );
+};
+
+export const getUserBehaviorAPI = async () => {
+  return await authorizedAxiosInstance.get(
+    `${BASE_URL}/adoption-post/user/user-behavior`
+  );
+};

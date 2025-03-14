@@ -32,6 +32,7 @@ import ManagePost from "./components/pages/StaffPages/Forum/ManagePost";
 import ManageBlog from "@/components/pages/StaffPages/Services/ManageBlog";
 import CampaignDetail from "./components/features/donate/CampaignDetail";
 import Campaigns from "./pages/Campaigns";
+import AdoptionDetail from "./components/features/adoptions/AdoptionDetail";
 
 const browserRouter = createBrowserRouter([
   {
@@ -63,6 +64,14 @@ const browserRouter = createBrowserRouter([
         element: (
           <ProtectedRoutes>
             <Home />
+          </ProtectedRoutes>
+        ),
+      },
+      {
+        path: "/adoptDetail/:id",
+        element: (
+          <ProtectedRoutes>
+            <AdoptionDetail />
           </ProtectedRoutes>
         ),
       },

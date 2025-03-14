@@ -26,6 +26,7 @@ import VerifiedBadge from "../core/VerifiedBadge";
 import UserListItem from "../features/users/UserListItem";
 import useFetchData from "@/hooks/useFetchData";
 import { getDonationByUserIdAPI } from "@/apis/donate";
+import { BASE_URL } from "@/configs/globalVariables";
 
 const Profile = () => {
   useFetchData()
@@ -102,7 +103,7 @@ const Profile = () => {
   const handlePostClick = async (post) => {
     try {
       const {data} = await authorizedAxiosInstance.get(
-        `http://localhost:3000/api/v1/post/${post._id}/getpostbyid`
+        `${BASE_URL}/post/${post._id}/getpostbyid`
       );
 
       dispatch(setSelectedPost(data.data));
