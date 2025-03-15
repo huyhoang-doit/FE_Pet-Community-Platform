@@ -120,7 +120,7 @@ export const fetchAllAdoptionPostsByBreedAPI = async (page, breed) => {
   const response = await authorizedAxiosInstance.get(
     `${BASE_URL}/adoption-post/breed/${breed}?limit=4&page=${page}`
   );
-  return response.data.data;
+  return response;
 };
 
 export const updateAdoptionFormStatusAPI = async (formId, status) => {
