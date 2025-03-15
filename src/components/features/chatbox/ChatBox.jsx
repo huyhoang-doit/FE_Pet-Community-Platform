@@ -10,12 +10,8 @@ const GeminiChatbox = () => {
 
   // Auto-scroll to bottom when messages change
   useEffect(() => {
-    scrollToBottom();
-  }, [messages]);
-
-  const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  };
+  }, [messages]);
 
   const toggleChatbox = () => {
     setIsOpen(!isOpen);
@@ -26,15 +22,21 @@ const GeminiChatbox = () => {
     if (newMessage.trim() === "") return;
 
     // Add user message
-    const updatedMessages = [
-      ...messages,
-      { text: newMessage, sender: "user", timestamp: new Date() },
-    ];
-    setMessages(updatedMessages);
+    const userMessage = {
+      text: newMessage,
+      sender: "user",
+      timestamp: new Date(),
+    };
+    setMessages((prev) => [...prev, userMessage]);
     setNewMessage("");
-
     setIsTyping(true);
 
+    const formattedMessage = `
+    Người dùng: ${newMessage}
+    Bạn là chuyên gia về thú cưng. Hãy đưa ra câu trả lời chi tiết, cụ thể và dễ hiểu. Nếu câu hỏi không rõ ràng, hãy hỏi lại hoặc gợi ý thông tin bổ sung.
+    Trả lời ngắn gọn, dễ hiểu và có thể sử dụng emoji nếu phù hợp.
+    `;
+    console.log(formattedMessage);
     try {
       const response = await fetch(
         "https://openrouter.ai/api/v1/chat/completions",
@@ -48,26 +50,28 @@ const GeminiChatbox = () => {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            model: "deepseek/deepseek-r1:free", // Model selection
-            messages: [{ role: "user", content: newMessage }], // Pass user message
+            model: "deepseek/deepseek-chat:free",
+            messages: [{ role: "user", content: formattedMessage }], // Pass user message
           }),
         }
       );
 
+      console.log(response);
+
       const data = await response.json();
+      console.log(data);
 
-      const aiResponse = data.choices[0].message.content;
-
-      setMessages([
-        ...updatedMessages,
+      let aiResponse = data.choices?.[0]?.message?.content?.trim() || "";
+      setMessages((prev) => [
+        ...prev,
         { text: aiResponse, sender: "ai", timestamp: new Date() },
       ]);
     } catch (error) {
       console.error("Error fetching AI response:", error);
-      setMessages([
-        ...updatedMessages,
+      setMessages((prev) => [
+        ...prev,
         {
-          text: "Sorry, something went wrong. Please try again.",
+          text: "Xin lỗi, có lỗi xảy ra. 🚨",
           sender: "ai",
           timestamp: new Date(),
         },
@@ -144,7 +148,9 @@ const GeminiChatbox = () => {
               </div>
               <div>
                 <h3 className="font-medium">AI Assistant</h3>
-                <p className="text-xs text-white/80">Online | Powered by AI</p>
+                <p className="text-xs text-white/80">
+                  🟢 Online | Powered by AI
+                </p>
               </div>
             </div>
           </div>

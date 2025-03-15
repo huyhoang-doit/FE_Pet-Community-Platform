@@ -1,5 +1,4 @@
 /* eslint-disable react/prop-types */
-import React from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
@@ -76,7 +75,7 @@ const Messages = ({ selectedUser }) => {
                 {showAvatar ? (
                 <img
                   className="w-8 h-8 rounded-full"
-                  src="https://imgcdn.stablediffusionweb.com/2024/4/3/34eb3fd4-4f5e-4359-be90-19f0366c0c33.jpg"
+                  src={msg.senderId === user?.id ? user?.profilePicture : selectedUser?.profilePicture}
                   alt="profile"
                   style={{ border: "1px solid #e0e0e0" }}
                 />
@@ -84,13 +83,13 @@ const Messages = ({ selectedUser }) => {
                 <div className="w-8 h-8" /> // Placeholder giữ khoảng cách
                 )}
                 <div
+                dangerouslySetInnerHTML={{ __html: msg.message }}
                 className={`p-2 rounded-lg max-w-xs break-words ${
                   msg.senderId === user?.id
                   ? "bg-blue-500 text-white"
                   : "bg-gray-200 text-black"
                 }`}
                 >
-                {msg.message}
                 </div>
               </div>
               {msg.senderId === "ai-support" && msg.suggestionButtons && (

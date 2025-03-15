@@ -12,8 +12,8 @@ import { calculateTimeAgo } from "@/utils/calculateTimeAgo";
 import { Button } from "../ui/button";
 import Messages from "../features/messages/Messages";
 import { fetchAllAdoptionPostsByBreedAPI, getUserBehaviorAPI } from "@/apis/post";
-import { GoogleGenerativeAI } from "@google/generative-ai";
-import { getBreedsAPI, getBreedsByIdAPI } from "@/apis/pet";
+import { getBreedsByIdAPI } from "@/apis/pet";
+import { chatbotAPI } from "@/apis/chatbot";
 
 const ChatPage = () => {
   const { id } = useParams();
@@ -23,7 +23,6 @@ const ChatPage = () => {
   const dispatch = useDispatch();
   const [chatUsers, setChatUsers] = useState([]);
   const [userBehavior, setUserBehavior] = useState([]);
-  const [isLoadingAI, setIsLoadingAI] = useState(false);
 
   const aiUser = {
     id: "ai-support",
@@ -64,7 +63,7 @@ const ChatPage = () => {
           const welcomeMessage = {
             _id: Date.now().toString(),
             senderId: "ai-support",
-            message: "Xin chào! Tôi là AI Support. Bạn muốn tìm thú cưng như thế nào? (Ví dụ: giống, vị trí, tình trạng). Tôi sẽ dựa vào sở thích của bạn để gợi ý!",
+            message: "Xin chào! Tôi là AI Support. Bạn muốn tìm thú cưng như thế nào? (Ví dụ: cần gợi ý, cần thú cưng, cần nhận nuôi, cần loại pet,...). Tôi sẽ dựa vào sở thích của bạn để gợi ý!",
             createdAt: new Date().toISOString(),
           };
           dispatch(setMessages([welcomeMessage]));
@@ -108,34 +107,34 @@ const ChatPage = () => {
             console.error("Lỗi lấy giống thú cưng:", error);
           }
   
-          setIsLoadingAI(true);
           dispatch(setMessages([
             ...messages,
             newMessage,
             { _id: "loading", senderId: "ai-support", message: "🔄 AI đang tìm kiếm thông tin chăm sóc..." }
           ]));
+
+          const careInstructions = await chatbotAPI(breedName)
+
+          // const prompt = `Hãy cung cấp hướng dẫn chăm sóc chi tiết cho giống thú cưng "${breedName}".`;
+          // let careInstructions;
   
-          const prompt = `Hãy cung cấp hướng dẫn chăm sóc chi tiết cho giống thú cưng "${breedName}".`;
-          let careInstructions;
+          // try {
+          //   const genAI = new GoogleGenerativeAI(import.meta.env.VITE_APP_GEMINI_API_KEY);
+          //   const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+          //   const result = await model.generateContent(prompt);
+          //   careInstructions = result.response.text();
+          // } catch (geminiError) {
+          //   console.error("Gemini API error:", geminiError);
+          //   careInstructions = `
+          //     Hiện tại không thể lấy thông tin chăm sóc từ Gemini. Dưới đây là hướng dẫn cơ bản mặc định:\n
+          //     - **Dinh dưỡng**: Cho ăn thức ăn chất lượng cao, phù hợp với kích thước và độ tuổi.\n
+          //     - **Vệ sinh**: Tắm 1-2 lần/tháng, chải lông thường xuyên.\n
+          //     - **Vận động**: Dắt đi dạo 20-30 phút/ngày.\n
+          //     - **Sức khỏe**: Khám thú y định kỳ.\n
+          //     - **Môi trường**: Chuẩn bị chỗ nghỉ sạch sẽ, thoáng mát.
+          //   `;
+          // }
   
-          try {
-            const genAI = new GoogleGenerativeAI(import.meta.env.VITE_APP_GEMINI_API_KEY);
-            const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-            const result = await model.generateContent(prompt);
-            careInstructions = result.response.text();
-          } catch (geminiError) {
-            console.error("Gemini API error:", geminiError);
-            careInstructions = `
-              Hiện tại không thể lấy thông tin chăm sóc từ Gemini. Dưới đây là hướng dẫn cơ bản mặc định:\n
-              - **Dinh dưỡng**: Cho ăn thức ăn chất lượng cao, phù hợp với kích thước và độ tuổi.\n
-              - **Vệ sinh**: Tắm 1-2 lần/tháng, chải lông thường xuyên.\n
-              - **Vận động**: Dắt đi dạo 20-30 phút/ngày.\n
-              - **Sức khỏe**: Khám thú y định kỳ.\n
-              - **Môi trường**: Chuẩn bị chỗ nghỉ sạch sẽ, thoáng mát.
-            `;
-          }
-  
-          setIsLoadingAI(false);
           dispatch(setMessages([
             ...messages.filter(msg => msg._id !== "loading"), 
             newMessage,
@@ -232,15 +231,12 @@ const ChatPage = () => {
       setTextMessage("");
     }
   };
-  
-  
 
   useEffect(() => {
     return () => {
       dispatch(setSelectedUser(null));
     };
   }, []);
-
 
   return (
     <div className="flex ml-[20px] h-screen">
