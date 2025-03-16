@@ -10,7 +10,7 @@ import Footer from "@/components/layouts/Footer";
 const sharedClasses = {
   textZinc: "text-zinc-",
   textPrimary: "text-primary",
-  maxContainer: "max-w-5xl mx-auto p-4",
+  maxContainer: "max-w-5xl mx-auto p-4  mt-24",
   textSm: "text-sm",
   textLg: "text-lg",
   textXl: "text-xl",

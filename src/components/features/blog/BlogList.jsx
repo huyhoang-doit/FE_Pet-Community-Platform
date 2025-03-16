@@ -69,7 +69,7 @@ const BlogList = () => {
       <div className="sticky top-0 z-30 bg-white shadow-md mb-4">
         <Header />
       </div>
-      <div className="max-w-7xl mx-auto">
+      <div className="max-w-7xl mx-auto mt-24">
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-4xl font-bold text-center text-primary mb-2">
             PET BLOG

@@ -39,7 +39,7 @@ const ManageCampaign = () => {
 
   const getAllCampaign = async (page = 1, search = "") => {
     try {
-      const { data } = await fetchCampaignsAPI(page, search);
+      const { data } = await fetchCampaignsAPI(page, limit, search);
       if (data?.data) {
         setCampaigns(data.data.results);
         setTotalResults(data.data.totalResults);
