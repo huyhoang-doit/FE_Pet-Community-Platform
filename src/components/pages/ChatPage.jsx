@@ -1,28 +1,37 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { setSelectedUser } from "@/redux/authSlice";
 import { Input } from "../ui/input";
-import { MessageCircleCode } from "lucide-react";
+import { MessageCircleCode, ImagePlus, Loader2, SmilePlus } from "lucide-react";
 import { setMessages } from "@/redux/chatSlice";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { getChatUserAPI, getProfileByIdAPI } from "@/apis/user";
-import { sendMessageAPI } from "@/apis/message";
+import { sendMessageAPI, sendImageMessageAPI } from "@/apis/message";
 import { calculateTimeAgo } from "@/utils/calculateTimeAgo";
 import { Button } from "../ui/button";
 import Messages from "../features/messages/Messages";
 import { fetchAllAdoptionPostsByBreedAPI, getUserBehaviorAPI } from "@/apis/post";
 import { getBreedsByIdAPI } from "@/apis/pet";
 import { chatbotAPI } from "@/apis/chatbot";
+import EmojiPicker from "emoji-picker-react";
 
 const ChatPage = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
+  const location = useLocation();
   const [textMessage, setTextMessage] = useState("");
   const { user, selectedUser } = useSelector((store) => store.auth);
   const { onlineUsers, messages } = useSelector((store) => store.chat);
   const dispatch = useDispatch();
   const [chatUsers, setChatUsers] = useState([]);
   const [userBehavior, setUserBehavior] = useState([]);
+  const [initialMessageSent, setInitialMessageSent] = useState(false);
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [isUploading, setIsUploading] = useState(false);
+  const [emojiPicker, setEmojiPicker] = useState(false);
+  const emojiPickerRef = useRef(null);
+  const inputRef = useRef(null);
 
   const aiUser = {
     id: "ai-support",
@@ -76,6 +85,93 @@ const ChatPage = () => {
     }
   }, [selectedUser, dispatch]);
 
+  useEffect(() => {
+    const sendInitialMessage = async () => {
+      if (
+        location.state?.fromPost &&
+        selectedUser &&
+        !initialMessageSent &&
+        selectedUser.id !== "ai-support"
+      ) {
+        const { postId, postTitle, petName, location: postLocation } = location.state;
+        const messageData = {
+          text: `Xin chào, tôi đến từ bài viết nhận nuôi: "${postTitle}" - Thú cưng: ${petName} tại ${postLocation}`,
+          metadata: {
+            type: 'adoption_post',
+            postId,
+            postTitle,
+            petName,
+            location: postLocation
+          }
+        };
+        
+        try {
+          const { data } = await sendMessageAPI(selectedUser.id, JSON.stringify(messageData));
+          if (data?.success) {
+            dispatch(setMessages([...messages, {
+              ...data.newMessage,
+              message: JSON.stringify(messageData)
+            }]));
+            setInitialMessageSent(true);
+          }
+        } catch (error) {
+          console.error("Error sending initial message:", error);
+        }
+      }
+    };
+
+    sendInitialMessage();
+  }, [selectedUser, location.state, initialMessageSent]);
+
+  const handleImageSelect = async (e) => {
+    const file = e.target.files[0];
+    if (file && file.type.startsWith('image/')) {
+      try {
+        setIsUploading(true);
+        const loadingMessage = {
+          _id: `loading-${Date.now()}`,
+          senderId: user?.id,
+          message: JSON.stringify({
+            text: '',
+            type: 'loading',
+            loadingText: 'Đang tải ảnh lên...'
+          }),
+          createdAt: new Date().toISOString(),
+        };
+        dispatch(setMessages([...messages, loadingMessage]));
+
+        const metadata = location.state?.fromPost ? {
+          type: 'adoption_post',
+          postId: location.state.postId,
+          postTitle: location.state.postTitle,
+          petName: location.state.petName,
+          location: location.state.location
+        } : null;
+
+        const { data } = await sendImageMessageAPI(selectedUser.id, file, metadata);
+        
+        if (data?.success) {
+          const updatedMessages = messages.filter(msg => msg._id !== loadingMessage._id);
+          dispatch(setMessages([...updatedMessages, {
+            ...data.newMessage
+          }]));
+        }
+      } catch (error) {
+        console.error("Error sending image:", error);
+        const errorMessage = {
+          _id: Date.now().toString(),
+          senderId: "ai-support",
+          message: "Không thể gửi hình ảnh. Vui lòng thử lại!",
+          createdAt: new Date().toISOString(),
+        };
+        const updatedMessages = messages.filter(msg => !msg._id.includes('loading-'));
+        dispatch(setMessages([...updatedMessages, errorMessage]));
+      } finally {
+        setIsUploading(false);
+      }
+    }
+  };
+
   const sendMessageHandler = async (receiverId) => {
     if (!textMessage.trim()) {
       console.log("Empty message, not sending");
@@ -115,26 +211,6 @@ const ChatPage = () => {
 
           const careInstructions = await chatbotAPI(breedName)
 
-          // const prompt = `Hãy cung cấp hướng dẫn chăm sóc chi tiết cho giống thú cưng "${breedName}".`;
-          // let careInstructions;
-  
-          // try {
-          //   const genAI = new GoogleGenerativeAI(import.meta.env.VITE_APP_GEMINI_API_KEY);
-          //   const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-          //   const result = await model.generateContent(prompt);
-          //   careInstructions = result.response.text();
-          // } catch (geminiError) {
-          //   console.error("Gemini API error:", geminiError);
-          //   careInstructions = `
-          //     Hiện tại không thể lấy thông tin chăm sóc từ Gemini. Dưới đây là hướng dẫn cơ bản mặc định:\n
-          //     - **Dinh dưỡng**: Cho ăn thức ăn chất lượng cao, phù hợp với kích thước và độ tuổi.\n
-          //     - **Vệ sinh**: Tắm 1-2 lần/tháng, chải lông thường xuyên.\n
-          //     - **Vận động**: Dắt đi dạo 20-30 phút/ngày.\n
-          //     - **Sức khỏe**: Khám thú y định kỳ.\n
-          //     - **Môi trường**: Chuẩn bị chỗ nghỉ sạch sẽ, thoáng mát.
-          //   `;
-          // }
-  
           dispatch(setMessages([
             ...messages.filter(msg => msg._id !== "loading"), 
             newMessage,
@@ -177,7 +253,8 @@ const ChatPage = () => {
         const allPosts = [];
         for (const breedId of breedIds) {
           const postsData = await fetchAllAdoptionPostsByBreedAPI(1, breedId);
-          allPosts.push(...(postsData?.results || []));
+          console.log("🚀 ~ sendMessageHandler ~ postsData:", postsData.data.data.results)
+          allPosts.push(...(postsData.data.data?.results || []));
         }
   
         console.log("Post list:", allPosts);
@@ -212,11 +289,26 @@ const ChatPage = () => {
   
         dispatch(setMessages([...messages, newMessage, aiResponse]));
       } else {
-        const { data } = await sendMessageAPI(receiverId, textMessage);
+        const messageData = {
+          text: textMessage,
+          metadata: location.state?.fromPost ? {
+            type: 'adoption_post',
+            postId: location.state.postId,
+            postTitle: location.state.postTitle,
+            petName: location.state.petName,
+            location: location.state.location
+          } : null
+        };
+
+        const { data } = await sendMessageAPI(receiverId, JSON.stringify(messageData));
         if (!data?.success) {
           throw new Error("Message send failed");
         }
-        dispatch(setMessages([...messages, data.newMessage]));
+        console.log("🚀 ~ sendMessageHandler ~ data:", data)
+        dispatch(setMessages([...messages, {
+          ...data.newMessage,
+          message: JSON.stringify(messageData)
+        }]));
       }
       setTextMessage("");
     } catch (error) {
@@ -231,6 +323,32 @@ const ChatPage = () => {
       setTextMessage("");
     }
   };
+
+  const onEmojiClick = (emoji) => {
+    if (inputRef.current) {
+      const input = inputRef.current;
+      const cursorPosition = input.selectionStart;
+      const textBefore = textMessage.substring(0, cursorPosition);
+      const textAfter = textMessage.substring(cursorPosition);
+      const newMessage = `${textBefore}${emoji.emoji}${textAfter}`;
+      setTextMessage(newMessage);
+
+      setTimeout(() => {
+        input.selectionStart = input.selectionEnd = cursorPosition + emoji.emoji.length;
+        input.focus();
+      }, 0);
+    }
+  };
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (emojiPickerRef.current && !emojiPickerRef.current.contains(event.target)) {
+        setEmojiPicker(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   useEffect(() => {
     return () => {
@@ -307,11 +425,18 @@ const ChatPage = () => {
                       Đang hoạt động
                     </span>
                   ) : (
-                    <span className={`text-xs text-gray-500 `}>
-                      {suggestedUser?.lastMessage?.from === user?.id
-                        ? "Bạn: "
-                        : ""}
-                      {suggestedUser?.lastMessage?.content} •{" "}
+                    <span className={`text-xs text-gray-500`}>
+                      {suggestedUser?.lastMessage?.from === user?.id ? "Bạn: " : ""}
+                      {(() => {
+                        try {
+                          const content = JSON.parse(suggestedUser?.lastMessage?.content);
+                          const text = content.text || "Không có tin nhắn";
+                          return text.length > 14 ? `${text.substring(0, 14)}...` : text;
+                        } catch (e) {
+                          const text = suggestedUser?.lastMessage?.content || "Không có tin nhắn";
+                          return text.length > 14 ? `${text.substring(0, 14)}...` : text;
+                        }
+                      })()} •{" "}
                       {calculateTimeAgo(suggestedUser?.lastMessage?.time)}
                     </span>
                   )}
@@ -339,16 +464,61 @@ const ChatPage = () => {
                 )}
               </span>
             </div>
+            {location.state?.fromPost && (
+              <Button
+                variant="ghost"
+                className="ml-auto"
+                onClick={() => navigate(`/adoptDetail/${location.state.postId}`)}
+              >
+                Xem bài viết gốc
+              </Button>
+            )}
           </div>
-          <Messages selectedUser={selectedUser} />
+          <Messages selectedUser={selectedUser} postInfo={location.state} />
           <div className="flex items-center p-4 border-t border-t-gray-300">
-            <Input
-              onChange={(e) => setTextMessage(e.target.value)}
-              value={textMessage}
-              type="text"
-              className="flex-1 mr-2 focus-visible:ring-transparent"
-              placeholder="Nhắn tin..."
-            />
+            <div className="relative flex-1 mr-2">
+              <div
+                className={`absolute z-10 transition-all duration-300 ease-in-out ${
+                  emojiPicker
+                    ? "opacity-100 scale-100"
+                    : "opacity-0 scale-95 pointer-events-none"
+                }`}
+                style={{ bottom: "100%", right: "0" }}
+                ref={emojiPickerRef}
+              >
+                <EmojiPicker open={emojiPicker} onEmojiClick={onEmojiClick} />
+              </div>
+              <Input
+                ref={inputRef}
+                onChange={(e) => setTextMessage(e.target.value)}
+                value={textMessage}
+                type="text"
+                className="w-full focus-visible:ring-transparent"
+                placeholder="Nhắn tin..."
+              />
+              <Button
+                variant="ghost"
+                size="icon"
+                className="absolute right-2 top-1/2 -translate-y-1/2 hover:bg-gray-200"
+                onClick={() => setEmojiPicker(!emojiPicker)}
+              >
+                <SmilePlus size={18} strokeWidth={1.5} className="text-gray-600" />
+              </Button>
+            </div>
+            <label className={`cursor-pointer mr-2 ${isUploading ? 'opacity-50 pointer-events-none' : ''}`}>
+              <input
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={handleImageSelect}
+                disabled={isUploading}
+              />
+              {isUploading ? (
+                <Loader2 className="h-6 w-6 text-gray-500 animate-spin" />
+              ) : (
+                <ImagePlus className="h-6 w-6 text-gray-500 hover:text-gray-700" />
+              )}
+            </label>
             <Button onClick={() => sendMessageHandler(selectedUser?.id)}>
               Send
             </Button>

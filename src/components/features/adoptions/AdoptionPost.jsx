@@ -166,7 +166,15 @@ const AdoptionPost = ({ post }) => {
       return (
         <Button
           className="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600"
-          onClick={() => navigate(`/chat/${post.author?.id}`)}
+          onClick={() => navigate(`/chat/${post.author?.id}`, { 
+            state: { 
+              fromPost: true,
+              postId: post._id,
+              postTitle: post.caption,
+              petName: post.pet?.name,
+              location: post.location
+            } 
+          })}
         >
           <div className="flex items-center gap-2">
             <Send className="cursor-pointer hover:text-gray-600" size={16} />
