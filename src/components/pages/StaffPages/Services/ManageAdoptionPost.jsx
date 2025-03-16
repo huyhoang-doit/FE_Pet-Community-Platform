@@ -21,23 +21,24 @@ const ManageAdoptionPost = () => {
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [formModalOpen, setFormModalOpen] = useState(false);
   const [selectedPost, setSelectedPost] = useState(null);
+  const fetchData = async () => {
+    try {
+      const response = await fetchAllAdoptionPostsAPI(
+        currentPage,
+        itemsPerPage,
+        sortBy,
+        statusSort
+      );
+      const { results, totalResults } = response.data.data;
+      setPosts(results);
+      setTotalResults(totalResults);
+    } catch (error) {
+      console.error("Error fetching posts:", error);
+    }
+  };
+
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await fetchAllAdoptionPostsAPI(
-          currentPage,
-          itemsPerPage,
-          sortBy,
-          statusSort
-        );
-        const { results, totalResults } = response.data.data;
-        setPosts(results);
-        setTotalResults(totalResults);
-      } catch (error) {
-        console.error("Error fetching posts:", error);
-      }
-    };
     fetchData();
   }, [currentPage, statusSort, sortBy]);
 
@@ -86,14 +87,12 @@ const ManageAdoptionPost = () => {
     setEditModalOpen(false);
   };
 
-  const handleFormSubmitted = async (formData) => {
+  const handleFormSubmitted = async () => {
     try {
-      const { data } = await addAdoptionForm(formData);
-      if (data.status === 201) {
-        toast.success(data.message);
+      await fetchData()
         setFormModalOpen(false);
       }
-    } catch (error) {
+     catch (error) {
       toast.error(error.response?.data?.message || "Error creating form!");
     }
   };
@@ -217,7 +216,7 @@ const ManageAdoptionPost = () => {
                         onClick={() => handleFormClick(post)}
                         className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
                       >
-                        Tạo form gửi
+                        Tạo form nhận nuôi
                       </Button>
                     )}
                   </td>

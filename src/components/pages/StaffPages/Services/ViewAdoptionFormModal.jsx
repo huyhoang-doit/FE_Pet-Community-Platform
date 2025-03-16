@@ -197,12 +197,14 @@ const ViewAdoptionFormModal = ({ open, setOpen, form, onStatusUpdate }) => {
                       ? "Đã duyệt"
                       : "Đã từ chối"}
                   </Tag>
-                  <Button
-                    onClick={() => setIsEditing(true)}
-                    className="bg-green-500 text-white hover:bg-green-600"
-                  >
-                    Chỉnh sửa
-                  </Button>
+                  {status !== "Rejected" && (
+                    <Button
+                      onClick={() => setIsEditing(true)}
+                      className="bg-green-500 text-white hover:bg-green-600"
+                    >
+                      Chỉnh sửa
+                    </Button>
+                  )}
                 </div>
               )}
             </Descriptions.Item>

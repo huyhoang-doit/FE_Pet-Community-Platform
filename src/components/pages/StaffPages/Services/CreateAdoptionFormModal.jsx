@@ -166,7 +166,8 @@ const CreateAdoptionFormModal = ({ open, setOpen, post, onSubmit }) => {
       setLoading(true);
       const { data } = await addAdoptionForm(formData);
       if (data.status === 201) {
-        toast.success(data.message || "Form đã được gửi thành công!");
+        toast.success(data.message || "Form đã được tạo thành công!");
+        onSubmit();
         setOpen(false);
         // Reset form
         setAdopterName("");
@@ -191,13 +192,19 @@ const CreateAdoptionFormModal = ({ open, setOpen, post, onSubmit }) => {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogContent className="max-w-2xl p-6 bg-white rounded-lg shadow-xl max-h-[80vh] overflow-y-auto">
-        <DialogHeader className="text-center flex items-center justify-center gap-2 sticky top-0 bg-white z-10 pb-4">
-          <PawPrint className="w-8 h-8 text-blue-500" />
-          <div>
-            <h2 className="text-2xl font-semibold text-gray-900">
-              Tạo form gửi người nhận nuôi
-            </h2>
-            <p className="text-sm text-gray-500">Bài đăng: {post.caption}</p>
+        <DialogHeader className="border-b pb-4 mb-6">
+          <div className="flex items-center gap-4">
+            <div className="p-3 bg-blue-50 rounded-full">
+              <PawPrint className="w-6 h-6 text-blue-500" />
+            </div>
+            <div className="flex-1">
+              <h2 className="text-xl font-semibold text-gray-900 mb-1">
+                Tạo form nhận nuôi thú cưng
+              </h2>
+              <p className="text-sm text-gray-500 line-clamp-1">
+                Bài đăng: {post.caption}
+              </p>
+            </div>
           </div>
         </DialogHeader>
 
@@ -422,10 +429,10 @@ const CreateAdoptionFormModal = ({ open, setOpen, post, onSubmit }) => {
               {loading ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Đang gửi...
+                  Đang tạo...
                 </>
               ) : (
-                "Gửi form"
+                "Tạo Form"
               )}
             </Button>
           </div>
