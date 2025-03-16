@@ -42,6 +42,7 @@ const ManageCampaign = () => {
       const { data } = await fetchCampaignsAPI(page, search);
       if (data?.data) {
         setCampaigns(data.data.results);
+        setTotalResults(data.data.totalResults);
       }
     } catch (error) {
       setCampaigns([]);
