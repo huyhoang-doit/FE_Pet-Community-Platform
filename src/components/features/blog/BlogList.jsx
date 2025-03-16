@@ -1,4 +1,5 @@
 import { getAllBlogsAPI } from "@/apis/blog";
+import Footer from "@/components/layouts/Footer";
 import Header from "@/components/layouts/Header";
 import { Button, Card, Pagination, Spin } from "antd";
 import { useEffect, useState } from "react";
@@ -111,7 +112,7 @@ const BlogList = () => {
                 >
                   <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
                     <h2 className="text-3xl font-bold">{blogs[0].title}</h2>
-                    
+
                     <p className="text-lg mt-2 line-clamp-2" dangerouslySetInnerHTML={{ __html: blogs[0].content }}></p>
                   </div>
                 </Card>
@@ -166,6 +167,7 @@ const BlogList = () => {
           className="mt-6 flex justify-center"
         />
       </div>
+      <Footer />
     </div>
   );
 };

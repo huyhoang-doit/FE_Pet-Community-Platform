@@ -19,8 +19,8 @@ function Navbar() {
   const [search, setSearch] = useState("");
   const [detectedBreed, setDetectedBreed] = useState(null);
   const { user } = useSelector((state) => state.auth);
-  
-  
+
+
   const handleKeyDown = (event) => {
     if (event.key === "Enter") {
       console.log("hello");
@@ -29,7 +29,7 @@ function Navbar() {
 
   const handleImageAnalysisResult = (result) => {
     console.log('result', result);
-    
+
     if (result) {
       setDetectedBreed(result);
     }
@@ -57,9 +57,9 @@ function Navbar() {
     },
   ];
 
-  const handleSearch = () => {
-    console.log(search);
-  }
+  // const handleSearch = () => {
+  //   console.log(search);
+  // }
   return (
     <>
       {navBar.map((item) => {
@@ -98,7 +98,7 @@ function Navbar() {
           onChange={(e) => setSearch(e.target.value)}
           onKeyDown={handleKeyDown}
           className="p-3 sm:w-[664px] w-[320px] rounded-md outline-none border-none bg-gray-400/30"
-          placeholder="Tìm kiếm chó cưng thích hợp với bạn ..."
+          placeholder="Gửi hình thú cưng của bạn để phân tích"
         />
 
         <div>
@@ -142,23 +142,23 @@ function Navbar() {
               </div>
               {user && (
                 <DialogFooter>
-                  <Button 
-                    type="primary" 
-                  onClick={handleNavigateToAdopt}
-                  disabled={!detectedBreed?._id}
-                >
-                  Đến trang kết quả
+                  <Button
+                    type="primary"
+                    onClick={handleNavigateToAdopt}
+                    disabled={!detectedBreed?._id}
+                  >
+                    Đến trang kết quả
                   </Button>
                 </DialogFooter>
               )}
             </DialogContent>
           </Dialog>
         </div>
-        <Button
-        className="ml-2"
-        type="primary"
-        onClick={handleSearch}
-        >Search</Button>
+        {/* <Button
+          className="ml-2"
+          type="primary"
+          onClick={handleSearch}
+        >Search</Button> */}
       </div>
     </>
   );
