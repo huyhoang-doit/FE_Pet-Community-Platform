@@ -8,9 +8,6 @@ const Home = () => {
   useFetchData();
 
   const location = useLocation();
-  const { adoptPosts } = useSelector((store) => store.adopt);
-  console.log('adoptPosts',adoptPosts)
-
   const renderFeed = () => {
     if (location.pathname.includes("/forum")) {
       return <ForumFeeds />;

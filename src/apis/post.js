@@ -29,10 +29,12 @@ export const bookmarkAPI = async (postId) => {
   );
 };
 
-export const fetchAllPostsAPI = async (page = 1, limit = 4) => {
-  return await authorizedAxiosInstance.get(
-    `${BASE_URL}/post/all?sortBy=createdAt:desc&limit=${limit}&page=${page}`
-  );
+export const fetchAllPostsAPI = async (page = 1, limit = 4, isApproved = null) => {
+  let url = `${BASE_URL}/post/all?sortBy=createdAt:desc&limit=${limit}&page=${page}`;
+  if (isApproved !== null) {
+    url += `&isApproved=${isApproved}`;
+  }
+  return await authorizedAxiosInstance.get(url);
 };
 
 export const getPostById = async (postId) => {

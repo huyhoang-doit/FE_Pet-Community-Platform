@@ -46,7 +46,7 @@ const Posts = () => {
     try {
       const nextPage = page + 1;
       setPage(nextPage);
-      const { data } = await fetchAllPostsAPI(nextPage);
+      const { data } = await fetchAllPostsAPI(nextPage, 4, true);
       if (data.data.results.length === 0) {
         setHasMorePosts(false);
         return;
