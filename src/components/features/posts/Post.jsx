@@ -11,7 +11,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { toast } from "sonner";
 import { setPosts, setSelectedPost } from "@/redux/postSlice";
 import { Badge } from "../../ui/badge";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import VerifiedBadge from "../../core/VerifiedBadge";
 import {
   bookmarkAPI,
@@ -36,6 +36,7 @@ const Post = ({ post }) => {
   const [postLike, setPostLike] = useState(post?.likes?.length);
   const [comment, setComment] = useState(post?.comments);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const changeEventHandler = (e) => {
     const inputText = e.target.value;
@@ -48,6 +49,10 @@ const Post = ({ post }) => {
 
   const likeOrDislikeHandler = async () => {
     try {
+      if (!user) {
+        toast.error("Please login first");
+        navigate("/login");
+      }
       const action = liked ? "dislike" : "like";
       const res = await likeOrDislikeAPI(post._id, action);
       if (res.data.success) {
@@ -76,6 +81,10 @@ const Post = ({ post }) => {
 
   const commentHandler = async () => {
     try {
+      if (!user) {
+        toast.error("Please login first");
+        navigate("/login");
+      }
       const res = await commentAPI(post._id, text);
       if (res.data.success) {
         const updatedCommentData = [...comment, res.data.comment];
@@ -112,6 +121,10 @@ const Post = ({ post }) => {
 
   const bookmarkHandler = async () => {
     try {
+      if (!user) {
+        toast.error("Please login first");
+        navigate("/login");
+      }
       const res = await bookmarkAPI(post._id);
       if (res.data.success) {
         setBookmarked(!bookmarked);
@@ -154,34 +167,36 @@ const Post = ({ post }) => {
             <Badge variant="secondary">Author</Badge>
           )}
         </div>
-        <Dialog>
-          <DialogTrigger asChild>
-            <MoreHorizontal className="cursor-pointer" />
-          </DialogTrigger>
-          <DialogContent className="flex flex-col items-center text-sm text-center">
-            {post?.author?.id !== user?.id && (
-              <Button
-                variant="ghost"
-                className="cursor-pointer w-fit text-[#ED4956] font-bold"
-              >
-                Unfollow
-              </Button>
-            )}
+        {user && (
+          <Dialog>
+            <DialogTrigger asChild>
+              <MoreHorizontal className="cursor-pointer" />
+            </DialogTrigger>
+            <DialogContent className="flex flex-col items-center text-sm text-center">
+              {post?.author?.id !== user?.id && (
+                <Button
+                  variant="ghost"
+                  className="cursor-pointer w-fit text-[#ED4956] font-bold"
+                >
+                  Unfollow
+                </Button>
+              )}
 
-            <Button variant="ghost" className="cursor-pointer w-fit">
-              Add to favorites
-            </Button>
-            {user && user?.id === post?.author?.id && (
-              <Button
-                onClick={deletePostHandler}
-                variant="ghost"
-                className="cursor-pointer w-fit"
-              >
-                Delete
+              <Button variant="ghost" className="cursor-pointer w-fit">
+                Add to favorites
               </Button>
-            )}
-          </DialogContent>
-        </Dialog>
+              {user && user?.id === post?.author?.id && (
+                <Button
+                  onClick={deletePostHandler}
+                  variant="ghost"
+                  className="cursor-pointer w-fit"
+                >
+                  Delete
+                </Button>
+              )}
+            </DialogContent>
+          </Dialog>
+        )}
       </div>
 
       {post?.image?.length + post?.video?.length === 1 ? (
@@ -231,46 +246,51 @@ const Post = ({ post }) => {
         </div>
       )}
 
-      <div className="flex items-center justify-between my-2">
-        <div className="flex items-center gap-3">
-          {liked ? (
-            <FaHeart
-              onClick={likeOrDislikeHandler}
-              size={"24"}
-              className="cursor-pointer text-red-600"
-            />
-          ) : (
-            <FaRegHeart
-              onClick={likeOrDislikeHandler}
-              size={"22px"}
+      {user && (
+        <div className="flex items-center justify-between my-2">
+          <div className="flex items-center gap-3">
+            {liked ? (
+              <FaHeart
+                onClick={likeOrDislikeHandler}
+                size={"24"}
+                className="cursor-pointer text-red-600"
+              />
+            ) : (
+              <FaRegHeart
+                onClick={likeOrDislikeHandler}
+                size={"22px"}
+                className="cursor-pointer hover:text-gray-600"
+              />
+            )}
+
+            <MessageCircle
+              onClick={() => {
+                dispatch(setSelectedPost(post));
+                setOpen(true);
+              }}
               className="cursor-pointer hover:text-gray-600"
             />
-          )}
-
-          <MessageCircle
-            onClick={() => {
-              dispatch(setSelectedPost(post));
-              setOpen(true);
-            }}
-            className="cursor-pointer hover:text-gray-600"
-          />
-          <Send className="cursor-pointer hover:text-gray-600" />
+            <Send className="cursor-pointer hover:text-gray-600" />
+          </div>
+          {user &&
+            (bookmarked ? (
+              <FaBookmark
+                onClick={bookmarkHandler}
+                className="cursor-pointer hover:text-gray-600"
+                size={24}
+              />
+            ) : (
+              <LuBookmark
+                onClick={bookmarkHandler}
+                className="cursor-pointer hover:text-gray-600"
+                size={24}
+              />
+            ))}
         </div>
-        {bookmarked ? (
-          <FaBookmark
-            onClick={bookmarkHandler}
-            className="cursor-pointer hover:text-gray-600"
-            size={24}
-          />
-        ) : (
-          <LuBookmark
-            onClick={bookmarkHandler}
-            className="cursor-pointer hover:text-gray-600"
-            size={24}
-          />
-        )}
-      </div>
-      <span className="font-medium block mb-2">{postLike} likes</span>
+      )}
+      <span className="font-medium block mb-2">
+        {postLike} likes
+      </span>
       <span className="text-sm">
         <div className="inline-flex mr-1">
           <Link
@@ -300,23 +320,25 @@ const Post = ({ post }) => {
         </span>
       )}
       <CommentDialog open={open} setOpen={setOpen} />
-      <div className="flex items-center justify-between mt-1">
-        <input
-          type="text"
-          placeholder="Add a comment..."
-          value={text}
-          onChange={changeEventHandler}
-          className="outline-none text-sm w-full"
-        />
-        {text && (
-          <span
-            onClick={commentHandler}
-            className="text-[#3BADF8] cursor-pointer"
-          >
-            Post
-          </span>
-        )}
-      </div>
+      {user && (
+        <div className="flex items-center justify-between mt-1">
+          <input
+            type="text"
+            placeholder="Add a comment..."
+            value={text}
+            onChange={changeEventHandler}
+            className="outline-none text-sm w-full"
+          />
+          {text && (
+            <span
+              onClick={commentHandler}
+              className="text-[#3BADF8] cursor-pointer"
+            >
+              Post
+            </span>
+          )}
+        </div>
+      )}
     </div>
   );
 };

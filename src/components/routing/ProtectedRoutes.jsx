@@ -44,10 +44,10 @@ const ProtectedRoutes = ({ children, allowedRoles = [] }) => {
         localStorage.removeItem("access_token");
         localStorage.removeItem("refresh_token");
         navigate("/");
-        toast.success(res.data.message);
+        toast.error('Vui lòng đăng nhập!');
       }
     } catch (error) {
-      toast.error(error.response.data.message);
+      console.error(error.response.data.message);
     }
   };
 

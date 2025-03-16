@@ -12,7 +12,7 @@ function ManagePost() {
 
   const fetchPosts = async (page = 1) => {
     try {
-      const response = await fetchAllPostsAPI(page, limit);
+      const response = await fetchAllPostsAPI(page,limit);
       setPosts(response.data.data.results);
       setTotalResults(response.data.data.totalResults);
     } catch (error) {

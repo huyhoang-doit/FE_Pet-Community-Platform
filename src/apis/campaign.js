@@ -25,8 +25,8 @@ export const getCampaignByIdAPI = async (id) => {
   return await authorizedAxiosInstance.get(`${BASE_URL}/campaign/${id}`);
 }
 
-export const getDonationsByCampaignIdAPI = async (id) => {
-  return await authorizedAxiosInstance.get(`${BASE_URL}/campaign/${id}/donations`);
+export const getDonationsByCampaignIdAPI = async (id, page) => {
+  return await authorizedAxiosInstance.get(`${BASE_URL}/campaign/${id}/donations?page=${page}`);
 }
 
 

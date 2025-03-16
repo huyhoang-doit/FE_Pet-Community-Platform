@@ -29,13 +29,13 @@ const CommentDialog = ({ open, setOpen }) => {
 
   useEffect(() => {
     if (selectedPost) {
-      setComment(selectedPost.comments);
-      setLiked(selectedPost.likes.includes(user?.id) || false);
-      setPostLike(selectedPost.likes.length);
-      setBookmarked(user.bookmarks.includes(selectedPost?._id) || false);
+      setComment(selectedPost?.comments);
+      setLiked(selectedPost?.likes.includes(user?.id) || false);
+      setPostLike(selectedPost?.likes.length);
+      setBookmarked(user?.bookmarks.includes(selectedPost?._id) || false);
     }
   }, [selectedPost, user]);
-  
+
   const changeEventHandler = (e) => {
     const inputText = e.target.value;
     if (inputText.trim()) {
@@ -94,7 +94,7 @@ const CommentDialog = ({ open, setOpen }) => {
       console.log(error);
     }
   };
-  
+
   const bookmarkHandler = async () => {
     try {
       const res = await bookmarkAPI(selectedPost._id);
@@ -122,57 +122,57 @@ const CommentDialog = ({ open, setOpen }) => {
       >
         <div className="flex h-full">
           {/* Left side - Image */}
-            {selectedPost &&
-            (selectedPost.image?.length || 0) +
-              (selectedPost.video?.length || 0) ===
-              1 ? (
-              selectedPost.image?.length === 1 ? (
-                <div className="w-full h-full flex justify-center items-center">
-                  <img
-                    className="max-h-full w-auto object-contain"
-                    src={selectedPost.image[0]}
-                    alt="post_img"
-                  />
-                </div>
-              ) : (
-                <div className="w-full h-full flex justify-center items-center">
-                  <video
-                    className="max-h-full w-auto object-contain"
-                    src={selectedPost.video[0]}
-                    autoPlay
-                    muted
-                    loop
-                  />
-                </div>
-              )
+          {selectedPost &&
+          (selectedPost.image?.length || 0) +
+            (selectedPost.video?.length || 0) ===
+            1 ? (
+            selectedPost.image?.length === 1 ? (
+              <div className="w-full h-full flex justify-center items-center">
+                <img
+                  className="max-h-full w-auto object-contain"
+                  src={selectedPost.image[0]}
+                  alt="post_img"
+                />
+              </div>
             ) : (
               <div className="w-full h-full flex justify-center items-center">
-                <div className="w-full max-w-[800px] h-auto">
-                  <Carousel autoSlide={false}>
-                    {[
-                      ...(selectedPost?.image || []).map((image) => (
-                        <img 
-                          key={image}
-                          src={image} 
-                          alt="carousel_img"
-                          className="max-h-[calc(100vh-200px)] w-auto object-contain" 
-                        />
-                      )),
-                      ...(selectedPost?.video || []).map((video) => (
-                        <video 
-                          key={video}
-                          src={video} 
-                          autoPlay 
-                          muted 
-                          loop
-                          className="max-h-[calc(100vh-200px)] w-auto object-contain"
-                        />
-                      ))
-                    ]}
-                  </Carousel>
-                </div>
+                <video
+                  className="max-h-full w-auto object-contain"
+                  src={selectedPost.video[0]}
+                  autoPlay
+                  muted
+                  loop
+                />
               </div>
-            )}
+            )
+          ) : (
+            <div className="w-full h-full flex justify-center items-center">
+              <div className="w-full max-w-[800px] h-auto">
+                <Carousel autoSlide={false}>
+                  {[
+                    ...(selectedPost?.image || []).map((image) => (
+                      <img
+                        key={image}
+                        src={image}
+                        alt="carousel_img"
+                        className="max-h-[calc(100vh-200px)] w-auto object-contain"
+                      />
+                    )),
+                    ...(selectedPost?.video || []).map((video) => (
+                      <video
+                        key={video}
+                        src={video}
+                        autoPlay
+                        muted
+                        loop
+                        className="max-h-[calc(100vh-200px)] w-auto object-contain"
+                      />
+                    )),
+                  ]}
+                </Carousel>
+              </div>
+            </div>
+          )}
 
           {/* Right side - Details */}
           <div className="w-[400px] flex flex-col border-l">
@@ -207,17 +207,21 @@ const CommentDialog = ({ open, setOpen }) => {
                   <span className="text-sm text-gray-500">Hồ Chí Minh</span>
                 </div>
               </div>
-              <Dialog>
-                <DialogTrigger asChild>
-                  <MoreHorizontal className="cursor-pointer" />
-                </DialogTrigger>
-                <DialogContent className="flex flex-col items-center text-sm text-center">
-                  <div className="cursor-pointer w-full text-[#ED4956] font-bold">
-                    Unfollow
-                  </div>
-                  <div className="cursor-pointer w-full">Add to favorites</div>
-                </DialogContent>
-              </Dialog>
+              {user && (
+                <Dialog>
+                  <DialogTrigger asChild>
+                    <MoreHorizontal className="cursor-pointer" />
+                  </DialogTrigger>
+                  <DialogContent className="flex flex-col items-center text-sm text-center">
+                    <div className="cursor-pointer w-full text-[#ED4956] font-bold">
+                      Unfollow
+                    </div>
+                    <div className="cursor-pointer w-full">
+                      Add to favorites
+                    </div>
+                  </DialogContent>
+                </Dialog>
+              )}
             </div>
 
             {/* Post details */}
@@ -305,70 +309,78 @@ const CommentDialog = ({ open, setOpen }) => {
                           </span>
                         </span>
                       </div>
-                      <div className="cursor-pointer flex items-start mt-2">
-                        <FaRegHeart size={12} />
-                      </div>
+                      {user && (
+                        <div className="cursor-pointer flex items-start mt-2">
+                          <FaRegHeart size={12} />
+                        </div>
+                      )}
                     </div>
                   ))}
               </div>
             </div>
 
             {/* Post actions */}
-            <div className="p-4 border-t">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  {liked ? (
-                    <FaHeart
-                      onClick={likeOrDislikeHandler}
-                      size={"24"}
-                      className="cursor-pointer text-red-600"
-                    />
-                  ) : (
-                    <FaRegHeart
-                      onClick={likeOrDislikeHandler}
-                      size={"22px"}
-                      className="cursor-pointer hover:text-gray-600"
-                    />
-                  )}
-                  <MessageCircle
-                    className="w-6 h-6 cursor-pointer"
-                    onClick={() => document.querySelector("textarea").focus()}
-                  />
+            {user && (
+              <>
+                <div className="p-4 border-t">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      {liked ? (
+                        <FaHeart
+                          onClick={likeOrDislikeHandler}
+                          size={"24"}
+                          className="cursor-pointer text-red-600"
+                        />
+                      ) : (
+                        <FaRegHeart
+                          onClick={likeOrDislikeHandler}
+                          size={"22px"}
+                          className="cursor-pointer hover:text-gray-600"
+                        />
+                      )}
+                      <MessageCircle
+                        className="w-6 h-6 cursor-pointer"
+                        onClick={() =>
+                          document.querySelector("textarea").focus()
+                        }
+                      />
+                    </div>
+                    {bookmarked ? (
+                      <FaBookmark
+                        onClick={bookmarkHandler}
+                        className="cursor-pointer hover:text-gray-600"
+                        size={24}
+                      />
+                    ) : (
+                      <LuBookmark
+                        onClick={bookmarkHandler}
+                        className="cursor-pointer hover:text-gray-600"
+                        size={24}
+                      />
+                    )}
+                  </div>
+                  <p className="font-semibold mt-2">{postLike} likes</p>
                 </div>
-                {bookmarked ? (
-                  <FaBookmark
-                    onClick={bookmarkHandler}
-                    className="cursor-pointer hover:text-gray-600"
-                    size={24}
-                  />
-                ) : (
-                  <LuBookmark
-                    onClick={bookmarkHandler}
-                    className="cursor-pointer hover:text-gray-600"
-                    size={24}
-                  />
-                )}
-              </div>
-              <p className="font-semibold mt-2">{postLike} likes</p>
-            </div>
 
-            <div className="p-4 border-t flex items-center gap-3">
-              <textarea
-                placeholder="Add a comment..."
-                className="flex-1 resize-none outline-none h-[18px] max-h-[80px] text-sm"
-                rows={1}
-                style={{ height: "18px" }}
-                value={text}
-                onChange={changeEventHandler}
-              />
-              <Button
-                disabled={!text.trim()}
-                onClick={sendMessageHandler}
-                variant="outline"
-              >
-                Send
-              </Button>
-            </div>
+                <div className="p-4 border-t flex items-center gap-3">
+                  <textarea
+                    placeholder="Add a comment..."
+                    className="flex-1 resize-none outline-none h-[18px] max-h-[80px] text-sm"
+                    rows={1}
+                    style={{ height: "18px" }}
+                    value={text}
+                    onChange={changeEventHandler}
+                  />
+                  <Button
+                    disabled={!text.trim()}
+                    onClick={sendMessageHandler}
+                    variant="outline"
+                  >
+                    Send
+                  </Button>
+                </div>
+              </>
+            )}
           </div>
         </div>
       </DialogContent>

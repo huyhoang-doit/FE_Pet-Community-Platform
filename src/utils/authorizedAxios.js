@@ -1,6 +1,5 @@
 import { handleLogoutAPI, refreshTokenAPI } from "@/apis/auth";
 import axios from "axios";
-import { toast } from "sonner";
 import { setLoading } from "@/redux/loadingSlice";
 import store from "@/redux/store";
 import { setAuthUser } from "@/redux/authSlice";
@@ -92,7 +91,7 @@ authorizedAxiosInstance.interceptors.response.use(
     // Handle all other error cases
     store.dispatch(setLoading(false)); // Hide loading on other errors
     if (error.response?.status !== 410) {
-      toast.error(error.response?.data?.message || error?.message);
+      console.error(error.response?.data?.message || error?.message)
     }
     return Promise.reject(error);
   }

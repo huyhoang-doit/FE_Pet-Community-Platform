@@ -40,6 +40,9 @@ const getInitialActiveTab = () => {
 };
 
 const LeftSidebar = () => {
+  const clientSetting = useSelector((state) => state.setting.clientSetting);
+  const logo = clientSetting?.find((item) => item.name === "Logo")?.value;
+  const logo2 = clientSetting?.find((item) => item.name === "Logo2")?.value;
   const navigate = useNavigate();
   const location = useLocation();
   const { user } = useSelector((store) => store.auth);
@@ -57,14 +60,14 @@ const LeftSidebar = () => {
   );
   const userRole = user?.role;
 
-  useEffect(() => {
-    if (!user) {
-      dispatch(setAuthUser(null));
-      localStorage.removeItem("access_token");
-      localStorage.removeItem("refresh_token");
-      navigate("/login");
-    }
-  }, [user, navigate]);
+  // useEffect(() => {
+  //   if (!user) {
+  //     dispatch(setAuthUser(null));
+  //     localStorage.removeItem("access_token");
+  //     localStorage.removeItem("refresh_token");
+  //     navigate("/login");
+  //   }
+  // }, [user, navigate]);
 
   const logoutHandler = async () => {
     try {
@@ -241,36 +244,44 @@ const LeftSidebar = () => {
       text: "Tìm kiếm",
       textType: "Search",
     },
-    {
-      icon: isActiveTab("Messages") ? (
-        <RiMessengerFill size={24} />
-      ) : (
-        <RiMessengerLine size={24} />
-      ),
-      text: "Tin nhắn",
-      textType: "Messages",
-    },
-    {
-      icon: showNotificationTab ? <FaHeart size={24} /> : <Heart />,
-      text: "Thông báo",
-      textType: "Notifications",
-    },
-    { icon: <PlusSquare />, text: "Tạo", textType: "Create" },
-    {
-      icon: isActiveTab("Profile") ? (
-        <Avatar className="w-6 h-6" style={{ border: "2px solid black" }}>
-          <AvatarImage src={user?.profilePicture} alt="@shadcn" />
-          <AvatarFallback>CN</AvatarFallback>
-        </Avatar>
-      ) : (
-        <Avatar className="w-6 h-6" style={{ border: "1px solid #e0e0e0" }}>
-          <AvatarImage src={user?.profilePicture} alt="@shadcn" />
-          <AvatarFallback>CN</AvatarFallback>
-        </Avatar>
-      ),
-      text: "Trang cá nhân",
-      textType: "Profile",
-    },
+    // Only show these items if user exists
+    ...(user
+      ? [
+          {
+            icon: isActiveTab("Messages") ? (
+              <RiMessengerFill size={24} />
+            ) : (
+              <RiMessengerLine size={24} />
+            ),
+            text: "Tin nhắn",
+            textType: "Messages",
+          },
+          {
+            icon: showNotificationTab ? <FaHeart size={24} /> : <Heart />,
+            text: "Thông báo",
+            textType: "Notifications",
+          },
+          { icon: <PlusSquare />, text: "Tạo", textType: "Create" },
+          {
+            icon: isActiveTab("Profile") ? (
+              <Avatar className="w-6 h-6" style={{ border: "2px solid black" }}>
+                <AvatarImage src={user?.profilePicture} alt="@shadcn" />
+                <AvatarFallback>CN</AvatarFallback>
+              </Avatar>
+            ) : (
+              <Avatar
+                className="w-6 h-6"
+                style={{ border: "1px solid #e0e0e0" }}
+              >
+                <AvatarImage src={user?.profilePicture} alt="@shadcn" />
+                <AvatarFallback>CN</AvatarFallback>
+              </Avatar>
+            ),
+            text: "Trang cá nhân",
+            textType: "Profile",
+          },
+        ]
+      : []),
   ];
 
   const allowedStaffItems = [
@@ -302,16 +313,12 @@ const LeftSidebar = () => {
           <h1 className="my-8 pl-3 font-bold text-xl">
             {sidebarWidth === "340px" && isDisplayText ? (
               <img
-                src="/assets/images/logo.png"
+                src={logo2}
                 alt="logo"
                 className="w-[50%]"
               />
             ) : (
-              <img
-                src="/assets/images/favicon.png"
-                alt="full logo"
-                className="w-[24px]"
-              />
+              <img src={logo} alt="full logo" className="w-[24px]" />
             )}
           </h1>
         </Link>
@@ -385,13 +392,15 @@ const LeftSidebar = () => {
           </div>
         </div>
 
-        <div
-          onClick={() => sidebarHandler("Logout")}
-          className="flex items-center gap-3 hover:bg-gray-100 cursor-pointer rounded-lg p-3 my-3 mb-8"
-        >
-          <LogOut />
-          {isDisplayText && <span>Đăng xuất</span>}
-        </div>
+        {user && (
+          <div
+            onClick={() => sidebarHandler("Logout")}
+            className="flex items-center gap-3 hover:bg-gray-100 cursor-pointer rounded-lg p-3 my-3 mb-8"
+          >
+            <LogOut />
+            {isDisplayText && <span>Đăng xuất</span>}
+          </div>
+        )}
       </div>
       <div
         ref={notificationRef}

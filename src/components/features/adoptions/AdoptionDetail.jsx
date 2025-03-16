@@ -2,7 +2,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { getAdoptionPostById, getUserBehaviorAPI } from "@/apis/post";
 import { FaRegHeart, FaHeart } from "react-icons/fa";
-import { PawPrint, MapPin, HandHeart, Share2, Send } from "lucide-react";
+import { PawPrint, MapPin, HandHeart, Send } from "lucide-react";
 import ShareButton from "./ShareButton";
 import { Button } from "@/components/ui/button";
 
@@ -134,8 +134,17 @@ const AdoptionDetail = () => {
               </div>
 
               <Button 
-          onClick={() => navigate(`/chat/${post.author?.id}`)}
-          className="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600">
+                onClick={() => navigate(`/chat/${post.author?.id}`, {
+                  state: {
+                    fromPost: true,
+                    postId: post._id,
+                    postTitle: post.caption,
+                    petName: post.pet?.name,
+                    location: post.location
+                  }
+                })}
+                className="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600"
+              >
                 <Send size={16} />
                 <span>Liên hệ nhận nuôi</span>
               </Button>

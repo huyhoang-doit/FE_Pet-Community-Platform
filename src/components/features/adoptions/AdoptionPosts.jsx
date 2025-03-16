@@ -43,7 +43,9 @@ const AdoptionPosts = () => {
   useEffect(() => {
     const fetchPosts = async () => {
       try {
-        const fetchAPI = id ? fetchAllAdoptionPostsByBreedAPI : fetchAllAdoptionPostsAPI;
+        const fetchAPI = id
+          ? fetchAllAdoptionPostsByBreedAPI
+          : fetchAllAdoptionPostsAPI;
         const { data } = await fetchAPI(page, id);
         if (data.status === 200) {
           setAdoptPosts((prevPosts) => [...prevPosts, ...data.data.results]);

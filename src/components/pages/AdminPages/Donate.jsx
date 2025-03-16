@@ -9,7 +9,7 @@ import { fetchCampaignsAPI } from "@/apis/campaign";
 
 const Donate = () => {
   const [donations, setDonations] = useState([]);
-  const [limit] = useState(5);
+  const [limit] = useState(20);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalResults, setTotalResults] = useState(0);
   // eslint-disable-next-line no-unused-vars
@@ -47,6 +47,11 @@ const Donate = () => {
       dataIndex: "user",
       key: "user",
       render: (user) => user?.username,
+    },
+    {
+      title: "Mã giao dịch",
+      dataIndex: "code",
+      key: "code",
     },
     {
       title: "Số tiền",
