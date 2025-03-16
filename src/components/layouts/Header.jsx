@@ -8,6 +8,8 @@ import { Avatar, Button, Dropdown } from "antd";
 import Navbar from "./Navbar";
 
 function Header() {
+  const clientSetting = useSelector((state) => state.setting.clientSetting);
+  const logo = clientSetting?.find((item) => item.name === "Logo")?.value;
   const { user } = useSelector((store) => store.auth);
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -61,7 +63,7 @@ function Header() {
       {/* Logo */}
       <div id="logo" className="w-16">
         <Link to="/">
-          <img src="/assets/images/favicon.png" alt="logo" />
+          <img src={logo} alt="logo" />
         </Link>
       </div>
 

@@ -7,6 +7,7 @@ import {
   MenuFoldOutlined,
   MenuUnfoldOutlined,
   PieChartOutlined,
+  SettingOutlined,
   TeamOutlined,
   UploadOutlined,
   UserOutlined,
@@ -21,11 +22,13 @@ const { Header, Sider, Content } = Layout;
 
 const AdminLayout = () => {
   const { user } = useSelector((store) => store.auth);
+  const clientSetting = useSelector((state) => state.setting.clientSetting);
+  const logo2 = clientSetting?.find((item) => item.name === "Logo2")?.value;
   const dispatch = useDispatch();
   const [collapsed, setCollapsed] = useState(() => {
     return localStorage.getItem("sidebar-collapsed") === "true";
   });
-  
+
   const navigate = useNavigate();
   const location = useLocation();
   const {
@@ -65,9 +68,13 @@ const AdminLayout = () => {
       >
         <div className="h-full flex flex-col">
           {/* Logo */}
-          <div className="flex justify-center items-center h-16"> 
+          <div className="flex justify-center items-center h-16">
             <Link to="/">
-              <img src='/assets/images/logo.png' alt="logo" className="w-100 h-10" />
+              <img
+                src={logo2}
+                alt="logo"
+                className="w-100 h-10"
+              />
             </Link>
           </div>
 
@@ -89,16 +96,30 @@ const AdminLayout = () => {
                 icon: <PieChartOutlined />,
                 label: "Bảng điều khiển",
               },
-              { key: "/admin/users", icon: <UserOutlined />, label: "Người dùng" },
-              { key: "/admin/staff", icon: <TeamOutlined />, label: "Nhân viên" },
+              {
+                key: "/admin/users",
+                icon: <UserOutlined />,
+                label: "Người dùng",
+              },
+              {
+                key: "/admin/staff",
+                icon: <TeamOutlined />,
+                label: "Nhân viên",
+              },
               {
                 key: "/admin/donate",
                 icon: <UploadOutlined />,
                 label: "Quyên góp",
-              },{
+              },
+              {
                 key: "/admin/campaign",
                 icon: <AlertOutlined />,
                 label: "Chiến dịch",
+              },
+              {
+                key: "/admin/client-setting",
+                icon: <SettingOutlined />,
+                label: "Cài đặt",
               },
               { type: "divider" }, // Dòng phân cách
               {
@@ -126,7 +147,11 @@ const AdminLayout = () => {
 
           {/* Avatar */}
           <div className="ml-auto">
-            <Avatar style={{border: '1px solid gray'}} size="large" src={user.profilePicture} />
+            <Avatar
+              style={{ border: "1px solid gray" }}
+              size="large"
+              src={user.profilePicture}
+            />
           </div>
         </Header>
 

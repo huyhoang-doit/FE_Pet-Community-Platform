@@ -2,8 +2,6 @@
 import { useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "../../ui/avatar";
 import { HandHeart, MapPin, PawPrint, Send } from "lucide-react";
-import { LuBookmark } from "react-icons/lu";
-import { FaBookmark } from "react-icons/fa";
 import { FaHeart, FaRegHeart } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "sonner";
@@ -11,25 +9,20 @@ import { setPosts } from "@/redux/postSlice";
 import { Badge } from "../../ui/badge";
 import { Link, useNavigate } from "react-router-dom";
 import VerifiedBadge from "../../core/VerifiedBadge";
-import { bookmarkAPI, likeOrDislikeAdoptionPostAPI, likeOrDislikeAPI } from "@/apis/post";
-import { setAuthUser } from "@/redux/authSlice";
+import { likeOrDislikeAdoptionPostAPI } from "@/apis/post";
 import Carousel from "../../ui/carousel";
 import { calculateTimeAgo } from "@/utils/calculateTimeAgo";
 import { Button } from "@/components/ui/button";
-import { FaShare } from "react-icons/fa";
 import ShareButton from "./ShareButton";
 
 const AdoptionPost = ({ post }) => {
   const { user } = useSelector((store) => store.auth);
   const [liked, setLiked] = useState(post.likes.includes(user?.id) || false);
-  const [bookmarked, setBookmarked] = useState(
-    user.bookmarks.includes(post?._id) || false
-  );
   const [postLike, setPostLike] = useState(post.likes.length);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const pet = post.pet;
-  const userRole = user.role;
+  const userRole = user?.role;
   const { posts } = useSelector((store) => store.adopt);
 
   // const changeEventHandler = (e) => {
@@ -265,7 +258,7 @@ const AdoptionPost = ({ post }) => {
               className="w-full h-full max-h-[400px] object-contain"
               src={post.image[0]}
               alt="post_img"
-              onClick={() => navigate(`/adoptDetail/${post._id}`)}
+              onClick={() => user && navigate(`/adoptDetail/${post._id}`)}
             />
           </div>
         ) : (
@@ -276,7 +269,7 @@ const AdoptionPost = ({ post }) => {
               autoPlay
               muted
               loop
-              onClick={() => navigate(`/adoptDetail/${post._id}`)}
+              onClick={() => user && navigate(`/adoptDetail/${post._id}`)}
             />
           </div>
         )
@@ -294,29 +287,29 @@ const AdoptionPost = ({ post }) => {
           </Carousel>
         </div>
       )}
+      {user && (
+        <>
+          <div className="flex items-center justify-between mt-1">
+            <div className="flex items-center justify-between my-2">
+              <div className="flex items-center gap-3">
+                {liked ? (
+                  <FaHeart
+                    onClick={likeOrDislikeHandler}
+                    size={"24"}
+                    className="cursor-pointer text-red-600"
+                  />
+                ) : (
+                  <FaRegHeart
+                    onClick={likeOrDislikeHandler}
+                    size={"22px"}
+                    className="cursor-pointer hover:text-gray-600"
+                  />
+                )}
+                <ShareButton post={post} />
+              </div>
+            </div>
 
-      <div className="flex items-center justify-between mt-1">
-        <div className="flex items-center justify-between my-2">
-          <div className="flex items-center gap-3">
-            {liked ? (
-              <FaHeart
-                onClick={likeOrDislikeHandler}
-                size={"24"}
-                className="cursor-pointer text-red-600"
-              />
-            ) : (
-              <FaRegHeart
-                onClick={likeOrDislikeHandler}
-                size={"22px"}
-                className="cursor-pointer hover:text-gray-600"
-              />
-            )}
-            <ShareButton post={post} />
-
-          </div>
-        </div>
-
-        {/* <Button
+            {/* <Button
           className="button--primary button rippleButton"
           onClick={() => {
             navigate(`/chat/${post.author?.id}`);
@@ -328,9 +321,11 @@ const AdoptionPost = ({ post }) => {
           </div>
         </Button> */}
 
-        {renderActionButton(post)}
-      </div>
-      <span className="font-medium">{postLike} likes</span>
+            {renderActionButton(post)}
+          </div>
+          <span className="font-medium">{postLike} likes</span>
+        </>
+      )}
     </div>
   );
 };

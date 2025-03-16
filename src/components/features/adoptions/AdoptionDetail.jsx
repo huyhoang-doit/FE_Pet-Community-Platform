@@ -2,7 +2,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { getAdoptionPostById, getUserBehaviorAPI } from "@/apis/post";
 import { FaRegHeart, FaHeart } from "react-icons/fa";
-import { PawPrint, MapPin, HandHeart, Share2, Send } from "lucide-react";
+import { PawPrint, MapPin, HandHeart, Send } from "lucide-react";
 import ShareButton from "./ShareButton";
 import { Button } from "@/components/ui/button";
 

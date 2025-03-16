@@ -12,7 +12,6 @@ const UserListItem = ({ userId, onClose }) => {
     const fetchUser = async () => {
       try {
         const { data } = await getProfileByIdAPI(userId)
-        console.log(data);
         
         if (data.status === 200) {
           setUserData(data.data);

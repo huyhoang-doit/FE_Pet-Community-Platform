@@ -8,6 +8,7 @@ import donateSlice from "./donateSlice.js";
 import loadingSlice from "./loadingSlice.js";
 import sidebarSlice from "./sidebarSlice.js";
 import adoptPostSlice from "./adoptPostSlice.js";
+import settingSlice from "./settingSlice.js";
 
 import {
     persistReducer,
@@ -36,7 +37,8 @@ const rootReducer = combineReducers({
     campaign: campaignSlice,
     donate: donateSlice,
     loading: loadingSlice,
-    sidebar: sidebarSlice
+    sidebar: sidebarSlice,
+    setting: settingSlice
 })
 
 const persistedReducer = persistReducer(persistConfig, rootReducer)

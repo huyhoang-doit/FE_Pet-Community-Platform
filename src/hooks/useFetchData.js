@@ -4,8 +4,10 @@ import useGetCampaign from "@/hooks/useGetCampaign";
 import useGetTopDonate from "@/hooks/useGetTopDonate";
 import useGetAllAdoptPost from "./useGetAllAdoptPost";
 import { useEffect } from "react";
+import { useSelector } from "react-redux";
 
 const useFetchData = () => {
+  const { user } = useSelector((store) => store.auth);
   const { fetchAllPost } = useGetAllPost();
   const { fetchAdoptPosts } = useGetAllAdoptPost();
   const { fetchSuggestedUsers } = useGetSuggestedUsers(5);
@@ -13,10 +15,13 @@ const useFetchData = () => {
   const { fetchTopDonate } = useGetTopDonate();
 
   useEffect(() => {
-    fetchAllPost();
-    fetchAdoptPosts();
+    if (!user) {
+      fetchAllPost();
+      fetchAdoptPosts();
+      fetchCampaigns();
+      return;
+    }
     fetchSuggestedUsers();
-    fetchCampaigns();
     fetchTopDonate();
   }, [
     fetchAllPost,
@@ -24,6 +29,7 @@ const useFetchData = () => {
     fetchSuggestedUsers,
     fetchCampaigns,
     fetchTopDonate,
+    user
   ]);
 };
 

@@ -33,6 +33,11 @@ import ManageBlog from "@/components/pages/StaffPages/Services/ManageBlog";
 import CampaignDetail from "./components/features/donate/CampaignDetail";
 import Campaigns from "./pages/Campaigns";
 import AdoptionDetail from "./components/features/adoptions/AdoptionDetail";
+import { useEffect } from "react";
+import { getClientSettingAPI } from "./apis/clientSetting";
+import { useDispatch } from "react-redux";
+import { setClientSetting } from "./redux/settingSlice";
+import ManageSetting from "./components/pages/AdminPages/ManageSetting";
 
 const browserRouter = createBrowserRouter([
   {
@@ -44,28 +49,32 @@ const browserRouter = createBrowserRouter([
         element: <LandingPage />,
       },
       {
-        path: "/forum",
-        element: (
-          <ProtectedRoutes>
-            <Home />
-          </ProtectedRoutes>
-        ),
+        path: "/campaigns",
+        element: <Campaigns />,
       },
       {
         path: "/adopt",
-        element: (
-          <ProtectedRoutes>
-            <Home />
-          </ProtectedRoutes>
-        ),
+        element: <Home />,
       },
       {
-        path: "/adopt/:id",
-        element: (
-          <ProtectedRoutes>
-            <Home />
-          </ProtectedRoutes>
-        ),
+        path: "/forum",
+        element: <Home />,
+      },
+      {
+        path: "/profile/:username",
+        element: <Profile />,
+      },
+      {
+        path: "/blog",
+        element: <BlogList />,
+      },
+      {
+        path: "/blog/:id",
+        element: <BlogDetail />,
+      },
+      {
+        path: "/donate/:id",
+        element: <CampaignDetail />,
       },
       {
         path: "/adoptDetail/:id",
@@ -76,10 +85,10 @@ const browserRouter = createBrowserRouter([
         ),
       },
       {
-        path: "/profile/:username",
+        path: "/adopt/:id",
         element: (
           <ProtectedRoutes>
-            <Profile />
+            <Home />
           </ProtectedRoutes>
         ),
       },
@@ -96,14 +105,6 @@ const browserRouter = createBrowserRouter([
         element: (
           <ProtectedRoutes>
             <EditProfile />
-          </ProtectedRoutes>
-        ),
-      },
-      {
-        path: "/donate/:id",
-        element: (
-          <ProtectedRoutes>
-            <CampaignDetail />
           </ProtectedRoutes>
         ),
       },
@@ -134,22 +135,6 @@ const browserRouter = createBrowserRouter([
         ),
       },
       {
-        path: "/blog",
-        element: (
-          <ProtectedRoutes>
-            <BlogList />
-          </ProtectedRoutes>
-        ),
-      },
-      {
-        path: "/blog/:id",
-        element: (
-          <ProtectedRoutes>
-            <BlogDetail />
-          </ProtectedRoutes>
-        ),
-      },
-      {
         path: "/blog/create",
         element: (
           <ProtectedRoutes>
@@ -170,14 +155,6 @@ const browserRouter = createBrowserRouter([
         element: (
           <ProtectedRoutes>
             <SubmitPet />
-          </ProtectedRoutes>
-        ),
-      },
-      {
-        path: "/campaigns",
-        element: (
-          <ProtectedRoutes>
-            <Campaigns />
           </ProtectedRoutes>
         ),
       },
@@ -218,6 +195,10 @@ const browserRouter = createBrowserRouter([
       {
         path: "campaign",
         element: <ManageCampaign />,
+      },
+      {
+        path: "client-setting",
+        element: <ManageSetting />,
       },
     ],
   },
@@ -280,6 +261,14 @@ const browserRouter = createBrowserRouter([
 ]);
 
 function App() {
+  const dispatch = useDispatch();
+  useEffect(() => {
+    const fetchClientSetting = async () => {
+      const { data } = await getClientSettingAPI();
+      dispatch(setClientSetting(data));
+    };
+    fetchClientSetting();
+  }, []);
   return (
     <SocketProvider>
       <LoadingSpinner />

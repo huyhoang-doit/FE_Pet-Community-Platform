@@ -29,7 +29,7 @@ import { getDonationByUserIdAPI } from "@/apis/donate";
 import { BASE_URL } from "@/configs/globalVariables";
 
 const Profile = () => {
-  useFetchData()
+  useFetchData();
   const params = useParams();
   const username = params.username;
   const dispatch = useDispatch();
@@ -50,7 +50,7 @@ const Profile = () => {
   const [showFollowModal, setShowFollowModal] = useState(false);
   const [modalType, setModalType] = useState("");
   const [showPostModal, setShowPostModal] = useState(false);
-  const [donations, setDonations] = useState([])
+  const [donations, setDonations] = useState([]);
 
   const handleTabChange = (tab) => {
     setActiveTab(tab);
@@ -60,11 +60,15 @@ const Profile = () => {
     setNumberFollowers(userProfile?.followers.length);
     setNumberFollowing(userProfile?.following.length);
     setIsFollowing(userProfile?.followers.includes(user?.id));
-    getDonation(userProfile?.id)
+    user && getDonation(userProfile?.id);
   }, [userProfile, user]);
 
   const followOrUnfollowHandler = async () => {
     try {
+      if (!user) {
+        toast.warning("Vui lòng đăng nhập!");
+        navigate("/login");
+      }
       const { data } = await followOrUnfollowAPI(userProfile.id);
 
       if (data.status === 200) {
@@ -102,7 +106,7 @@ const Profile = () => {
 
   const handlePostClick = async (post) => {
     try {
-      const {data} = await authorizedAxiosInstance.get(
+      const { data } = await authorizedAxiosInstance.get(
         `${BASE_URL}/post/${post._id}/getpostbyid`
       );
 
@@ -114,19 +118,22 @@ const Profile = () => {
   };
 
   const getDonation = async (userId) => {
-    const {data} = await getDonationByUserIdAPI(userId, 1, 5)
-    setDonations(data.data.results)
-  }
+    const { data } = await getDonationByUserIdAPI(userId, 1, 5);
+    setDonations(data.data.results);
+  };
 
   const displayedPost =
-    activeTab === "posts" 
-      ? userProfile?.posts 
-      : activeTab === "saved" 
+    activeTab === "posts"
+      ? userProfile?.posts
+      : activeTab === "saved"
       ? userProfile?.bookmarks
       : donations;
 
   return (
-    <div className="flex max-w-8xl justify-center mx-auto" style={{padding: "0 100px"}}>
+    <div
+      className="flex max-w-8xl justify-center mx-auto"
+      style={{ padding: "0 100px" }}
+    >
       <div className="flex flex-col gap-20 p-8 w-full">
         <div className="grid grid-cols-2">
           <section className="flex items-center justify-center">
@@ -255,14 +262,16 @@ const Profile = () => {
             >
               <FaBookmark size={16} /> ĐÃ LƯU
             </span>
-            <span
-              className={`py-3 cursor-pointer flex items-center gap-2 ${
-                activeTab === "donations" ? "font-bold" : "text-gray-500"
-              }`}
-              onClick={() => handleTabChange("donations")}
-            >
-              <Gift size={18} /> LỊCH SỬ QUYÊN GÓP
-            </span>
+            {user && (
+              <span
+                className={`py-3 cursor-pointer flex items-center gap-2 ${
+                  activeTab === "donations" ? "font-bold" : "text-gray-500"
+                }`}
+                onClick={() => handleTabChange("donations")}
+              >
+                <Gift size={18} /> LỊCH SỬ QUYÊN GÓP
+              </span>
+            )}
           </div>
           <div className="grid grid-cols-4 gap-4 min-h-[200px]">
             {activeTab === "donations" ? (
@@ -272,28 +281,45 @@ const Profile = () => {
                     <table className="w-full text-sm text-left">
                       <thead className="text-xs uppercase bg-gray-100">
                         <tr>
-                          <th className="px-6 py-4 font-medium text-gray-900">Ngày</th>
-                          <th className="px-6 py-4 font-medium text-gray-900">Số tiền</th>
-                          <th className="px-6 py-4 font-medium text-gray-900">Chiến dịch</th>
-                          <th className="px-6 py-4 font-medium text-gray-900">Mã giao dịch</th>
-                          <th className="px-6 py-4 font-medium text-gray-900">Trạng thái</th>
+                          <th className="px-6 py-4 font-medium text-gray-900">
+                            Ngày
+                          </th>
+                          <th className="px-6 py-4 font-medium text-gray-900">
+                            Số tiền
+                          </th>
+                          <th className="px-6 py-4 font-medium text-gray-900">
+                            Chiến dịch
+                          </th>
+                          <th className="px-6 py-4 font-medium text-gray-900">
+                            Mã giao dịch
+                          </th>
+                          <th className="px-6 py-4 font-medium text-gray-900">
+                            Trạng thái
+                          </th>
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-gray-200">
                         {donations.map((donation) => (
-                          <tr 
+                          <tr
                             key={donation._id}
                             className="bg-white hover:bg-gray-50 transition-colors duration-200"
                           >
                             <td className="px-6 py-4 whitespace-nowrap">
                               <div className="flex items-center gap-2">
                                 <Calendar size={14} className="text-gray-500" />
-                                <span>{new Date(donation.createdAt).toLocaleDateString('vi-VN')}</span>
+                                <span>
+                                  {new Date(
+                                    donation.createdAt
+                                  ).toLocaleDateString("vi-VN")}
+                                </span>
                               </div>
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap">
                               <span className="font-medium text-green-600">
-                                {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(donation.amount)}
+                                {new Intl.NumberFormat("vi-VN", {
+                                  style: "currency",
+                                  currency: "VND",
+                                }).format(donation.amount)}
                               </span>
                             </td>
                             <td className="px-6 py-4">
@@ -306,11 +332,25 @@ const Profile = () => {
                             <td className="px-6 py-4 whitespace-nowrap">
                               <div className="flex items-center gap-2">
                                 <Receipt size={14} className="text-gray-500" />
-                                <span className="text-gray-500">{donation.code}</span>
+                                <span className="text-gray-500">
+                                  {donation.code}
+                                </span>
                               </div>
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap">
-                              <span style={{color: donation.status === "pending" ? "yellow" : donation.status === "completed" ? "green" : "red"}}>{donation.status.charAt(0).toUpperCase() + donation.status.slice(1)}</span>
+                              <span
+                                style={{
+                                  color:
+                                    donation.status === "pending"
+                                      ? "yellow"
+                                      : donation.status === "completed"
+                                      ? "green"
+                                      : "red",
+                                }}
+                              >
+                                {donation.status.charAt(0).toUpperCase() +
+                                  donation.status.slice(1)}
+                              </span>
                             </td>
                           </tr>
                         ))}
