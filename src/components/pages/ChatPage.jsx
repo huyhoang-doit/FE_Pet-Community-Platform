@@ -348,6 +348,12 @@ const ChatPage = () => {
               type="text"
               className="flex-1 mr-2 focus-visible:ring-transparent"
               placeholder="Nhắn tin..."
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  e.preventDefault();
+                  sendMessageHandler(selectedUser?.id);
+                }
+              }}
             />
             <Button onClick={() => sendMessageHandler(selectedUser?.id)}>
               Send
