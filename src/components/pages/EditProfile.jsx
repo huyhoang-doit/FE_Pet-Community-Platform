@@ -135,6 +135,7 @@ const EditProfile = () => {
             value={input.username}
             onChange={(e) => setInput({ ...input, username: e.target.value })}
             name="username"
+            disabled
             className="w-full rounded-md border border-input px-3 py-2 text-sm focus-visible:outline-none"
           />
         </div>

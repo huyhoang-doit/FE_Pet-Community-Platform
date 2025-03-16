@@ -92,7 +92,7 @@ function Navbar() {
           onChange={(e) => setSearch(e.target.value)}
           onKeyDown={handleKeyDown}
           className="p-3 sm:w-[664px] w-[320px] rounded-md outline-none border-none bg-gray-400/30"
-          placeholder="Tìm kiếm chó cưng thích hợp với bạn ..."
+          placeholder="Gửi hình thú cưng của bạn để phân tích"
         />
 
         <div>
