@@ -7,7 +7,8 @@ const useGetAllPost = () => {
   const dispatch = useDispatch();
   const fetchAllPost = useCallback(async () => {
     try {
-      const { data } = await fetchAllPostsAPI(1);
+      const isApproved = true;
+      const { data } = await fetchAllPostsAPI(1,4, isApproved);
       if (data.status === 200) {
         dispatch(setPosts(data.data.results));
       }
