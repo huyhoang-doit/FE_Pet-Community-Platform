@@ -348,9 +348,11 @@ const ManageAdoptionForms = () => {
 
       <Modal
         title={
-          <div className="flex items-center gap-2">
-            <span className="text-xl">Lịch sử kiểm tra định kỳ</span>
-            <Tag color="processing">{selectedForm?.pet?.name || 'N/A'}</Tag>
+          <div className="flex items-center justify-between border-b pb-3">
+            <div className="flex items-center gap-2">
+              <span className="text-xl font-semibold">Lịch sử kiểm tra định kỳ</span>
+              <Tag color="processing">{selectedForm?.pet?.name || 'N/A'}</Tag>
+            </div>
           </div>
         }
         open={viewResultsModalOpen}
@@ -359,23 +361,70 @@ const ManageAdoptionForms = () => {
         width={800}
         className="periodic-check-modal"
       >
-        <div className="max-h-[70vh] overflow-y-auto px-4">
+        <div className="max-h-[70vh] overflow-y-auto px-4 py-4">
           {selectedChecks.length > 0 ? (
-            <Timeline
-              mode="left"
-              items={selectedChecks.map((check, index) => ({
-                color: check.status === 'Good' ? 'green' : check.status === 'Needs Attention' ? 'yellow' : 'red',
-                label: moment(check.checkDate).format('DD/MM/YYYY'),
-                children: (
-                  <div key={check._id || index}>
-                    <h3 className="font-bold mb-4 text-lg">Đợt kiểm tra #{index + 1}</h3>
-                    {renderCheckStatus(check)}
+            <div className="space-y-6">
+              {selectedChecks.map((check, index) => (
+                <div key={check._id || index} className="bg-white rounded-lg shadow-sm border border-gray-200">
+                  <div className="p-4 border-b border-gray-200 bg-gray-50">
+                    <div className="flex items-center justify-between">
+                      <h3 className="font-semibold text-lg">Đợt kiểm tra #{index + 1}</h3>
+                      <Tag 
+                        icon={
+                          check.status === 'Good' ? <CheckCircleOutlined /> :
+                          check.status === 'Needs Attention' ? <ExclamationCircleOutlined /> :
+                          <CloseCircleOutlined />
+                        }
+                        color={
+                          check.status === 'Good' ? 'success' :
+                          check.status === 'Needs Attention' ? 'warning' :
+                          'error'
+                        }
+                      >
+                        {check.status === 'Good' ? 'Tốt' :
+                         check.status === 'Needs Attention' ? 'Cần chú ý' :
+                         'Nghiêm trọng'}
+                      </Tag>
+                    </div>
                   </div>
-                )
-              }))}
-            />
+                  
+                  <div className="p-4">
+                    <Descriptions column={1} className="w-full">
+                      <Descriptions.Item label={<span className="font-medium">Ngày kiểm tra</span>}>
+                        {moment(check.checkDate).format('DD/MM/YYYY HH:mm')}
+                      </Descriptions.Item>
+                      <Descriptions.Item label={<span className="font-medium">Người kiểm tra</span>}>
+                        {check.checkedBy?.username || 'N/A'}
+                      </Descriptions.Item>
+                      <Descriptions.Item label={<span className="font-medium">Ghi chú</span>}>
+                        {check.notes || 'Không có ghi chú'}
+                      </Descriptions.Item>
+                    </Descriptions>
+
+                    {check.image_url && (
+                      <div className="mt-4">
+                        <p className="font-medium mb-2">Hình ảnh kiểm tra:</p>
+                        <div className="relative group">
+                          <img 
+                            src={check.image_url} 
+                            alt="Check result" 
+                            className="w-full max-w-lg rounded-lg cursor-pointer transition-all duration-300 hover:scale-105"
+                            onClick={() => window.open(check.image_url, '_blank')}
+                          />
+                          {/* <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all duration-300 rounded-lg flex items-center justify-center">
+                            <span className="text-white opacity-0 group-hover:opacity-100 transition-all duration-300">
+                              Nhấn để xem ảnh đầy đủ
+                            </span>
+                          </div> */}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
           ) : (
-            <div className="text-center py-8">
+            <div className="text-center py-12">
               <p className="text-gray-500 text-lg">Chưa có kết quả kiểm tra nào</p>
             </div>
           )}

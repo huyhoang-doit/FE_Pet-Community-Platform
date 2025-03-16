@@ -212,7 +212,7 @@ const PeriodicCheckModal = ({ open, setOpen, form, onSubmit, currentUser }) => {
                 danger={isCheckNeeded()}
                 disabled={isCheckButtonDisabled()}
               >
-                {isCheckNeeded() ? "Kiểm tra ngay!" : "Gửi"}
+                {isCheckNeeded() ? "Hoàn tất kiểm tra!" : "Lưu"}
               </Button>
             </div>
           </Form.Item>
