@@ -4,6 +4,7 @@ import { useState } from "react";
 import moment from "moment";
 import { toast } from "sonner";
 import { updateAdoptionFormStatusAPI } from "@/apis/post";
+import { HeartFilled } from "@ant-design/icons";
 
 const { Option } = Select;
 
@@ -22,77 +23,102 @@ const ViewAdoptionFormModal = ({ open, setOpen, form, onStatusUpdate }) => {
   } = form;
 
   const [isEditing, setIsEditing] = useState(false);
-  const [newStatus, setNewStatus] = useState(status);
+  const [selectedStatus, setSelectedStatus] = useState(status);
+  const [loading, setLoading] = useState(false);
 
   const handleStatusChange = (value) => {
-    setNewStatus(value);
+    setSelectedStatus(value);
   };
 
   const handleSaveStatus = async () => {
     try {
-      const response = await updateAdoptionFormStatusAPI(form._id, newStatus);
+      setLoading(true);
+      const response = await updateAdoptionFormStatusAPI(form._id, {
+        status: selectedStatus,
+      });
       if (response.status === 200) {
-        toast.success("Cập nhật trạng thái đơn nhận nuôi thành công");
+        toast.success("Cập nhật trạng thái thành công!");
+        onStatusUpdate(form._id, selectedStatus);
         setIsEditing(false);
-        if (onStatusUpdate) {
-          onStatusUpdate(form._id, newStatus); // Notify parent to refresh data
-        }
       }
     } catch (error) {
       toast.error(
         error.response?.data?.message || "Lỗi khi cập nhật trạng thái!"
       );
+    } finally {
+      setLoading(false);
     }
+  };
+
+  const getStatusTag = (status) => {
+    const statusConfig = {
+      Pending: { color: "yellow", text: "Đang chờ" },
+      Approved: { color: "green", text: "Đã duyệt" },
+      Rejected: { color: "red", text: "Đã từ chối" },
+    };
+
+    const config = statusConfig[status] || statusConfig.Pending;
+    return <Tag color={config.color}>{config.text}</Tag>;
   };
 
   return (
     <Modal
-      title="Chi tiết đơn nhận nuôi"
+      title={
+        <div className="flex items-center gap-2 text-amber-800">
+          <HeartFilled style={{ color: "#f472b6" }} />
+          <span className="font-semibold">Chi tiết đơn nhận nuôi</span>
+        </div>
+      }
       open={open}
       onCancel={() => setOpen(false)}
       footer={null}
       width={800}
+      className="adoption-form-modal"
     >
       <div className="space-y-6">
         {/* Adopter Information */}
         <div>
-          <h3 className="text-lg font-semibold mb-2">
+          <h3 className="text-lg font-semibold mb-2 text-amber-800 flex items-center gap-2">
+            <span className="w-1.5 h-5 bg-pink-500 rounded-full"></span>
             Thông tin người nhận nuôi
           </h3>
-          <Descriptions bordered column={1} size="small">
-            <Descriptions.Item label="Họ tên">{adopter.name}</Descriptions.Item>
-            <Descriptions.Item label="Email">{adopter.email}</Descriptions.Item>
-            <Descriptions.Item label="Số điện thoại">
+          <Descriptions bordered column={1} size="small" className="border-pink-200">
+            <Descriptions.Item label={<span className="text-pink-700">Họ tên</span>}>{adopter.name}</Descriptions.Item>
+            <Descriptions.Item label={<span className="text-pink-700">Email</span>}>{adopter.email}</Descriptions.Item>
+            <Descriptions.Item label={<span className="text-pink-700">Số điện thoại</span>}>
               {adopter.phone}
             </Descriptions.Item>
-            <Descriptions.Item label="Địa chỉ">
+            <Descriptions.Item label={<span className="text-pink-700">Địa chỉ</span>}>
               {`${adopter.address.detail}, ${adopter.address.ward}, ${adopter.address.district}, ${adopter.address.province}`}
             </Descriptions.Item>
           </Descriptions>
         </div>
 
         {/* Pet Information */}
-        <Divider />
+        <Divider className="border-pink-100" />
         <div>
-          <h3 className="text-lg font-semibold mb-2">Thông tin thú cưng</h3>
-          <Descriptions bordered column={1} size="small">
-            <Descriptions.Item label="Tên">{pet.name}</Descriptions.Item>
-            <Descriptions.Item label="Giống">{pet.breed}</Descriptions.Item>
-            <Descriptions.Item label="Tuổi">{pet.age} tuổi</Descriptions.Item>
-            <Descriptions.Item label="Tình trạng sức khỏe">
+          <h3 className="text-lg font-semibold mb-2 text-amber-800 flex items-center gap-2">
+            <span className="w-1.5 h-5 bg-pink-500 rounded-full"></span>
+            Thông tin thú cưng
+          </h3>
+          <Descriptions bordered column={1} size="small" className="border-pink-200">
+            <Descriptions.Item label={<span className="text-pink-700">Tên</span>}>{pet.name}</Descriptions.Item>
+            <Descriptions.Item label={<span className="text-pink-700">Giống</span>}>{pet.breed}</Descriptions.Item>
+            <Descriptions.Item label={<span className="text-pink-700">Tuổi</span>}>{pet.age} tuổi</Descriptions.Item>
+            <Descriptions.Item label={<span className="text-pink-700">Tình trạng sức khỏe</span>}>
               {pet.health_status}
             </Descriptions.Item>
-            <Descriptions.Item label="Mô tả">
+            <Descriptions.Item label={<span className="text-pink-700">Mô tả</span>}>
               {pet.description}
             </Descriptions.Item>
-            <Descriptions.Item label="Hình ảnh">
+            <Descriptions.Item label={<span className="text-pink-700">Hình ảnh</span>}>
               {pet.image_url?.[0]?.[0] ? (
                 <Image
                   src={pet.image_url[0][0]}
                   alt={pet.name}
                   width={100}
                   height={100}
-                  className="object-cover rounded"
+                  className="object-cover rounded border border-pink-200"
                 />
               ) : (
                 "Không có ảnh"
@@ -102,14 +128,17 @@ const ViewAdoptionFormModal = ({ open, setOpen, form, onStatusUpdate }) => {
         </div>
 
         {/* Adoption Post Information */}
-        <Divider />
+        <Divider className="border-pink-100" />
         <div>
-          <h3 className="text-lg font-semibold mb-2">Thông tin bài đăng</h3>
-          <Descriptions bordered column={1} size="small">
-            <Descriptions.Item label="Tiêu đề">
+          <h3 className="text-lg font-semibold mb-2 text-amber-800 flex items-center gap-2">
+            <span className="w-1.5 h-5 bg-pink-500 rounded-full"></span>
+            Thông tin bài đăng
+          </h3>
+          <Descriptions bordered column={1} size="small" className="border-pink-200">
+            <Descriptions.Item label={<span className="text-pink-700">Tiêu đề</span>}>
               {adoptionPost.caption}
             </Descriptions.Item>
-            <Descriptions.Item label="Trạng thái nhận nuôi">
+            <Descriptions.Item label={<span className="text-pink-700">Trạng thái nhận nuôi</span>}>
               <Tag
                 color={
                   adoptionPost.adopt_status === "Available"
@@ -126,97 +155,137 @@ const ViewAdoptionFormModal = ({ open, setOpen, form, onStatusUpdate }) => {
                   : "Đã nhận nuôi"}
               </Tag>
             </Descriptions.Item>
-            <Descriptions.Item label="Địa điểm">
+            <Descriptions.Item label={<span className="text-pink-700">Địa điểm</span>}>
               {adoptionPost.location}
             </Descriptions.Item>
-            <Descriptions.Item label="Hình ảnh bài đăng">
+            <Descriptions.Item label={<span className="text-pink-700">Hình ảnh bài đăng</span>}>
               {adoptionPost.image?.[0] ? (
                 <Image
                   src={adoptionPost.image[0]}
                   alt="Adoption Post"
                   width={100}
                   height={100}
-                  className="object-cover rounded"
+                  className="object-cover rounded border border-pink-200"
                 />
               ) : (
                 "Không có ảnh"
               )}
             </Descriptions.Item>
-            <Descriptions.Item label="Ngày đăng">
+            <Descriptions.Item label={<span className="text-pink-700">Ngày đăng</span>}>
               {moment(adoptionPost.createdAt).format("DD/MM/YYYY HH:mm")}
             </Descriptions.Item>
           </Descriptions>
         </div>
 
         {/* Form Information */}
-        <Divider />
+        <Divider className="border-pink-100" />
         <div>
-          <h3 className="text-lg font-semibold mb-2">Thông tin đơn</h3>
-          <Descriptions bordered column={1} size="small">
-            <Descriptions.Item label="Người gửi đơn">
+          <h3 className="text-lg font-semibold mb-2 text-amber-800 flex items-center gap-2">
+            <span className="w-1.5 h-5 bg-pink-500 rounded-full"></span>
+            Thông tin đơn
+          </h3>
+          <Descriptions bordered column={1} size="small" className="border-pink-200">
+            <Descriptions.Item label={<span className="text-pink-700">Người gửi đơn</span>}>
               {user.username}
             </Descriptions.Item>
-            <Descriptions.Item label="Thông điệp">
+            <Descriptions.Item label={<span className="text-pink-700">Thông điệp</span>}>
               {message || "Không có"}
             </Descriptions.Item>
-            <Descriptions.Item label="Trạng thái">
+            <Descriptions.Item label={<span className="text-pink-700">Trạng thái</span>}>
               {isEditing ? (
-                <div className="flex items-center gap-2">
-                  <Select
-                    value={newStatus}
-                    onChange={handleStatusChange}
-                    style={{ width: 120 }}
-                  >
-                    <Option value="Pending">Đang chờ</Option>
-                    <Option value="Approved">Đã duyệt</Option>
-                    <Option value="Rejected">Đã từ chối</Option>
-                  </Select>
-                  <Button
-                    type="primary"
-                    onClick={handleSaveStatus}
-                    className="bg-blue-500 hover:bg-blue-600"
-                  >
-                    Lưu
-                  </Button>
-                  <Button onClick={() => setIsEditing(false)}>Hủy</Button>
-                </div>
+                <Select
+                  value={selectedStatus}
+                  onChange={handleStatusChange}
+                  style={{ width: 150 }}
+                  className="border-pink-200"
+                >
+                  <Select.Option value="Pending">Đang chờ</Select.Option>
+                  <Select.Option value="Approved">Duyệt</Select.Option>
+                  <Select.Option value="Rejected">Từ chối</Select.Option>
+                </Select>
               ) : (
-                <div className="flex items-center gap-2">
-                  <Tag
-                    color={
-                      status === "Pending"
-                        ? "yellow"
-                        : status === "Approved"
-                        ? "green"
-                        : "red"
-                    }
-                  >
-                    {status === "Pending"
-                      ? "Đang chờ"
-                      : status === "Approved"
-                      ? "Đã duyệt"
-                      : "Đã từ chối"}
-                  </Tag>
-                  {status !== "Rejected" && (
-                    <Button
-                      onClick={() => setIsEditing(true)}
-                      className="bg-green-500 text-white hover:bg-green-600"
-                    >
-                      Chỉnh sửa
-                    </Button>
-                  )}
-                </div>
+                getStatusTag(status)
               )}
             </Descriptions.Item>
-            <Descriptions.Item label="Ngày tạo">
+            <Descriptions.Item label={<span className="text-pink-700">Ngày tạo</span>}>
               {moment(createdAt).format("DD/MM/YYYY HH:mm")}
             </Descriptions.Item>
-            <Descriptions.Item label="Số lần kiểm tra định kỳ">
-              {periodicChecks.length}/3
+            <Descriptions.Item label={<span className="text-pink-700">Số lần kiểm tra định kỳ</span>}>
+              <Tag color="pink">{periodicChecks.length}/3</Tag>
             </Descriptions.Item>
           </Descriptions>
+
+          <div className="flex justify-end mt-4 gap-2">
+            {status === "Pending" && (
+              <>
+                {isEditing ? (
+                  <>
+                    <Button
+                      onClick={() => setIsEditing(false)}
+                      className="border-gray-300 hover:border-gray-400"
+                    >
+                      Hủy
+                    </Button>
+                    <Button
+                      type="primary"
+                      onClick={handleSaveStatus}
+                      loading={loading}
+                      className="border-pink-500 bg-pink-50 text-pink-600 hover:bg-pink-600 hover:text-white hover:border-pink-600"
+                    >
+                      Lưu
+                    </Button>
+                  </>
+                ) : (
+                  <Button
+                    onClick={() => setIsEditing(true)}
+                    className="border-amber-500 bg-amber-50 text-amber-600 hover:bg-amber-600 hover:text-white hover:border-amber-600"
+                  >
+                    Chỉnh sửa trạng thái
+                  </Button>
+                )}
+              </>
+            )}
+          </div>
         </div>
       </div>
+
+      <style jsx global>{`
+        .adoption-form-modal .ant-modal-content {
+          border-radius: 12px;
+          overflow: hidden;
+        }
+        
+        .adoption-form-modal .ant-modal-header {
+          background-color: #fdf2f8;
+          border-bottom: 1px solid #fbcfe8;
+          padding: 16px 24px;
+        }
+        
+        .adoption-form-modal .ant-descriptions-bordered .ant-descriptions-item-label {
+          background-color: #fdf2f8;
+        }
+        
+        .adoption-form-modal .ant-descriptions-bordered .ant-descriptions-view {
+          border-color: #fbcfe8;
+        }
+        
+        .adoption-form-modal .ant-descriptions-bordered .ant-descriptions-row {
+          border-bottom-color: #fbcfe8;
+        }
+        
+        .adoption-form-modal .ant-descriptions-bordered .ant-descriptions-item-label,
+        .adoption-form-modal .ant-descriptions-bordered .ant-descriptions-item-content {
+          border-right-color: #fbcfe8;
+        }
+        
+        .adoption-form-modal .ant-select-selector {
+          border-color: #f9a8d4 !important;
+        }
+        
+        .adoption-form-modal .ant-select:hover .ant-select-selector {
+          border-color: #f472b6 !important;
+        }
+      `}</style>
     </Modal>
   );
 };

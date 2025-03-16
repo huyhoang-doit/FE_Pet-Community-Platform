@@ -8,6 +8,7 @@ import { motion } from "framer-motion";
 import { dogBreeds } from "@/components/submitPet/dobBreeds";
 import { updatePetAPI } from "@/apis/pet";
 import { toast } from "sonner";
+import { HeartFilled } from "@ant-design/icons";
 
 const EditPetModal = ({ visible, pet, onClose, onUpdate }) => {
   const [step, setStep] = useState(1);
@@ -93,17 +94,23 @@ const EditPetModal = ({ visible, pet, onClose, onUpdate }) => {
 
   return (
     <Modal
-      title="Chỉnh sửa thú cưng"
+      title={
+        <div className="flex items-center gap-2 text-amber-800">
+          <HeartFilled style={{ color: "#f472b6" }} />
+          <span className="font-semibold">Chỉnh sửa thú cưng</span>
+        </div>
+      }
       visible={visible}
       onCancel={onClose}
       footer={null}
       width={800}
+      className="edit-pet-modal"
     >
       {loading && (
         <div className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 z-50 flex items-center justify-center">
           <div className="bg-white p-6 rounded-md flex flex-col items-center">
-            <div className="w-12 h-12 border-4 border-gray-200 border-t-[#DA5BA9] rounded-full animate-spin"></div>
-            <p className="text-lg font-semibold mt-4">Đang cập nhật...</p>
+            <div className="w-12 h-12 border-4 border-pink-200 border-t-pink-500 rounded-full animate-spin"></div>
+            <p className="text-lg font-semibold mt-4 text-pink-700">Đang cập nhật...</p>
           </div>
         </div>
       )}
@@ -127,12 +134,12 @@ const EditPetModal = ({ visible, pet, onClose, onUpdate }) => {
           {({ setFieldValue, isValid, dirty }) => (
             <Form className="w-full max-w-lg space-y-4">
               {step === 1 && (
-                <div className="border border-gray-300 rounded-md p-8">
+                <div className="border border-pink-200 rounded-md p-8 bg-pink-50/30">
                   <div className="py-2">
                     <Field
                       placeholder="Vui lòng nhập tên thú cưng"
                       name="name"
-                      className=" w-full px-4 py-3 bg-[rgba(255,255,255,0.4)] shadow-md outline-none rounded-md border border-gray-200 focus:border-[#DA5BA9] focus:shadow-lg transition-all duration-300 ease-in-out"
+                      className="w-full px-4 py-3 bg-white shadow-md outline-none rounded-md border border-pink-200 focus:border-pink-500 focus:shadow-lg transition-all duration-300 ease-in-out"
                     />
                     <ErrorMessage
                       name="name"
@@ -145,7 +152,7 @@ const EditPetModal = ({ visible, pet, onClose, onUpdate }) => {
                     <Field
                       as="select"
                       name="breed"
-                      className=" w-full px-4 py-3 bg-[rgba(255,255,255,0.4)] shadow-md outline-none rounded-md border border-gray-200 focus:border-[#DA5BA9] focus:shadow-lg transition-all duration-300 ease-in-out"
+                      className="w-full px-4 py-3 bg-white shadow-md outline-none rounded-md border border-pink-200 focus:border-pink-500 focus:shadow-lg transition-all duration-300 ease-in-out"
                     >
                       {dogBreeds.map((breed, index) => (
                         <option key={index} value={breed}>
@@ -165,7 +172,7 @@ const EditPetModal = ({ visible, pet, onClose, onUpdate }) => {
                       placeholder="Vui lòng nhập tuổi"
                       type="number"
                       name="age"
-                      className=" w-full px-4 py-3 bg-[rgba(255,255,255,0.4)] shadow-md outline-none rounded-md border border-gray-200 focus:border-[#DA5BA9] focus:shadow-lg transition-all duration-300 ease-in-out"
+                      className="w-full px-4 py-3 bg-white shadow-md outline-none rounded-md border border-pink-200 focus:border-pink-500 focus:shadow-lg transition-all duration-300 ease-in-out"
                     />
                     <ErrorMessage
                       name="age"
@@ -179,7 +186,7 @@ const EditPetModal = ({ visible, pet, onClose, onUpdate }) => {
                       placeholder="Vui lòng nhập mô tả"
                       as="textarea"
                       name="description"
-                      className=" w-full px-4 py-3 bg-[rgba(255,255,255,0.4)] shadow-md outline-none rounded-md border border-gray-200 focus:border-[#DA5BA9] focus:shadow-lg transition-all duration-300 ease-in-out"
+                      className="w-full px-4 py-3 bg-white shadow-md outline-none rounded-md border border-pink-200 focus:border-pink-500 focus:shadow-lg transition-all duration-300 ease-in-out"
                     />
                     <ErrorMessage
                       name="description"
@@ -192,7 +199,7 @@ const EditPetModal = ({ visible, pet, onClose, onUpdate }) => {
                     <Field
                       as="select"
                       name="health_status"
-                      className=" w-full px-4 py-3 bg-[rgba(255,255,255,0.4)] shadow-md outline-none rounded-md border border-gray-200 focus:border-[#DA5BA9] focus:shadow-lg transition-all duration-300 ease-in-out"
+                      className="w-full px-4 py-3 bg-white shadow-md outline-none rounded-md border border-pink-200 focus:border-pink-500 focus:shadow-lg transition-all duration-300 ease-in-out"
                     >
                       <option value="">Chọn tình trạng sức khỏe</option>
                       <option value="Healthy">Healthy</option>
@@ -210,7 +217,7 @@ const EditPetModal = ({ visible, pet, onClose, onUpdate }) => {
                   <div className="flex justify-end mt-4">
                     <button
                       type="button"
-                      className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+                      className="bg-pink-500 text-white px-4 py-2 rounded hover:bg-pink-600 transition-colors"
                       onClick={() => setStep(2)}
                     >
                       Tiếp theo
@@ -220,8 +227,8 @@ const EditPetModal = ({ visible, pet, onClose, onUpdate }) => {
               )}
 
               {step === 2 && (
-                <div className="border border-gray-300 rounded-md p-8">
-                  <div className="w-full bg-card backdrop-blur-md h-64 rounded-md border-2 border-dotted border-gray-300 cursor-pointer flex items-center justify-center relative">
+                <div className="border border-pink-200 rounded-md p-8 bg-pink-50/30">
+                  <div className="w-full bg-white backdrop-blur-md h-64 rounded-md border-2 border-dotted border-pink-300 cursor-pointer flex items-center justify-center relative">
                     {imagePreview ? (
                       <div className="w-full h-full flex items-center justify-center relative">
                         <motion.img
@@ -239,7 +246,7 @@ const EditPetModal = ({ visible, pet, onClose, onUpdate }) => {
                         <div className="mt-2">
                           <label
                             htmlFor="upload-image"
-                            className="absolute bottom-2 right-2 bg-green-500 text-white p-2 rounded-md shadow-md hover:bg-gredd-600 transition hover:cursor-pointer"
+                            className="absolute bottom-2 right-2 bg-pink-500 text-white p-2 rounded-md shadow-md hover:bg-pink-600 transition hover:cursor-pointer"
                           >
                             Thêm ảnh
                           </label>
@@ -248,53 +255,41 @@ const EditPetModal = ({ visible, pet, onClose, onUpdate }) => {
                             type="file"
                             name="upload-image"
                             accept="image/*"
-                            multiple
                             onChange={(e) =>
-                              fileChangeHandler(e, setFieldValue, "add_image")
+                              fileChangeHandler(e, setFieldValue, "Pending")
                             }
-                            className="w-0 h-0"
+                            className="hidden"
                           />
                         </div>
                       </div>
                     ) : (
-                      <label
-                        htmlFor="upload-image"
-                        className="flex flex-col items-center justify-center h-full w-full cursor-pointer"
-                      >
-                        <p className="font-bold text-4xl">
-                          <FaCloudUploadAlt className="-rotate-0" />
-                        </p>
-                        <p className="text-lg text-textColor">
-                          Nhấn để tải ảnh lên
+                      <div className="flex flex-col items-center justify-center">
+                        <FaCloudUploadAlt className="text-5xl text-pink-400" />
+                        <p className="text-gray-500 mt-2">
+                          Kéo thả hoặc nhấp để tải lên
                         </p>
                         <input
-                          id="upload-image"
                           type="file"
                           name="upload-image"
                           accept="image/*"
-                          multiple
                           onChange={(e) =>
-                            fileChangeHandler(
-                              e,
-                              setFieldValue,
-                              "upload_new_image"
-                            )
+                            fileChangeHandler(e, setFieldValue, "Pending")
                           }
-                          className="w-0 h-0"
+                          className="absolute inset-0 opacity-0 cursor-pointer"
                         />
-                      </label>
+                      </div>
                     )}
                   </div>
 
-                  <div className="py-2">
+                  <div className="py-2 mt-4">
                     <Field
                       as="select"
                       name="vaccinated"
-                      className=" w-full px-4 py-3 bg-[rgba(255,255,255,0.4)] shadow-md outline-none rounded-md border border-gray-200 focus:border-[#DA5BA9] focus:shadow-lg transition-all duration-300 ease-in-out"
+                      className="w-full px-4 py-3 bg-white shadow-md outline-none rounded-md border border-pink-200 focus:border-pink-500 focus:shadow-lg transition-all duration-300 ease-in-out"
                     >
-                      <option value={null}>Đã tiêm chủng?</option>
-                      <option value={true}>Có</option>
-                      <option value={false}>Không</option>
+                      <option value="">Đã tiêm chủng?</option>
+                      <option value="true">Có</option>
+                      <option value="false">Không</option>
                     </Field>
                     <ErrorMessage
                       name="vaccinated"
@@ -307,7 +302,7 @@ const EditPetModal = ({ visible, pet, onClose, onUpdate }) => {
                     <Field
                       placeholder="Vui lòng nhập kích thước"
                       name="size"
-                      className="w-full px-4 py-3 bg-[rgba(255,255,255,0.4)] shadow-md outline-none rounded-md border border-gray-200 focus:border-[#DA5BA9] focus:shadow-lg transition-all duration-300 ease-in-out"
+                      className="w-full px-4 py-3 bg-white shadow-md outline-none rounded-md border border-pink-200 focus:border-pink-500 focus:shadow-lg transition-all duration-300 ease-in-out"
                     />
                     <ErrorMessage
                       name="size"
@@ -320,7 +315,7 @@ const EditPetModal = ({ visible, pet, onClose, onUpdate }) => {
                     <Field
                       placeholder="Vui lòng nhập màu lông"
                       name="coat"
-                      className="w-full px-4 py-3 bg-[rgba(255,255,255,0.4)] shadow-md outline-none rounded-md border border-gray-200 focus:border-[#DA5BA9] focus:shadow-lg transition-all duration-300 ease-in-out"
+                      className="w-full px-4 py-3 bg-white shadow-md outline-none rounded-md border border-pink-200 focus:border-pink-500 focus:shadow-lg transition-all duration-300 ease-in-out"
                     />
                     <ErrorMessage
                       name="coat"
@@ -333,7 +328,7 @@ const EditPetModal = ({ visible, pet, onClose, onUpdate }) => {
                     <Field
                       placeholder="Vui lòng nhập tính cách"
                       name="temperament"
-                      className="w-full px-4 py-3 bg-[rgba(255,255,255,0.4)] shadow-md outline-none rounded-md border border-gray-200 focus:border-[#DA5BA9] focus:shadow-lg transition-all duration-300 ease-in-out"
+                      className="w-full px-4 py-3 bg-white shadow-md outline-none rounded-md border border-pink-200 focus:border-pink-500 focus:shadow-lg transition-all duration-300 ease-in-out"
                     />
                     <ErrorMessage
                       name="temperament"
@@ -342,28 +337,18 @@ const EditPetModal = ({ visible, pet, onClose, onUpdate }) => {
                     />
                   </div>
 
-                  <div className="flex justify-between">
+                  <div className="flex justify-between mt-4">
                     <button
                       type="button"
-                      className="bg-slate-400 text-white px-4 py-2 rounded hover:bg-slate-500"
+                      className="bg-gray-300 text-gray-700 px-4 py-2 rounded hover:bg-gray-400 transition-colors"
                       onClick={() => setStep(1)}
                     >
                       Quay lại
                     </button>
                     <button
                       type="submit"
+                      className="bg-pink-500 text-white px-4 py-2 rounded hover:bg-pink-600 transition-colors"
                       disabled={!isValid || !dirty}
-                      onClick={() => {
-                        if (!isValid)
-                          toast.error(
-                            "Vui lòng điền đầy đủ thông tin trước khi gửi!"
-                          );
-                      }}
-                      className={`px-4 py-2 rounded ${
-                        !isValid || !dirty
-                          ? "bg-gray-300 text-gray-500 cursor-not-allowed shake"
-                          : "bg-blue-500 text-white hover:bg-blue-600"
-                      }`}
                     >
                       Cập nhật
                     </button>
@@ -374,6 +359,31 @@ const EditPetModal = ({ visible, pet, onClose, onUpdate }) => {
           )}
         </Formik>
       </div>
+
+      <style jsx global>{`
+        .edit-pet-modal .ant-modal-content {
+          border-radius: 12px;
+          overflow: hidden;
+        }
+        
+        .edit-pet-modal .ant-modal-header {
+          background-color: #fdf2f8;
+          border-bottom: 1px solid #fbcfe8;
+          padding: 16px 24px;
+        }
+        
+        .edit-pet-modal .ant-modal-title {
+          color: #9d174d;
+        }
+        
+        .edit-pet-modal .ant-modal-close {
+          color: #be185d;
+        }
+        
+        .edit-pet-modal .ant-modal-body {
+          padding: 20px;
+        }
+      `}</style>
     </Modal>
   );
 };

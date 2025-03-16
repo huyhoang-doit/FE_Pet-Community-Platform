@@ -17,6 +17,7 @@ import {
 } from "@/components/ui/select";
 import { getAllUsersAPI } from "@/apis/user";
 import { addAdoptionForm } from "@/apis/post";
+import { HeartFilled } from "@ant-design/icons";
 
 const CreateAdoptionFormModal = ({ open, setOpen, post, onSubmit }) => {
   const [adopterName, setAdopterName] = useState("");
@@ -194,11 +195,11 @@ const CreateAdoptionFormModal = ({ open, setOpen, post, onSubmit }) => {
       <DialogContent className="max-w-2xl p-6 bg-white rounded-lg shadow-xl max-h-[80vh] overflow-y-auto">
         <DialogHeader className="border-b pb-4 mb-6">
           <div className="flex items-center gap-4">
-            <div className="p-3 bg-blue-50 rounded-full">
-              <PawPrint className="w-6 h-6 text-blue-500" />
+            <div className="p-3 bg-pink-50 rounded-full">
+              <HeartFilled style={{ color: "#f472b6", fontSize: "24px" }} />
             </div>
             <div className="flex-1">
-              <h2 className="text-xl font-semibold text-gray-900 mb-1">
+              <h2 className="text-xl font-semibold text-amber-800 mb-1">
                 Tạo form nhận nuôi thú cưng
               </h2>
               <p className="text-sm text-gray-500 line-clamp-1">
@@ -209,38 +210,38 @@ const CreateAdoptionFormModal = ({ open, setOpen, post, onSubmit }) => {
         </DialogHeader>
 
         {/* Pet Information */}
-        <div className="mb-6 p-4 bg-gray-50 rounded-md">
-  <h3 className="text-lg font-medium text-gray-800 mb-2">Thông tin thú cưng</h3>
-  <div className="grid grid-cols-2 gap-2 text-sm text-gray-700">
-    <p>
-      <span className="font-semibold">Tên thú cưng:</span>{" "}
-      {post.pet?.name || "Không rõ"}
-    </p>
-    <p>
-      <span className="font-semibold">Loài:</span>{" "}
-      {post.pet?.species || post.pet?.breed?.name || "Không rõ"}
-    </p>
-    <p>
-      <span className="font-semibold">Tuổi:</span>{" "}
-      {post.pet?.age || "Không rõ"}
-    </p>
-    <p>
-      <span className="font-semibold">Giới tính:</span>{" "}
-      {post.pet?.gender || "Không rõ"}
-    </p>
-  </div>
-  {post.image?.length > 0 && (
-    <img
-      src={post.image[0]}
-      alt={post.pet?.name || "Pet"}
-      className="mt-2 w-24 h-24 object-cover rounded-md"
-    />
-  )}
-</div>
+        <div className="mb-6 p-4 bg-pink-50/50 rounded-md border border-pink-100">
+          <h3 className="text-lg font-medium text-amber-800 mb-2">Thông tin thú cưng</h3>
+          <div className="grid grid-cols-2 gap-2 text-sm text-gray-700">
+            <p>
+              <span className="font-semibold text-pink-700">Tên thú cưng:</span>{" "}
+              {post.pet?.name || "Không rõ"}
+            </p>
+            <p>
+              <span className="font-semibold text-pink-700">Loài:</span>{" "}
+              {post.pet?.species || post.pet?.breed?.name || "Không rõ"}
+            </p>
+            <p>
+              <span className="font-semibold text-pink-700">Tuổi:</span>{" "}
+              {post.pet?.age || "Không rõ"}
+            </p>
+            <p>
+              <span className="font-semibold text-pink-700">Giới tính:</span>{" "}
+              {post.pet?.gender || "Không rõ"}
+            </p>
+          </div>
+          {post.image?.length > 0 && (
+            <img
+              src={post.image[0]}
+              alt={post.pet?.name || "Pet"}
+              className="mt-2 w-24 h-24 object-cover rounded-md border border-pink-200"
+            />
+          )}
+        </div>
 
         {/* User Search */}
         <div className="mb-6">
-          <Label className="block text-sm font-medium text-gray-700 mb-1">
+          <Label className="block text-sm font-medium text-pink-700 mb-1">
             Tìm kiếm người dùng
           </Label>
           <Input
@@ -250,15 +251,15 @@ const CreateAdoptionFormModal = ({ open, setOpen, post, onSubmit }) => {
               handleSearchUsers(e.target.value);
             }}
             placeholder="Nhập tên tài khoản tiếp nhận"
-            className="w-full border-gray-200 bg-gray-50 text-gray-800"
+            className="w-full border-pink-200 bg-pink-50/50 text-gray-800 focus-visible:ring-pink-400"
           />
           {searchResults?.length > 0 && (
-            <ul className="mt-2 max-h-40 overflow-y-auto border border-gray-200 rounded-md bg-white">
+            <ul className="mt-2 max-h-40 overflow-y-auto border border-pink-200 rounded-md bg-white">
               {searchResults.map((user) => (
                 <li
                   key={user.id}
                   onClick={() => handleSelectUser(user)}
-                  className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                  className="px-4 py-2 hover:bg-pink-50 cursor-pointer"
                 >
                   {user.username} ({user.email})
                 </li>
@@ -268,7 +269,7 @@ const CreateAdoptionFormModal = ({ open, setOpen, post, onSubmit }) => {
           {selectedUser && (
             <p className="mt-2 text-sm text-gray-600">
               Đã chọn:{" "}
-              <span className="font-semibold">{selectedUser.username}</span>
+              <span className="font-semibold text-pink-600">{selectedUser.username}</span>
             </p>
           )}
         </div>
@@ -277,7 +278,7 @@ const CreateAdoptionFormModal = ({ open, setOpen, post, onSubmit }) => {
           <div>
             <Label
               htmlFor="adopterName"
-              className="block text-sm font-medium text-gray-700 mb-1"
+              className="block text-sm font-medium text-pink-700 mb-1"
             >
               Tên người nhận nuôi
             </Label>
@@ -285,7 +286,7 @@ const CreateAdoptionFormModal = ({ open, setOpen, post, onSubmit }) => {
               id="adopterName"
               value={adopterName}
               onChange={(e) => setAdopterName(e.target.value)}
-              className="w-full border-gray-200 bg-gray-50 text-gray-800"
+              className="w-full border-pink-200 bg-pink-50/50 text-gray-800 focus-visible:ring-pink-400"
               placeholder="Nhập tên người nhận nuôi"
               required
             />
@@ -293,7 +294,7 @@ const CreateAdoptionFormModal = ({ open, setOpen, post, onSubmit }) => {
           <div>
             <Label
               htmlFor="adopterEmail"
-              className="block text-sm font-medium text-gray-700 mb-1"
+              className="block text-sm font-medium text-pink-700 mb-1"
             >
               Email
             </Label>
@@ -302,7 +303,7 @@ const CreateAdoptionFormModal = ({ open, setOpen, post, onSubmit }) => {
               type="email"
               value={adopterEmail}
               onChange={(e) => setAdopterEmail(e.target.value)}
-              className="w-full border-gray-200 bg-gray-50 text-gray-800"
+              className="w-full border-pink-200 bg-pink-50/50 text-gray-800 focus-visible:ring-pink-400"
               placeholder="Nhập email"
               required
             />
@@ -310,7 +311,7 @@ const CreateAdoptionFormModal = ({ open, setOpen, post, onSubmit }) => {
           <div>
             <Label
               htmlFor="adopterPhone"
-              className="block text-sm font-medium text-gray-700 mb-1"
+              className="block text-sm font-medium text-pink-700 mb-1"
             >
               Số điện thoại
             </Label>
@@ -319,13 +320,13 @@ const CreateAdoptionFormModal = ({ open, setOpen, post, onSubmit }) => {
               type="tel"
               value={adopterPhone}
               onChange={(e) => setAdopterPhone(e.target.value)}
-              className="w-full border-gray-200 bg-gray-50 text-gray-800"
+              className="w-full border-pink-200 bg-pink-50/50 text-gray-800 focus-visible:ring-pink-400"
               placeholder="Nhập số điện thoại"
               required
             />
           </div>
           <div className="space-y-4">
-            <Label className="block text-sm font-medium text-gray-700">
+            <Label className="block text-sm font-medium text-pink-700">
               Địa chỉ
             </Label>
             <div>
@@ -336,10 +337,10 @@ const CreateAdoptionFormModal = ({ open, setOpen, post, onSubmit }) => {
                   fetchDistricts(value);
                 }}
               >
-                <SelectTrigger>
+                <SelectTrigger className="border-pink-200 bg-pink-50/50 focus:ring-pink-400">
                   <SelectValue placeholder="Chọn tỉnh/thành phố" />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="bg-white border border-pink-100">
                   {provinces?.map((prov) => (
                     <SelectItem key={prov.code} value={prov.code.toString()}>
                       {prov.name}
@@ -357,10 +358,10 @@ const CreateAdoptionFormModal = ({ open, setOpen, post, onSubmit }) => {
                 }}
                 disabled={!provinceCode}
               >
-                <SelectTrigger>
+                <SelectTrigger className="border-pink-200 bg-pink-50/50 focus:ring-pink-400">
                   <SelectValue placeholder="Chọn quận/huyện" />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="bg-white border border-pink-100">
                   {districts?.map((dist) => (
                     <SelectItem key={dist.code} value={dist.code.toString()}>
                       {dist.name}
@@ -375,10 +376,10 @@ const CreateAdoptionFormModal = ({ open, setOpen, post, onSubmit }) => {
                 onValueChange={setWardCode}
                 disabled={!districtCode}
               >
-                <SelectTrigger>
+                <SelectTrigger className="border-pink-200 bg-pink-50/50 focus:ring-pink-400">
                   <SelectValue placeholder="Chọn phường/xã" />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="bg-white border border-pink-100">
                   {wards?.map((w) => (
                     <SelectItem key={w.code} value={w.code.toString()}>
                       {w.name}
@@ -391,7 +392,7 @@ const CreateAdoptionFormModal = ({ open, setOpen, post, onSubmit }) => {
               <Input
                 value={address}
                 onChange={(e) => setAddress(e.target.value)}
-                className="w-full border-gray-200 bg-gray-50 text-gray-800"
+                className="w-full border-pink-200 bg-pink-50/50 text-gray-800 focus-visible:ring-pink-400"
                 placeholder="Số nhà, tên đường"
                 required
               />
@@ -400,7 +401,7 @@ const CreateAdoptionFormModal = ({ open, setOpen, post, onSubmit }) => {
           <div>
             <Label
               htmlFor="message"
-              className="block text-sm font-medium text-gray-700 mb-1"
+              className="block text-sm font-medium text-pink-700 mb-1"
             >
               Tin nhắn
             </Label>
@@ -408,11 +409,11 @@ const CreateAdoptionFormModal = ({ open, setOpen, post, onSubmit }) => {
               id="message"
               value={message}
               onChange={(e) => setMessage(e.target.value)}
-              className="min-h-[80px] resize-none border-gray-200 bg-gray-50 text-gray-800 placeholder:text-gray-400"
+              className="min-h-[80px] resize-none border-pink-200 bg-pink-50/50 text-gray-800 placeholder:text-gray-400 focus-visible:ring-pink-400"
               placeholder="Nhập tin nhắn hoặc điều khoản nhận nuôi"
             />
           </div>
-          <div className="flex justify-end gap-3 sticky bottom-0 bg-white pt-4">
+          <div className="flex justify-end gap-3 sticky bottom-0 bg-white pt-4 border-t border-pink-100">
             <Button
               type="button"
               variant="outline"
@@ -424,7 +425,7 @@ const CreateAdoptionFormModal = ({ open, setOpen, post, onSubmit }) => {
             <Button
               type="submit"
               disabled={loading || loadingAddress}
-              className="bg-blue-500 hover:bg-blue-600 text-white font-medium rounded-md py-2 flex items-center justify-center disabled:opacity-50"
+              className="bg-pink-500 hover:bg-pink-600 text-white font-medium rounded-md py-2 flex items-center justify-center disabled:opacity-50"
             >
               {loading ? (
                 <>

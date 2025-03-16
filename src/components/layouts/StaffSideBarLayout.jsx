@@ -84,12 +84,12 @@ const StaffSideBarLayout = () => {
       label: "Quản lý bài đăng",
       roles: ["forum_staff"],
     },
-    {
-      key: "/staff-forum/ApprovePost",
-      icon: <FaListCheck className="w-4 h-4" />,
-      label: "Xác nhận bài đăng",
-      roles: ["forum_staff"],
-    },
+    // {
+    //   key: "/staff-forum/ApprovePost",
+    //   icon: <FaListCheck className="w-4 h-4" />,
+    //   label: "Xác nhận bài đăng",
+    //   roles: ["forum_staff"],
+    // },
     { type: "divider" },
     {
       key: "logout",
