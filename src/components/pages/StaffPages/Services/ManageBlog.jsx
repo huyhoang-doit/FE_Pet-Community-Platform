@@ -8,7 +8,7 @@ const { Search } = Input;
 const { Option } = Select;
 
 const POST_CATEGORIES = [
-    { name: "All Posts", value: "All Posts" },
+    { name: "All Blog", value: "All Blog" },
     { name: "Dogs", value: "Dogs" },
     { name: "Cats", value: "Cats" },
 ];
@@ -16,7 +16,7 @@ const POST_CATEGORIES = [
 const ManageBlog = () => {
     const navigate = useNavigate();
     const [blogs, setBlogs] = useState([]);
-    const [selectedCategory, setSelectedCategory] = useState("All Posts");
+    const [selectedCategory, setSelectedCategory] = useState("All Blog");
     const [loading, setLoading] = useState(false);
     const [openCreate, setOpenCreate] = useState(false);
     const [error, setError] = useState(null);
