@@ -127,10 +127,9 @@ const BlogDetail = () => {
                 {/* Content */}
                 <div
                     className={`${sharedClasses.textZinc700} space-y-4 mb-8 blog-content`}
+                    // {blog.content}
                     dangerouslySetInnerHTML={{ __html: blog.content }}
                 />
-
-
             </div>
             <Footer />
         </>

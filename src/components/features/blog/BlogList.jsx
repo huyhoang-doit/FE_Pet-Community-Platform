@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 const POST_CATEGORIES = [
-  { name: "All Posts", color: "bg-secondary text-secondary-foreground" },
+  { name: "All Blogs", color: "bg-secondary text-secondary-foreground" },
   { name: "Dogs", color: "bg-blue-500 text-white" },
   { name: "Cats", color: "bg-green-500 text-white" },
 ];
@@ -14,7 +14,7 @@ const POST_CATEGORIES = [
 const BlogList = () => {
   const navigate = useNavigate();
   const [blogs, setBlogs] = useState([]);
-  const [selectedCategory, setSelectedCategory] = useState("All Posts");
+  const [selectedCategory, setSelectedCategory] = useState("All Blogs");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
@@ -40,7 +40,7 @@ const BlogList = () => {
         sortBy: "-createdAt",
         page: pagination.page,
         limit: pagination.limit,
-        ...(selectedCategory !== "All Posts" ? { category: selectedCategory } : {}),
+        ...(selectedCategory !== "All Blog" ? { category: selectedCategory } : {}),
       };
       const res = await getAllBlogsAPI(params);
       if (res.data.success || res.data.status === 200) {
