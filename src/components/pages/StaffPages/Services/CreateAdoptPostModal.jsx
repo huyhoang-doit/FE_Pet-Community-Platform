@@ -13,6 +13,7 @@ import { Button } from "@/components/ui/button";
 import * as Yup from "yup";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import { MdDelete } from "react-icons/md";
+import { PawPrint } from "lucide-react";
 
 const CreateAdoptPostModal = ({ open, setOpen, pet, onPostCreated }) => {
   const dispatch = useDispatch();
@@ -126,18 +127,27 @@ const CreateAdoptPostModal = ({ open, setOpen, pet, onPostCreated }) => {
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogContent className="sm:max-w-[425px]">
-        <DialogHeader className="text-center font-semibold">
-          Create New Adoption Post
+      <DialogContent className="sm:max-w-[425px] bg-white rounded-lg shadow-xl">
+        <DialogHeader className="border-b pb-4 mb-6">
+          <div className="flex items-center gap-4">
+            <div className="p-3 bg-pink-50 rounded-full">
+              <PawPrint className="w-6 h-6 text-pink-500" />
+            </div>
+            <div className="flex-1">
+              <h2 className="text-xl font-semibold text-amber-800 mb-1">
+                Tạo bài đăng nhận nuôi mới
+              </h2>
+            </div>
+          </div>
         </DialogHeader>
 
-        <div className="flex items-center gap-3">
-          <Avatar>
+        <div className="flex items-center gap-3 mb-4 p-3 bg-pink-50/50 rounded-lg border border-pink-100">
+          <Avatar className="border-2 border-pink-200">
             <AvatarImage src={user?.profilePicture} alt="Profile" />
-            <AvatarFallback>{user?.username?.[0] || "U"}</AvatarFallback>
+            <AvatarFallback className="bg-pink-100 text-pink-700">{user?.username?.[0] || "U"}</AvatarFallback>
           </Avatar>
           <div>
-            <h1 className="font-semibold text-sm">{user?.username}</h1>
+            <h1 className="font-semibold text-sm text-gray-800">{user?.username}</h1>
             <span className="text-gray-600 text-xs">{user?.bio}</span>
           </div>
         </div>
@@ -169,14 +179,14 @@ const CreateAdoptPostModal = ({ open, setOpen, pet, onPostCreated }) => {
                   as="textarea"
                   name="caption"
                   innerRef={captionRef}
-                  placeholder="Write a caption..."
-                  className="w-full p-2 border rounded-md resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="Viết nội dung bài đăng..."
+                  className="w-full p-2 border border-pink-200 rounded-md resize-none focus:outline-none focus:ring-2 focus:ring-pink-400 bg-pink-50/50"
                   rows={3}
                 />
                 <button
                   type="button"
                   onClick={() => setShowEmojiPicker(!showEmojiPicker)}
-                  className="absolute bottom-2 right-2 text-2xl hover:bg-gray-100 rounded-full p-1"
+                  className="absolute bottom-2 right-2 text-2xl hover:bg-pink-100 rounded-full p-1"
                 >
                   😊
                 </button>
@@ -192,7 +202,7 @@ const CreateAdoptPostModal = ({ open, setOpen, pet, onPostCreated }) => {
                 <Field
                   as="select"
                   name="location"
-                  className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full p-2 border border-pink-200 rounded-md focus:outline-none focus:ring-2 focus:ring-pink-400 bg-pink-50/50"
                 >
                   <option value="">Chọn cơ sở tiếp nhận</option>
                   <option value="Cơ sở Hà Nội">Cơ sở Hà Nội</option>
@@ -218,27 +228,27 @@ const CreateAdoptPostModal = ({ open, setOpen, pet, onPostCreated }) => {
               <Button
                 type="button"
                 onClick={() => imageInputRef.current.click()}
-                className="w-full bg-blue-500 hover:bg-blue-600 text-white"
+                className="w-full bg-pink-100 hover:bg-pink-200 text-pink-700 font-medium"
               >
-                Add Images
+                Thêm hình ảnh
               </Button>
 
               {/* Image Previews */}
               {imagePreviews.length > 0 && (
-                <div className="flex flex-wrap gap-2 mt-2">
+                <div className="flex flex-wrap gap-2 mt-2 p-3 bg-pink-50/50 rounded-lg border border-pink-100">
                   {imagePreviews.map((preview, index) => (
                     <div key={index} className="relative">
                       <motion.img
                         src={preview}
                         alt="Preview"
-                        className="w-20 h-20 object-cover rounded-md"
+                        className="w-20 h-20 object-cover rounded-md border border-pink-200"
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                       />
                       <button
                         type="button"
                         onClick={() => removeImage(index, setFieldValue)}
-                        className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1"
+                        className="absolute top-1 right-1 bg-pink-600 text-white rounded-full p-1 hover:bg-pink-700"
                       >
                         <MdDelete size={16} />
                       </button>
@@ -248,13 +258,15 @@ const CreateAdoptPostModal = ({ open, setOpen, pet, onPostCreated }) => {
               )}
 
               {/* Submit Button */}
-              <Button
-                type="submit"
-                disabled={loading}
-                className="w-full bg-green-500 hover:bg-green-600 text-white"
-              >
-                {loading ? "Posting..." : "Post"}
-              </Button>
+              <div className="pt-4 border-t border-pink-100">
+                <Button
+                  type="submit"
+                  disabled={loading}
+                  className="w-full bg-pink-500 hover:bg-pink-600 text-white"
+                >
+                  {loading ? "Đang đăng..." : "Đăng bài"}
+                </Button>
+              </div>
             </Form>
           )}
         </Formik>
