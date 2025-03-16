@@ -19,3 +19,11 @@ export const getAllDonationsAPI = async () => {
   const response = await authorizedAxiosInstance.get(`${BASE_URL}/donation`);
   return response;
 };
+
+export const createStaffAPI = async (data) => {
+  const response = await authorizedAxiosInstance.post(
+    `${BASE_URL}/admin/staff`,
+    data
+  );
+  return response;
+};

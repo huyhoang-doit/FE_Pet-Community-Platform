@@ -3,7 +3,6 @@ import RightSidebar from "../layouts/RightSidebar";
 import ForumFeeds from "./ForumFeeds";
 import AdoptFeeds from "./AdoptFeeds";
 import useFetchData from "@/hooks/useFetchData";
-import { useSelector } from "react-redux";
 const Home = () => {
   useFetchData();
 

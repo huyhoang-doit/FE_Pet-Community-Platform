@@ -1,27 +1,34 @@
 /* eslint-disable react/prop-types */
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
 import useGetAllMessage from "@/hooks/useGetAllMessage";
 import useGetRTM from "@/hooks/useGetRTM";
 import { Button } from "@/components/ui/button";
 import { Download, Loader2 } from "lucide-react";
+import { useEffect, useRef } from "react";
 
-const Messages = ({ selectedUser, postInfo }) => {
+const Messages = ({ selectedUser }) => {
   // Hook kết nối realtime message và load tất cả tin nhắn
   useGetRTM();
   useGetAllMessage();
-  const navigate = useNavigate();
 
   const { messages } = useSelector((store) => store.chat);
   const { user } = useSelector((store) => store.auth);
+  const messagesEndRef = useRef(null);
+
+  useEffect(() => {
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: "instant" });
+    }
+  }, [messages]);
 
   const handleDownloadImage = async (imageUrl) => {
     try {
       const response = await fetch(imageUrl);
       const blob = await response.blob();
       const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
+      const a = document.createElement("a");
       a.href = url;
       a.download = `image-${Date.now()}.jpg`;
       document.body.appendChild(a);
@@ -29,17 +36,19 @@ const Messages = ({ selectedUser, postInfo }) => {
       window.URL.revokeObjectURL(url);
       document.body.removeChild(a);
     } catch (error) {
-      console.error('Error downloading image:', error);
+      console.error("Error downloading image:", error);
     }
   };
 
   const renderPostLink = (metadata, isSender) => {
-    if (metadata?.type === 'adoption_post') {
+    if (metadata?.type === "adoption_post") {
       return (
-        <div className={`mt-2 w-[50%] flex ${isSender ? 'ml-auto' : ''}`}>
-          <div 
+        <div className={`mt-2 w-[50%] flex ${isSender ? "ml-auto" : ""}`}>
+          <div
             className="bg-gray-100 p-3 rounded-lg cursor-pointer hover:bg-gray-200 text-sm w-full"
-            onClick={() => window.open(`/adoptDetail/${metadata.postId}`, '_blank')}
+            onClick={() =>
+              window.open(`/adoptDetail/${metadata.postId}`, "_blank")
+            }
           >
             <div className="flex items-center justify-between">
               <div>
@@ -60,7 +69,7 @@ const Messages = ({ selectedUser, postInfo }) => {
                   className="ml-2"
                   onClick={(e) => {
                     e.stopPropagation();
-                    window.open(`/adoptDetail/${metadata.postId}`, '_blank');
+                    window.open(`/adoptDetail/${metadata.postId}`, "_blank");
                   }}
                 >
                   Xem chi tiết
@@ -80,9 +89,12 @@ const Messages = ({ selectedUser, postInfo }) => {
     let imageUrl;
     let messageType;
     let loadingText;
-    
+
     try {
-      const parsedMessage = JSON.parse(msg.message);
+      let parsedMessage = JSON.parse(msg.message);
+      if (typeof parsedMessage === "number") {
+        parsedMessage = { text: parsedMessage };
+      }
       messageContent = parsedMessage.text;
       metadata = parsedMessage.metadata;
       imageUrl = parsedMessage.image;
@@ -94,7 +106,8 @@ const Messages = ({ selectedUser, postInfo }) => {
 
     const isSender = msg.senderId === user?.id;
     const nextMsg = index < messages.length - 1 ? messages[index + 1] : null;
-    const showAvatar = !isSender && (!nextMsg || nextMsg.senderId !== msg.senderId);
+    const showAvatar =
+      !isSender && (!nextMsg || nextMsg.senderId !== msg.senderId);
 
     return (
       <div key={msg._id} className="flex flex-col mb-2">
@@ -119,23 +132,21 @@ const Messages = ({ selectedUser, postInfo }) => {
           )}
           <div
             className={`p-2 rounded-lg max-w-[50%] break-words ${
-              isSender
-                ? "bg-blue-500 text-white"
-                : "bg-gray-200 text-black"
-            } ${messageType === 'image' ? 'p-1' : ''}`}
+              isSender ? "bg-blue-500 text-white" : "bg-gray-200 text-black"
+            } ${messageType === "image" ? "p-1" : ""}`}
           >
-            {messageType === 'loading' ? (
+            {messageType === "loading" ? (
               <div className="flex items-center gap-2">
                 <Loader2 className="h-4 w-4 animate-spin" />
                 <span>{loadingText}</span>
               </div>
-            ) : messageType === 'image' ? (
+            ) : messageType === "image" ? (
               <div className="relative group">
-                <img 
-                  src={imageUrl} 
-                  alt="Sent image" 
+                <img
+                  src={imageUrl}
+                  alt="Sent image"
                   className="max-w-[200px] rounded-lg cursor-pointer hover:opacity-90"
-                  onClick={() => window.open(imageUrl, '_blank')}
+                  onClick={() => window.open(imageUrl, "_blank")}
                 />
                 <Button
                   size="icon"
@@ -150,7 +161,10 @@ const Messages = ({ selectedUser, postInfo }) => {
                 </Button>
               </div>
             ) : (
-              <span className="inline-block">{messageContent}</span>
+              <span
+                dangerouslySetInnerHTML={{ __html: messageContent }}
+                className="inline-block"
+              ></span>
             )}
           </div>
           {/* {isSender && (
@@ -174,7 +188,7 @@ const Messages = ({ selectedUser, postInfo }) => {
             {msg.suggestionButtons.map((btn) => (
               <Button
                 key={btn.index}
-                onClick={() => window.open(btn.url, '_blank')}
+                onClick={() => window.open(btn.url, "_blank")}
                 variant="secondary"
                 className="text-sm hover:bg-gray-200"
               >
@@ -196,7 +210,7 @@ const Messages = ({ selectedUser, postInfo }) => {
             <AvatarImage src={selectedUser?.profilePicture} alt="profile" />
             <AvatarFallback>CN</AvatarFallback>
           </Avatar>
-          {(selectedUser.firstName && selectedUser.lastName) ? (
+          {selectedUser.firstName && selectedUser.lastName ? (
             <>
               <span className="font-bold mt-2">
                 {selectedUser?.lastName} {selectedUser?.firstName}
@@ -209,7 +223,9 @@ const Messages = ({ selectedUser, postInfo }) => {
             <>
               <span className="font-bold mt-2">{selectedUser?.username}</span>
               <span className="text-sm text-gray-500">
-                {selectedUser.id === "ai-support" ? "AI Assistant" : "Outstagram"}
+                {selectedUser.id === "ai-support"
+                  ? "AI Assistant"
+                  : "Outstagram"}
               </span>
             </>
           )}
@@ -225,12 +241,15 @@ const Messages = ({ selectedUser, postInfo }) => {
 
       {selectedUser.id === "ai-support" && messages.length === 0 && (
         <div className="text-center text-gray-500 my-4">
-          Xin chào! Tôi là AI Support. Hãy cho tôi biết bạn muốn tìm thú cưng như thế nào (giống, vị trí, tình trạng, v.v.)!
+          Xin chào! Tôi là AI Support. Hãy cho tôi biết bạn muốn tìm thú cưng
+          như thế nào (giống, vị trí, tình trạng, v.v.)!
         </div>
       )}
 
       <div className="flex flex-col gap-1">
-        {messages && messages.map((msg, index) => renderMessage(msg, index, messages))}
+        {messages &&
+          messages.map((msg, index) => renderMessage(msg, index, messages))}
+        <div ref={messagesEndRef} />
       </div>
     </div>
   );

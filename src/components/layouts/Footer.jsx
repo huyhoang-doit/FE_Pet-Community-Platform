@@ -51,7 +51,7 @@ function Footer() {
       <div className="flex flex-col gap-4 text-lg">
         <h2 className="font-bold">TÀI NGUYÊN</h2>
         <ul className="flex flex-col gap-2">
-          <li>Blog</li>
+          <li><Link to={'/blog'}>Blog</Link></li>
           <li>Phát triển bền vững</li>
           <li>Về chúng tôi</li>
           <li>Pawparazzi</li>

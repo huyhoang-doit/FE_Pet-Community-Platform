@@ -28,6 +28,8 @@ import { FaHeart, FaSearch } from "react-icons/fa";
 import TabNotification from "./TabNotification";
 import TabSearch from "./TabSearch";
 import CreatePost from "../features/posts/CreatePost";
+import { Modal } from "antd";
+import { ExclamationCircleOutlined } from "@ant-design/icons";
 
 const getInitialActiveTab = () => {
   const pathname = window.location.pathname;
@@ -70,20 +72,31 @@ const LeftSidebar = () => {
   // }, [user, navigate]);
 
   const logoutHandler = async () => {
-    try {
-      const res = await handleLogoutAPI();
-      if (res.status === 200) {
-        dispatch(setAuthUser(null));
-        dispatch(setSelectedPost(null));
-        dispatch(setPosts([]));
-        localStorage.removeItem("access_token");
-        localStorage.removeItem("refresh_token");
-        navigate("/");
-        toast.success(res.data.message);
-      }
-    } catch (error) {
-      toast.error(error.response.data.message);
-    }
+    Modal.confirm({
+      title: "Are you sure you want to logout?",
+      icon: <ExclamationCircleOutlined style={{ color: "#FAAD14" }} />,
+      content: "You will need to log in again to access your account.",
+      okText: "Yes, Logout",
+      okType: "danger",
+      cancelText: "Cancel",
+      centered: true,
+      onOk: async () => {
+        try {
+          const res = await handleLogoutAPI();
+          if (res.status === 200) {
+            dispatch(setAuthUser(null));
+            dispatch(setSelectedPost(null));
+            dispatch(setPosts([]));
+            localStorage.removeItem("access_token");
+            localStorage.removeItem("refresh_token");
+            navigate("/");
+            toast.success(res.data.message);
+          }
+        } catch (error) {
+          toast.error(error.response?.data?.message || "Logout failed");
+        }
+      },
+    });
   };
 
   const isActiveTab = (path) => {

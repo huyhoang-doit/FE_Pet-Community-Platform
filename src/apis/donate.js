@@ -22,8 +22,8 @@ export const getTop5DonateAPI = async () => {
   return await authorizedAxiosInstance.get(`${BASE_URL}/donation/top-5`)
 }
 
-export const getAllDonateAPI = async (page, limit, q, campaign) => {
-  return await authorizedAxiosInstance.get(`${BASE_URL}/donation?page=${page}&limit=${limit}&q=${q}&campaign=${campaign}`)
+export const getAllDonateAPI = async (page, limit, q, campaign = null) => {
+  return await authorizedAxiosInstance.get(`${BASE_URL}/donation?page=${page}&limit=${limit}&q=${q}&campaign=${campaign ? campaign : ""}`)
 }
 
 export const getDonationByUserIdAPI = async (userId, page, limit) => {

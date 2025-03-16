@@ -1,3 +1,4 @@
+/* eslint-disable react/no-unknown-property */
 import { useEffect, useState } from "react";
 import { Table, Button, Modal, Form, Input, message, Upload } from "antd";
 import Search from "antd/es/input/Search";
@@ -6,7 +7,7 @@ import {
   getClientSettingAPI,
   updateClientSettingAPI,
 } from "@/apis/clientSetting";
-import { PlusOutlined } from "@ant-design/icons";
+import { PlusOutlined, UserAddOutlined } from "@ant-design/icons";
 
 function ManageSetting() {
   const [settings, setSettings] = useState([]);
@@ -31,6 +32,10 @@ function ManageSetting() {
     };
     fetchSettings();
   }, []);
+
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+  };
 
   const handleSubmit = async (values, isUpdate = false) => {
     try {
@@ -150,7 +155,12 @@ function ManageSetting() {
         <>
           <Button
             type="primary"
-            className="mr-2"
+            style={{
+              background: "#fdf2f8",
+              borderColor: "#fbcfe8",
+              color: "#db2777",
+            }}
+            className="hover:bg-pink-200 hover:border-pink-300 hover:text-pink-800"
             onClick={() => {
               updateForm.setFieldsValue({
                 ...record,
@@ -169,37 +179,86 @@ function ManageSetting() {
   ];
 
   return (
-    <div className="p-4">
-      <div className="flex justify-between items-center mb-4">
-        <h1 className="text-2xl font-bold mb-4">Cài đặt cho Website</h1>
-        <Button
-          type="primary"
-          className="mb-4"
-          onClick={() => setIsModalVisible(true)}
-        >
-          Create Setting
-        </Button>
+    <div className="p-6 bg-gradient-to-b from-pink-50 to-white min-h-screen">
+      <div className="bg-white rounded-2xl shadow-md p-6 mb-6 border-2 border-pink-100">
+        <div className="flex justify-between items-center mb-6">
+          <div className="flex items-center gap-2">
+            <span className="text-3xl">🐾</span>
+            <h1 className="text-2xl font-bold text-amber-800">
+              Cài đặt cho Website
+            </h1>
+          </div>
+          <Button
+            onClick={() => setIsModalVisible(true)}
+            className="flex items-center gap-2 bg-pink-500 text-white border-0 hover:bg-pink-600 hover:border-0"
+            icon={<UserAddOutlined />}
+          >
+            Create Setting
+          </Button>
+        </div>
+
+        <Table
+          columns={columns}
+          dataSource={settings}
+          rowKey="_id"
+          pagination={{
+            current: currentPage,
+            pageSize: limit,
+            showSizeChanger: false,
+            total: settings.length,
+            onChange: handlePageChange,
+            className: "custom-pagination",
+            itemRender: (page, type) => {
+              if (type === "page") {
+                return (
+                  <span
+                    className={`${
+                      page === currentPage
+                        ? "text-pink-600 font-bold"
+                        : "text-gray-600"
+                    }`}
+                  >
+                    {page}
+                  </span>
+                );
+              }
+              return null;
+            },
+          }}
+          className="pet-friendly-table"
+          rowClassName={(record, index) =>
+            index % 2 === 0 ? "bg-pink-50/30" : "bg-white"
+          }
+        />
+
+        {renderModal("Manage Setting", isModalVisible, setIsModalVisible, form)}
+        {renderModal(
+          "Update Setting",
+          isUpdateModalVisible,
+          setIsUpdateModalVisible,
+          updateForm,
+          true
+        )}
       </div>
+      <style jsx global>{`
+        .pet-friendly-table .ant-table-thead > tr > th {
+          background-color: #fdf3f8;
+          border-bottom: 2px solid #fecdd3;
+        }
 
-      <Table
-        columns={columns}
-        dataSource={settings}
-        rowKey="_id"
-        pagination={{
-          current: currentPage,
-          pageSize: limit,
-          onChange: (page) => setCurrentPage(page),
-        }}
-      />
+        .ant-table-wrapper .ant-table-pagination.ant-pagination {
+          margin: 16px 0;
+        }
 
-      {renderModal("Manage Setting", isModalVisible, setIsModalVisible, form)}
-      {renderModal(
-        "Update Setting",
-        isUpdateModalVisible,
-        setIsUpdateModalVisible,
-        updateForm,
-        true
-      )}
+        .custom-pagination .ant-pagination-item-active {
+          background-color: #fdf3f8;
+          border-color: #f472b6;
+        }
+
+        .ant-pagination-item:hover {
+          border-color: #f472b6;
+        }
+      `}</style>
     </div>
   );
 }

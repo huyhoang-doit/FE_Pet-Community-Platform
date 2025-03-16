@@ -5,13 +5,16 @@ import { FaRegHeart, FaHeart } from "react-icons/fa";
 import { PawPrint, MapPin, HandHeart, Send } from "lucide-react";
 import ShareButton from "./ShareButton";
 import { Button } from "@/components/ui/button";
+import { useSelector } from "react-redux";
 
 const AdoptionDetail = () => {
+  const { user } = useSelector((store) => store.auth);
   const { id } = useParams();
   const navigate = useNavigate(); // Thêm useNavigate để điều hướng
   const [post, setPost] = useState(null);
   const [liked, setLiked] = useState(false);
   const [loading, setLoading] = useState(true);
+  const userRole = user?.role;
   const [error, setError] = useState(null);
 
   useEffect(() => {
@@ -30,21 +33,56 @@ const AdoptionDetail = () => {
     fetchPost();
   }, [id]);
 
-  
-    useEffect(() => {
-      const fetchUserBehavior = async () => {
-        try {
-         const res = await getUserBehaviorAPI();
-         console.log(res)
-        } catch (error) {
-          console.error("Error fetching user behavior:", error);
-        }
-      };
-      fetchUserBehavior();
-    }, []);
+  useEffect(() => {
+    const fetchUserBehavior = async () => {
+      try {
+        const res = await getUserBehaviorAPI();
+        console.log(res);
+      } catch (error) {
+        console.error("Error fetching user behavior:", error);
+      }
+    };
+    fetchUserBehavior();
+  }, []);
 
   const handleClose = () => {
     navigate("/adopt"); // Quay lại trang tổng hợp khi nhấp nút "X"
+  };
+
+  const renderActionButton = (post) => {
+    if (userRole === "services_staff") {
+      return (
+        <Button
+          className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
+          onClick={() => navigate("/staff-services/manageAdoptionPost")}
+        >
+          Quản lý bài đăng
+        </Button>
+      );
+    } else if (userRole === "user") {
+      return (
+        <Button
+          className="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600"
+          onClick={() =>
+            navigate(`/chat/${post.author?.id}`, {
+              state: {
+                fromPost: true,
+                postId: post._id,
+                postTitle: post.caption,
+                petName: post.pet?.name,
+                location: post.location,
+              },
+            })
+          }
+        >
+          <div className="flex items-center gap-2">
+            <Send className="cursor-pointer hover:text-gray-600" size={16} />
+            <span>Liên hệ nhận nuôi</span>
+          </div>
+        </Button>
+      );
+    }
+    return null;
   };
 
   if (loading) return <p className="text-center">Đang tải...</p>;
@@ -133,21 +171,7 @@ const AdoptionDetail = () => {
                 <ShareButton post={post} />
               </div>
 
-              <Button 
-                onClick={() => navigate(`/chat/${post.author?.id}`, {
-                  state: {
-                    fromPost: true,
-                    postId: post._id,
-                    postTitle: post.caption,
-                    petName: post.pet?.name,
-                    location: post.location
-                  }
-                })}
-                className="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600"
-              >
-                <Send size={16} />
-                <span>Liên hệ nhận nuôi</span>
-              </Button>
+              {renderActionButton(post)}
             </div>
 
             {/* Số lượt thích */}
