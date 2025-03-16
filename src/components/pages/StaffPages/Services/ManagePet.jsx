@@ -17,6 +17,7 @@ import { Button } from "@/components/ui/button";
 import EditPetModal from "./EditPetModal";
 import CreateAdoptPostModal from "./CreateAdoptPostModal";
 
+
 const ManagePet = () => {
   const [pets, setPets] = useState([]);
   const [totalPets, setTotalPets] = useState(0);
@@ -29,6 +30,8 @@ const ManagePet = () => {
   const [openCreatePost, setOpenCreatePost] = useState(false);
   const [sortBy, setSortBy] = useState("createdAt:desc"); // Default sort
   const { Search } = Input;
+
+
   const fetchPets = async (page = 1, limit = itemsPerPage, sort = sortBy) => {
     try {
       const response = await getPetApprovedAPI(page, limit, sort);
@@ -152,17 +155,16 @@ const ManagePet = () => {
                     </td>
                     <td className="px-6 py-4 capitalize text-sm text-gray-700 dark:text-gray-300 border-b border-gray-200 dark:border-gray-700 border-r">
                       <span
-                        className={`${
-                          pet.health_status === "Healthy"
+                        className={`${pet.health_status === "Healthy"
                             ? "text-green-500 font-bold"
                             : pet.health_status === "Sick"
-                            ? "text-red-500 font-bold"
-                            : pet.health_status === "Injured"
-                            ? "text-orange-500 font-bold"
-                            : pet.health_status === "Recovering"
-                            ? "text-blue-500 font-bold"
-                            : "text-gray-700 dark:text-gray-300 font-bold"
-                        }`}
+                              ? "text-red-500 font-bold"
+                              : pet.health_status === "Injured"
+                                ? "text-orange-500 font-bold"
+                                : pet.health_status === "Recovering"
+                                  ? "text-blue-500 font-bold"
+                                  : "text-gray-700 dark:text-gray-300 font-bold"
+                          }`}
                       >
                         {pet.health_status}
                       </span>
