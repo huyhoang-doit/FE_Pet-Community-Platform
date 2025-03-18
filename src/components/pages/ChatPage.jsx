@@ -33,7 +33,13 @@ const ChatPage = () => {
   const dispatch = useDispatch();
   const [chatUsers, setChatUsers] = useState([]);
   const [userBehavior, setUserBehavior] = useState([]);
-  const [initialMessageSent, setInitialMessageSent] = useState(false);
+  const [initialMessageSent, setInitialMessageSent] = useState(() => {
+    const sentMessages = JSON.parse(
+      localStorage.getItem("sentInitialMessages") || "[]"
+    );
+    const postId = location.state?.postId;
+    return postId ? sentMessages.includes(postId) : false;
+  });
   const [isUploading, setIsUploading] = useState(false);
   const [emojiPicker, setEmojiPicker] = useState(false);
   const emojiPickerRef = useRef(null);
@@ -101,8 +107,10 @@ const ChatPage = () => {
   useEffect(() => {
     const fetchData = async () => {
       if (id) {
-        const { data } = await getProfileByIdAPI(id);
-        dispatch(setSelectedUser(data.data));
+        const profileResponse = await getProfileByIdAPI(id);
+        const chatUsersResponse = await getChatUserAPI();
+        dispatch(setSelectedUser(profileResponse.data.data));
+        setChatUsers(chatUsersResponse.data.data);
       } else {
         const { data } = await getChatUserAPI();
         setChatUsers(data.data);
@@ -174,6 +182,12 @@ const ChatPage = () => {
           petName,
           location: postLocation,
         } = location.state;
+        const sentMessages = JSON.parse(
+          localStorage.getItem("sentInitialMessages") || "[]"
+        );
+        if (sentMessages.includes(postId)) {
+          return;
+        }
         const messageData = {
           text: `Xin chào, tôi đến từ bài viết nhận nuôi: "${postTitle}" - Thú cưng: ${petName} tại ${postLocation}`,
           metadata: {
@@ -202,6 +216,8 @@ const ChatPage = () => {
             );
             setInitialMessageSent(true);
           }
+          sentMessages.push(postId);
+          localStorage.setItem('sentInitialMessages', JSON.stringify(sentMessages));
         } catch (error) {
           console.error("Error sending initial message:", error);
         }
