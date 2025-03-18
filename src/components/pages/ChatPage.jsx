@@ -11,13 +11,13 @@ import { sendMessageAPI, sendImageMessageAPI } from "@/apis/message";
 import { calculateTimeAgo } from "@/utils/calculateTimeAgo";
 import { Button } from "../ui/button";
 import Messages from "../features/messages/Messages";
-import { GoogleGenerativeAI } from "@google/generative-ai";
 import {
   fetchAllAdoptionPostsByBreedAPI,
   getUserBehaviorAPI,
 } from "@/apis/post";
 import { getBreedsByIdAPI, getBreedsAPI } from "@/apis/pet";
 import EmojiPicker from "emoji-picker-react";
+import { chatbotAPI, recommendBreedsAPI } from "@/apis/chatbot";
 
 const requiredKeywords = ["gợi ý", "thú cưng", "nhận nuôi", "loại pet"];
 
@@ -211,7 +211,6 @@ const ChatPage = () => {
     sendInitialMessage();
   }, [selectedUser, location.state, initialMessageSent]);
 
-  
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (
@@ -367,14 +366,7 @@ const ChatPage = () => {
   });
 
   const handleAIResponse = async (selectedPet, breedName) => {
-    const carePrompt = `Hãy cung cấp hướng dẫn chăm sóc chi tiết cho giống thú cưng "${breedName}" ở định dạng Markdown, với các tiêu đề rõ ràng (##, ###), danh sách gạch đầu dòng (-), và in đậm các từ khóa quan trọng (**text**).`;
-
-    const genAI = new GoogleGenerativeAI(
-      import.meta.env.VITE_APP_GEMINI_API_KEY
-    );
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-    const result = await model.generateContent(carePrompt);
-    const careInstructions = result.response.text();
+    const careInstructions = await chatbotAPI(breedName);
 
     return {
       _id: Date.now().toString(),
@@ -434,9 +426,6 @@ const ChatPage = () => {
         effectiveMessage.trim();
       sessionStorage.setItem("userAnswers", JSON.stringify(userAnswers));
 
-      const userBehaviorRes = await getUserBehaviorAPI();
-      const userBehavior = userBehaviorRes.data.data || [];
-
       const userPreferences = `
         Kích thước: ${userAnswers[questions[0].text]}
         Mức độ hoạt động: ${userAnswers[questions[1].text]}
@@ -449,20 +438,6 @@ const ChatPage = () => {
       `;
 
       const breedList = breeds.map((breed) => breed.name);
-      const prompt = `
-        Dựa trên các tiêu chí người dùng mong muốn:
-        ${userPreferences}
-
-        Và danh sách giống chó hiện có:
-        ${breedList.join(", ")}
-
-        Hãy phân tích và chọn ra TOP 3 giống chó phù hợp nhất với người dùng.
-        Trả về JSON với định dạng sau:
-        {
-          "breeds": ["Tên giống 1", "Tên giống 2", "Tên giống 3"],
-          "explanation": "Giải thích ngắn gọn lý do chọn các giống này"
-        }
-      `;
 
       dispatch(
         setMessages([
@@ -477,27 +452,16 @@ const ChatPage = () => {
       );
 
       try {
-        const genAI = new GoogleGenerativeAI(
-          import.meta.env.VITE_APP_GEMINI_API_KEY
-        );
-        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-        const result = await model.generateContent(prompt);
-        const responseText = result.response.text();
-
-        const jsonMatch = responseText.match(/\{.*?\}/s);
-        if (!jsonMatch) {
-          throw new Error("Không tìm thấy JSON trong phản hồi từ Gemini");
-        }
-
-        const parsedResponse = JSON.parse(jsonMatch[0]);
-        const recommendedBreeds = parsedResponse.breeds;
+        const result = await recommendBreedsAPI(userPreferences, breedList);
+        const recommendedBreeds = result.breeds;
+        const explanation = result.explanation;
 
         const geminiResponse = {
           _id: Date.now().toString(),
           senderId: "ai-support",
-          message: `Dựa trên sở thích của bạn, tôi đề xuất các giống chó sau:\n\n**${parsedResponse.breeds.join(
+          message: `Dựa trên sở thích của bạn, tôi đề xuất các giống chó sau:\n\n**${recommendedBreeds.join(
             ", "
-          )}**\n\n${parsedResponse.explanation}`,
+          )}**\n\n${explanation}`,
           createdAt: new Date().toISOString(),
         };
 

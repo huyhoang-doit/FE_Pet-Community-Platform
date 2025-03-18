@@ -10,3 +10,20 @@ export const chatbotAPI = async (breedName) => {
   })
   return response.data.data
 }
+
+export const recommendBreedsAPI = async (userPreferences, breedList) => {
+  const token = localStorage.getItem('access_token')
+  const response = await axios.post(
+    `${BASE_URL}/chatbot/recommend-breeds`, 
+    { 
+      userPreferences, 
+      breedList 
+    },
+    {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    }
+  )
+  return response.data.data
+}
