@@ -4,20 +4,22 @@ import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { setSelectedUser } from "@/redux/authSlice";
 import { Input } from "../ui/input";
 import { MessageCircleCode, ImagePlus, Loader2, SmilePlus } from "lucide-react";
-import { setMessages } from "@/redux/chatSlice";
+import { setMessages, setSurveyActive } from "@/redux/chatSlice";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { getChatUserAPI, getProfileByIdAPI } from "@/apis/user";
 import { sendMessageAPI, sendImageMessageAPI } from "@/apis/message";
 import { calculateTimeAgo } from "@/utils/calculateTimeAgo";
 import { Button } from "../ui/button";
 import Messages from "../features/messages/Messages";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 import {
   fetchAllAdoptionPostsByBreedAPI,
   getUserBehaviorAPI,
 } from "@/apis/post";
-import { getBreedsByIdAPI } from "@/apis/pet";
-import { chatbotAPI } from "@/apis/chatbot";
+import { getBreedsByIdAPI, getBreedsAPI } from "@/apis/pet";
 import EmojiPicker from "emoji-picker-react";
+
+const requiredKeywords = ["gợi ý", "thú cưng", "nhận nuôi", "loại pet"];
 
 const ChatPage = () => {
   const { id } = useParams();
@@ -25,7 +27,7 @@ const ChatPage = () => {
   const location = useLocation();
   const [textMessage, setTextMessage] = useState("");
   const { user, selectedUser } = useSelector((store) => store.auth);
-  const { onlineUsers, messages } = useSelector((store) => store.chat);
+  const { onlineUsers, messages, isSurveyActive } = useSelector((store) => store.chat);
   const dispatch = useDispatch();
   const [chatUsers, setChatUsers] = useState([]);
   const [userBehavior, setUserBehavior] = useState([]);
@@ -46,6 +48,49 @@ const ChatPage = () => {
       from: "ai-support",
     },
   };
+
+  const questions = [
+    {
+      id: 1,
+      text: "Bạn thích thú cưng có kích thước như thế nào?",
+      options: ["Nhỏ", "Trung bình", "Lớn"]
+    },
+    {
+      id: 2, 
+      text: "Bạn muốn thú cưng có mức độ hoạt động ra sao?",
+      options: ["Thấp (ít vận động)", "Trung bình", "Cao (rất năng động)"]
+    },
+    {
+      id: 3,
+      text: "Bạn có muốn thú cưng dễ huấn luyện không?",
+      options: ["Có (dễ)", "Trung bình", "Không (không quan trọng)"]
+    },
+    {
+      id: 4,
+      text: "Bạn có không gian ngoài trời rộng rãi không?",
+      options: ["Có (nhà vườn/sân lớn)", "Trung bình (sân nhỏ)", "Không (trong nhà)"]
+    },
+    {
+      id: 5,
+      text: "Bạn sống ở khí hậu như thế nào?",
+      options: ["Nóng (nhiệt đới)", "Lạnh (ôn đới)", "Trung bình (mát mẻ)"]
+    },
+    {
+      id: 6,
+      text: "Bạn có kinh nghiệm nuôi chó trước đây không?",
+      options: ["Có (đã nuôi)", "Không (lần đầu)"]
+    },
+    {
+      id: 7,
+      text: "Bạn muốn thú cưng có lông như thế nào?",
+      options: ["Ngắn (ít rụng)", "Trung bình", "Dài (rậm rạp)"]
+    },
+    {
+      id: 8,
+      text: "Bạn có trẻ nhỏ hoặc thú cưng khác trong nhà không?",
+      options: ["Có", "Không"]
+    }
+  ];
 
   useEffect(() => {
     const fetchChatUsers = async () => {
@@ -69,23 +114,45 @@ const ChatPage = () => {
     if (selectedUser?.id === "ai-support") {
       const fetchUserBehavior = async () => {
         try {
+          console.log("🔄 Fetching user behavior...");
           const res = await getUserBehaviorAPI();
+          console.log("📊 User behavior data:", res.data.data);
           setUserBehavior(res.data.data);
 
           const welcomeMessage = {
             _id: Date.now().toString(),
             senderId: "ai-support",
-            message:
-              "Xin chào! Tôi là AI Support. Bạn muốn tìm thú cưng như thế nào? (Ví dụ: cần gợi ý, cần thú cưng, cần nhận nuôi, cần loại pet,...). Tôi sẽ dựa vào sở thích của bạn để gợi ý!",
+            message: "Xin chào! Tôi là AI Support. Bạn muốn tìm thú cưng như thế nào? (Ví dụ: cần gợi ý, cần thú cưng, cần nhận nuôi, cần loại pet,...). Tôi sẽ dựa vào sở thích của bạn để gợi ý!",
             createdAt: new Date().toISOString(),
           };
+
+          const questionsAsked = JSON.parse(sessionStorage.getItem("questionsAsked")) || [];
+          const surveyCompleted = sessionStorage.getItem("surveyCompleted") === "true";
+          
+          console.log("📝 Current survey state:", {
+            questionsAsked,
+            surveyCompleted,
+            isSurveyActive
+          });
+
+          if (questionsAsked.length > 0 && !surveyCompleted) {
+            console.log("🔄 Resetting incomplete survey...");
+            sessionStorage.removeItem("questionsAsked");
+            sessionStorage.removeItem("userAnswers");
+            sessionStorage.removeItem("surveyCompleted");
+            dispatch(setSurveyActive(false));
+          }
+
           dispatch(setMessages([welcomeMessage]));
         } catch (error) {
-          console.error("Error fetching user behavior:", error);
+          console.error("❌ Error fetching user behavior:", error);
           setUserBehavior([]);
         }
       };
       fetchUserBehavior();
+    } else {
+      console.log("👤 Switching to user chat, clearing messages");
+      dispatch(setMessages([]));
     }
   }, [selectedUser, dispatch]);
 
@@ -204,189 +271,390 @@ const ChatPage = () => {
     }
   };
 
-  const sendMessageHandler = async (receiverId) => {
-    if (!textMessage.trim()) {
+  const sendMessageHandler = async (receiverId, messageOverride = null) => {
+    const effectiveMessage = messageOverride || textMessage;
+    if (!effectiveMessage.trim()) {
       console.log("Empty message, not sending");
       return;
     }
+
     try {
       if (receiverId === "ai-support") {
-        const newMessage = {
+        console.log("🤖 Processing AI message...");
+        
+        // Tạo tin nhắn của user trước
+        const userMessage = {
           _id: Date.now().toString() + "-user",
           senderId: user?.id,
-          message: textMessage,
+          message: effectiveMessage,
           createdAt: new Date().toISOString(),
         };
-        setTextMessage("");
-
-        dispatch(setMessages([...messages, newMessage]));
-
-        const userInput = textMessage.trim();
-        const selectedIndex = parseInt(userInput) || -1;
-
-        const lastAiMessage = messages.findLast(
-          (msg) => msg.senderId === "ai-support" && msg.suggestionButtons
+        
+        const hasRequiredKeyword = requiredKeywords.some(keyword => 
+          effectiveMessage.toLowerCase().includes(keyword.toLowerCase())
         );
+        console.log("🔍 Keyword check:", { hasRequiredKeyword, effectiveMessage });
 
-        if (
-          lastAiMessage?.suggestionButtons?.length &&
-          selectedIndex > 0 &&
-          selectedIndex <= lastAiMessage.suggestionButtons.length
-        ) {
-          const selectedPet =
-            lastAiMessage.suggestionButtons[selectedIndex - 1];
-
-          let breedName = "không xác định";
-          try {
-            const breedRes = await getBreedsByIdAPI(selectedPet.petBreed);
-            breedName = breedRes.data.data.name;
-          } catch (error) {
-            console.error("Lỗi lấy giống thú cưng:", error);
-          }
-          dispatch(
-            setMessages([
-              ...messages,
-              newMessage,
-              {
-                _id: "loading",
-                senderId: "ai-support",
-                message: "🔄 AI đang tìm kiếm thông tin chăm sóc...",
-              },
-            ])
-          );
-
-          const careInstructions = await chatbotAPI(breedName);
-
-          dispatch(
-            setMessages([
-              ...messages.filter((msg) => msg._id !== "loading"),
-              newMessage,
-              {
-                _id: Date.now().toString(),
-                senderId: "ai-support",
-                message: `
-                Bạn đã chọn **${selectedPet.petName}** tại ${selectedPet.location} (${selectedPet.adopt_status}). 
-                Đây là hướng dẫn chăm sóc cho giống **${breedName}**:\n${careInstructions}\n
-                Bạn muốn hỏi chi tiết hơn về phần nào không?
-              `,
-                createdAt: new Date().toISOString(),
-              },
-            ])
-          );
-          return;
-        }
-
-        const requiredKeywords = ["gợi ý", "thú cưng", "nhận nuôi", "loại pet"];
-        const lowerText = textMessage.toLowerCase();
-        const isValidPrompt = requiredKeywords.some((keyword) =>
-          lowerText.includes(keyword)
-        );
-
-        if (!isValidPrompt) {
-          const aiResponse = {
+        if (hasRequiredKeyword) {
+          console.log("🔄 Starting new survey due to keyword match");
+          sessionStorage.removeItem("questionsAsked");
+          sessionStorage.removeItem("userAnswers");
+          sessionStorage.removeItem("surveyCompleted");
+          
+          const resetMessage = {
             _id: Date.now().toString(),
             senderId: "ai-support",
-            message:
-              "Vui lòng nhập prompt liên quan đến gợi ý thú cưng nhận nuôi hoặc số thứ tự của thú cưng bạn muốn biết thêm!",
+            message: "Tôi sẽ giúp bạn tìm thú cưng phù hợp. Hãy trả lời một số câu hỏi nhé!",
             createdAt: new Date().toISOString(),
           };
-          dispatch(setMessages([...messages, newMessage, aiResponse]));
+          
+          const firstQuestion = {
+            _id: Date.now().toString() + "-question",
+            senderId: "ai-support",
+            message: questions[0].text,
+            createdAt: new Date().toISOString(),
+            suggestionButtons: questions[0].options.map((option, index) => ({
+              index: index + 1,
+              caption: option
+            }))
+          };
+
+          // Thêm userMessage vào messages
+          dispatch(setMessages([...messages, userMessage, resetMessage, firstQuestion]));
+          dispatch(setSurveyActive(true));
+          sessionStorage.setItem("questionsAsked", JSON.stringify([questions[0].text]));
           setTextMessage("");
           return;
         }
 
-        const breedIds = [
-          ...new Set(
-            userBehavior.map((behavior) => behavior?.postId?.pet?.breed)
-          ),
-        ];
-        if (breedIds.length === 0) {
-          throw new Error("Không có dữ liệu hành vi để gợi ý thú cưng.");
+        // Thêm userMessage vào messages trước khi xử lý các trường hợp khác
+        dispatch(setMessages([...messages, userMessage]));
+
+        dispatch(setSurveyActive(true));
+        
+        let questionsAsked = JSON.parse(sessionStorage.getItem("questionsAsked")) || [];
+        let userAnswers = JSON.parse(sessionStorage.getItem("userAnswers")) || {};
+        let breeds = JSON.parse(sessionStorage.getItem("breeds"));
+        const surveyCompleted = sessionStorage.getItem("surveyCompleted") === "true";
+
+        if (!breeds) {
+          const getAllPetsBreeds = await getBreedsAPI();
+          breeds = getAllPetsBreeds.data.data || [];
+          sessionStorage.setItem("breeds", JSON.stringify(breeds));
         }
 
-        const allPosts = [];
-        for (const breedId of breedIds) {
-          const postsData = await fetchAllAdoptionPostsByBreedAPI(1, breedId);
-          console.log(
-            "🚀 ~ sendMessageHandler ~ postsData:",
-            postsData.data.data.results
-          );
-          allPosts.push(...(postsData.data.data?.results || []));
+        if (!surveyCompleted && questionsAsked.length < questions.length) {
+          dispatch(setSurveyActive(true));
+          
+          const userMessage = {
+            _id: Date.now().toString() + "-user",
+            senderId: user?.id,
+            message: effectiveMessage,
+            createdAt: new Date().toISOString(),
+          };
+          
+          if (questionsAsked.length > 0) {
+            userAnswers[questionsAsked[questionsAsked.length - 1]] = effectiveMessage.trim();
+            sessionStorage.setItem("userAnswers", JSON.stringify(userAnswers));
+          }
+
+          const nextQuestion = questions[questionsAsked.length];
+          questionsAsked.push(nextQuestion.text);
+          sessionStorage.setItem("questionsAsked", JSON.stringify(questionsAsked));
+
+          const aiResponse = {
+            _id: Date.now().toString(),
+            senderId: "ai-support",
+            message: nextQuestion.text,
+            createdAt: new Date().toISOString(),
+            suggestionButtons: nextQuestion.options.map((option, index) => ({
+              index: index + 1,
+              caption: option
+            }))
+          };
+
+          dispatch(setMessages([...messages, userMessage, aiResponse]));
+          setTextMessage("");
+          return;
         }
 
-        console.log("Post list:", allPosts);
+        if (!surveyCompleted && questionsAsked.length === questions.length) {
+          console.log("📋 Processing final survey answer:", {
+            userAnswers,
+            questionsAsked
+          });
 
-        const aiResponseText =
-          allPosts.length > 0
-            ? "Dựa trên sở thích của bạn, đây là những thú cưng có thể phù hợp:\n"
-            : "Hiện tại tôi không tìm thấy thú cưng nào phù hợp. Bạn có thể thử tìm kiếm giống khác.";
+          const userMessage = {
+            _id: Date.now().toString() + "-user",
+            senderId: user?.id,
+            message: effectiveMessage,
+            createdAt: new Date().toISOString(),
+          };
 
-        const suggestionButtons = allPosts.map((post, index) => ({
-          index: index + 1,
-          caption: post.caption || "Không có tiêu đề",
-          location: post.location || "Không rõ vị trí",
-          adopt_status: post.adopt_status || "Không rõ trạng thái",
-          petName: post.pet?.name || "Không xác định",
-          url: `${window.location.origin}/adoptDetail/${post._id}`,
-          petBreed: post.pet?.breed || "Không xác định",
-        }));
+          userAnswers[questionsAsked[questionsAsked.length - 1]] = effectiveMessage.trim();
+          sessionStorage.setItem("userAnswers", JSON.stringify(userAnswers));
 
-        const petListText = suggestionButtons
-          .map(
-            (btn) =>
-              `${btn.index}. ${btn.petName} - ${btn.location} (${btn.adopt_status})`
-          )
-          .join("\n");
+          const userBehaviorRes = await getUserBehaviorAPI();
+          const userBehavior = userBehaviorRes.data.data || [];
 
-        const finalMessage =
-          aiResponseText +
-          petListText +
-          "\n\nBạn muốn biết thêm về thú cưng nào? Hãy nhập số thứ tự!";
+          const userPreferences = `
+            Kích thước: ${userAnswers[questions[0].text]}
+            Mức độ hoạt động: ${userAnswers[questions[1].text]}
+            Dễ huấn luyện: ${userAnswers[questions[2].text]}
+            Không gian ngoài trời: ${userAnswers[questions[3].text]}
+            Khí hậu: ${userAnswers[questions[4].text]}
+            Kinh nghiệm nuôi chó: ${userAnswers[questions[5].text]}
+            Độ dài lông: ${userAnswers[questions[6].text]}
+            Có trẻ nhỏ/thú cưng khác: ${userAnswers[questions[7].text]}
+          `;
 
-        const aiResponse = {
-          _id: Date.now().toString(),
-          senderId: "ai-support",
-          message: finalMessage,
-          createdAt: new Date().toISOString(),
-          suggestionButtons,
-        };
+          const breedList = breeds.map(breed => breed.name);
 
-        dispatch(setMessages([...messages, newMessage, aiResponse]));
-      } else {
-        const messageData = {
-          text: textMessage,
-          metadata: location.state?.fromPost
-            ? {
-                type: "adoption_post",
-                postId: location.state.postId,
-                postTitle: location.state.postTitle,
-                petName: location.state.petName,
-                location: location.state.location,
+          const prompt = `
+            Dựa trên các tiêu chí người dùng mong muốn:
+            ${userPreferences}
+
+            Và danh sách giống chó hiện có:
+            ${breedList.join(", ")}
+
+            Hãy phân tích và chọn ra TOP 3 giống chó phù hợp nhất với người dùng.
+            Trả về JSON với định dạng sau:
+            {
+              "breeds": ["Tên giống 1", "Tên giống 2", "Tên giống 3"],
+              "explanation": "Giải thích ngắn gọn lý do chọn các giống này"
+            }
+          `;
+
+          console.log("🤖 Sending prompt to Gemini:", prompt);
+
+          dispatch(setMessages([
+            ...messages,
+            userMessage,
+            { _id: "loading", senderId: "ai-support", message: "🔄 AI đang phân tích sở thích của bạn..." }
+          ]));
+
+          try {
+            const genAI = new GoogleGenerativeAI(import.meta.env.VITE_APP_GEMINI_API_KEY);
+            const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+            const result = await model.generateContent(prompt);
+            const responseText = result.response.text();
+            
+            const jsonMatch = responseText.match(/\{.*?\}/s);
+            if (!jsonMatch) {
+              throw new Error("Không tìm thấy JSON trong phản hồi từ Gemini");
+            }
+
+            const parsedResponse = JSON.parse(jsonMatch[0]);
+            const recommendedBreeds = parsedResponse.breeds;
+
+            // Tạo message cho phản hồi từ Gemini
+            const geminiResponse = {
+              _id: Date.now().toString(),
+              senderId: "ai-support",
+              message: `Dựa trên sở thích của bạn, tôi đề xuất các giống chó sau:\n\n**${parsedResponse.breeds.join(", ")}**\n\n${parsedResponse.explanation}`,
+              createdAt: new Date().toISOString(),
+            };
+
+            // Tìm bài post phù hợp
+            const allPosts = [];
+            for (const breedName of recommendedBreeds) {
+              const breed = breeds.find(b => b.name.toLowerCase() === breedName.toLowerCase());
+              if (breed) {
+                const postsData = await fetchAllAdoptionPostsByBreedAPI(1, breed._id);
+                allPosts.push(...(postsData.data.data?.results || []));
               }
-            : null,
-        };
+            }
 
-        const { data } = await sendMessageAPI(
-          receiverId,
-          JSON.stringify(messageData)
-        );
+            // Tạo message cho danh sách bài post
+            let postsResponse;
+            if (allPosts.length > 0) {
+              postsResponse = {
+                _id: Date.now().toString() + "-posts",
+                senderId: "ai-support",
+                message: `Đây là các bài đăng nhận nuôi phù hợp:\n\n${
+                  allPosts.map((post, index) => 
+                    `${index + 1}. ${post.pet?.name || 'Không xác định'} - ${post.location || 'Không rõ vị trí'} (${post.adopt_status || 'Không rõ trạng thái'})`
+                  ).join('\n')
+                }\n\nBạn muốn biết thêm về thú cưng nào? Hãy nhập số thứ tự!`,
+                createdAt: new Date().toISOString(),
+                suggestionButtons: allPosts.map((post, index) => ({
+                  index: index + 1,
+                  caption: post.caption || "Không có tiêu đề",
+                  location: post.location || "Không rõ vị trí",
+                  adopt_status: post.adopt_status || "Không rõ trạng thái",
+                  petName: post.pet?.name || "Không xác định",
+                  url: `${window.location.origin}/adoptDetail/${post._id}`,
+                  petBreed: post.pet?.breed || "Không xác định",
+                }))
+              };
+            } else {
+              // Tìm từ user behavior
+              const breedIds = [...new Set(userBehavior.map(behavior => behavior?.postId?.pet?.breed).filter(Boolean))];
+              let behaviorPosts = [];
+              
+              for (const breedId of breedIds) {
+                try {
+                  const postsData = await fetchAllAdoptionPostsByBreedAPI(1, breedId);
+                  if (postsData?.data?.data?.results) {
+                    behaviorPosts.push(...postsData.data.data.results);
+                  }
+                } catch (error) {
+                  console.error("Error fetching posts for breed:", breedId, error);
+                }
+              }
+
+              if (behaviorPosts.length > 0) {
+                postsResponse = {
+                  _id: Date.now().toString() + "-behavior",
+                  senderId: "ai-support",
+                  message: `Dựa trên lịch sử tương tác của bạn, tôi tìm thấy một số bài viết có thể phù hợp:\n\n${
+                    behaviorPosts.map((post, index) => 
+                      `${index + 1}. ${post.pet?.name || 'Không xác định'} - ${post.location || 'Không rõ vị trí'} (${post.adopt_status || 'Không rõ trạng thái'})`
+                    ).join('\n')
+                  }\n\nBạn muốn biết thêm về thú cưng nào? Hãy nhập số thứ tự!`,
+                  createdAt: new Date().toISOString(),
+                  suggestionButtons: behaviorPosts.map((post, index) => ({
+                    index: index + 1,
+                    caption: post.caption || "Không có tiêu đề",
+                    location: post.location || "Không rõ vị trí",
+                    adopt_status: post.adopt_status || "Không rõ trạng thái",
+                    petName: post.pet?.name || "Không xác định",
+                    url: `${window.location.origin}/adoptDetail/${post._id}`,
+                    petBreed: post.pet?.breed || "Không xác định",
+                  }))
+                };
+              }
+            }
+
+            // Dispatch tất cả messages cùng lúc, bao gồm cả tin nhắn của user
+            const newMessages = [
+              ...messages.filter(msg => msg._id !== "loading"), 
+              userMessage,  // Thêm tin nhắn của user
+              geminiResponse
+            ];
+            if (postsResponse) {
+              newMessages.push(postsResponse);
+            }
+            dispatch(setMessages(newMessages));
+
+            sessionStorage.setItem("surveyCompleted", "true");
+            dispatch(setSurveyActive(false));
+            setTextMessage("");
+            return;
+
+          } catch (error) {
+            console.error("❌ Error in sendMessageHandler:", error);
+            dispatch(setMessages([
+              ...messages.filter(msg => msg._id !== "loading"),
+              {
+                _id: Date.now().toString(),
+                senderId: "ai-support",
+                message: "Có lỗi xảy ra khi phân tích. Vui lòng thử lại!",
+                createdAt: new Date().toISOString(),
+              }
+            ]));
+          }
+
+          sessionStorage.setItem("surveyCompleted", "true");
+          dispatch(setSurveyActive(false));
+          setTextMessage("");
+          return;
+        }
+
+        if (surveyCompleted) {
+          // Tạo tin nhắn của user trước
+          const userMessage = {
+            _id: Date.now().toString() + "-user",
+            senderId: user?.id,
+            message: effectiveMessage,
+            createdAt: new Date().toISOString(),
+          };
+
+          const lastAiMessage = messages.findLast((msg) => msg.senderId === "ai-support" && msg.suggestionButtons);
+          if (lastAiMessage && lastAiMessage.suggestionButtons) {
+            const selectedIndex = parseInt(effectiveMessage) || -1;
+            if (selectedIndex > 0 && selectedIndex <= lastAiMessage.suggestionButtons.length) {
+              const selectedPet = lastAiMessage.suggestionButtons[selectedIndex - 1];
+
+              let breedName = "không xác định";
+              try {
+                const breedRes = await getBreedsByIdAPI(selectedPet.petBreed);
+                breedName = breedRes.data.data.name;
+              } catch (error) {
+                console.error("Lỗi lấy giống thú cưng:", error);
+              }
+
+              dispatch(setMessages([
+                ...messages,
+                userMessage, // Thêm tin nhắn của user
+                { _id: "loading", senderId: "ai-support", message: "🔄 AI đang tìm kiếm thông tin chăm sóc..." },
+              ]));
+
+              const carePrompt = `Hãy cung cấp hướng dẫn chăm sóc chi tiết cho giống thú cưng "${breedName}" ở định dạng Markdown, với các tiêu đề rõ ràng (##, ###), danh sách gạch đầu dòng (-), và in đậm các từ khóa quan trọng (**text**).`;
+              let careInstructions;
+
+              try {
+                const genAI = new GoogleGenerativeAI(import.meta.env.VITE_APP_GEMINI_API_KEY);
+                const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+                const result = await model.generateContent(carePrompt);
+                careInstructions = result.response.text();
+
+                dispatch(setMessages([
+                  ...messages.filter((msg) => msg._id !== "loading"),
+                  userMessage, // Thêm tin nhắn của user
+                  {
+                    _id: Date.now().toString(),
+                    senderId: "ai-support",
+                    message: `Bạn đã chọn **${selectedPet.petName}** tại ${selectedPet.location} (${selectedPet.adopt_status}). Đây là hướng dẫn chăm sóc cho giống **${breedName}**:\n${careInstructions}\nBạn muốn hỏi chi tiết hơn về phần nào không? (Ví dụ: dinh dưỡng, vận động, huấn luyện, v.v.)`,
+                    createdAt: new Date().toISOString(),
+                  },
+                ]));
+                setTextMessage("");
+                dispatch(setSurveyActive(false));
+                return;
+              } catch (error) {
+                console.error("Error getting care instructions:", error);
+                dispatch(setMessages([
+                  ...messages.filter((msg) => msg._id !== "loading"),
+                  userMessage, // Thêm tin nhắn của user
+                  {
+                    _id: Date.now().toString(),
+                    senderId: "ai-support",
+                    message: "Xin lỗi, tôi không thể lấy thông tin chăm sóc lúc này. Vui lòng thử lại sau!",
+                    createdAt: new Date().toISOString(),
+                  },
+                ]));
+              }
+            }
+          }
+
+          // Nếu không phải là lựa chọn hợp lệ
+          dispatch(setMessages([
+            ...messages,
+            userMessage, // Thêm tin nhắn của user
+            {
+              _id: Date.now().toString(),
+              senderId: "ai-support",
+              message: "Vui lòng chọn số hợp lệ từ danh sách hoặc hỏi chi tiết về chăm sóc!",
+              createdAt: new Date().toISOString(),
+            },
+          ]));
+          setTextMessage("");
+          dispatch(setSurveyActive(false));
+          return;
+        }
+
+      } else {
+        const { data } = await sendMessageAPI(receiverId, effectiveMessage);
         if (!data?.success) {
           throw new Error("Message send failed");
         }
-        console.log("🚀 ~ sendMessageHandler ~ data:", data);
-        dispatch(
-          setMessages([
-            ...messages,
-            {
-              ...data.newMessage,
-              message: JSON.stringify(messageData),
-            },
-          ])
-        );
+        dispatch(setMessages([...messages, data.newMessage]));
+        dispatch(setSurveyActive(false));
+        setTextMessage("");
       }
-      setTextMessage("");
     } catch (error) {
-      console.error("Send message error:", error);
+      console.error("❌ Error in sendMessageHandler:", error);
       const errorMessage = {
         _id: Date.now().toString(),
         senderId: "ai-support",
@@ -566,9 +834,13 @@ const ChatPage = () => {
               </Button>
             )}
           </div>
-          <Messages selectedUser={selectedUser} postInfo={location.state} />
-          <div className="flex items-center p-4 border-t border-t-gray-300">
-            <div className="relative mr-2" style={{ width: "89%" }}>
+          <Messages selectedUser={selectedUser} postInfo={location.state} sendMessageHandler={sendMessageHandler}
+        setTextMessage={setTextMessage} />
+          <div
+            className="flex items-center p-4 border-t border-t-gray-300"
+          >
+            <div className="relative mr-2" 
+            style={{ width: "89%" }}>
               <div
                 className={`absolute z-10 transition-all duration-300 ease-in-out ${
                   emojiPicker
@@ -586,7 +858,12 @@ const ChatPage = () => {
                 value={textMessage}
                 type="text"
                 className="w-full focus-visible:ring-transparent"
-                placeholder="Nhắn tin..."
+                placeholder={
+                  selectedUser.id === "ai-support" && isSurveyActive
+                    ? "Vui lòng bấm vào button để trả lời"
+                    : "Nhắn tin..."
+                }
+                disabled={selectedUser.id === "ai-support" && isSurveyActive}
                 onKeyDown={(e) => {
                   if (e.key === "Enter") {
                     e.preventDefault();

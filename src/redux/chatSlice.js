@@ -5,6 +5,7 @@ const chatSlice = createSlice({
     initialState:{
         onlineUsers:[],
         messages:[],
+        isSurveyActive: false,
     },
     reducers:{
         // actions
@@ -13,8 +14,11 @@ const chatSlice = createSlice({
         },
         setMessages:(state,action) => {
             state.messages = action.payload;
-        }
+        },
+        setSurveyActive: (state, action) => { 
+            state.isSurveyActive = action.payload;
+        },
     }
 });
-export const {setOnlineUsers, setMessages} = chatSlice.actions;
+export const {setOnlineUsers, setMessages, setSurveyActive} = chatSlice.actions;
 export default chatSlice.reducer;
