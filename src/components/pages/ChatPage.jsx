@@ -454,15 +454,15 @@ const ChatPage = () => {
                 : "hover:bg-gray-50"
             }`}
           >
-            <div className="relative">
+            <div className="flex items-center">
               <Avatar
                 className="w-14 h-14"
-                style={{ border: "1px solid #e0e0e0" }}
+                style={{ border: "1px solid #e0e0e0", position: "static" }}
               >
                 <AvatarImage src={aiUser.profilePicture} />
                 <AvatarFallback>AI</AvatarFallback>
               </Avatar>
-              <span className="absolute bottom-0 right-0 w-4 h-4 bg-green-500 border-2 border-white rounded-full"></span>
+              <span className="w-4 h-4 bg-green-500 border-2 border-white rounded-full ml-[-10px] mt-8"></span>
             </div>
             <div className="flex flex-col">
               <span className="text-sm font-semibold">{aiUser.username}</span>
@@ -480,16 +480,16 @@ const ChatPage = () => {
                   isSelected ? "bg-gray-100" : "hover:bg-gray-50"
                 }`}
               >
-                <div className="relative">
+                <div className="flex items-center">
                   <Avatar
                     className="w-14 h-14"
-                    style={{ border: "1px solid #e0e0e0" }}
+                    style={{ border: "1px solid #e0e0e0", position: "static" }}
                   >
                     <AvatarImage src={suggestedUser?.profilePicture} />
                     <AvatarFallback>CN</AvatarFallback>
                   </Avatar>
                   {isOnline && (
-                    <span className="absolute bottom-0 right-0 w-4 h-4 bg-green-500 border-2 border-white rounded-full"></span>
+                    <span className="w-4 h-4 bg-green-500 border-2 border-white rounded-full ml-[-10px] mt-8"></span>
                   )}
                 </div>
                 <div className="flex flex-col">
@@ -567,11 +567,8 @@ const ChatPage = () => {
             )}
           </div>
           <Messages selectedUser={selectedUser} postInfo={location.state} />
-          <div
-            className="flex items-center p-4 border-t border-t-gray-300"
-          >
-            <div className="relative mr-2" 
-            style={{ width: "89%" }}>
+          <div className="flex items-center p-4 border-t border-t-gray-300">
+            <div className="relative mr-2" style={{ width: "89%" }}>
               <div
                 className={`absolute z-10 transition-all duration-300 ease-in-out ${
                   emojiPicker
