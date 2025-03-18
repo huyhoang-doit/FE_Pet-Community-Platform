@@ -94,16 +94,35 @@ const Messages = ({ selectedUser, sendMessageHandler }) => {
   };
 
   const renderMessage = (msg, index, messages) => {
-    const nextMsg = index < messages.length - 1 ? messages[index + 1] : null;
+    // Xử lý JSON trong message
+    let parsedMessage;
+    try {
+      parsedMessage = JSON.parse(msg.message);
+      if (typeof parsedMessage === "number")
+        parsedMessage = { text: String(parsedMessage) };
+    } catch (e) {
+      parsedMessage = { text: String(msg.message) };
+    }
+    const {
+      text: messageContent,
+      metadata,
+      image: imageUrl,
+      type: messageType,
+      loadingText,
+    } = parsedMessage;
+
+    const isSender = msg.senderId === user?.id;
     const showAvatar =
-      msg.senderId !== user?.id && (!nextMsg || nextMsg.senderId !== msg.senderId);
+      msg.senderId !== user?.id &&
+      messages[index + 1]?.senderId !== msg.senderId;
+    const lastAiMessage = messages
+      .filter((m) => m.senderId === "ai-support" && m.suggestionButtons)
+      .pop()?._id;
+
     const isLastAiMessageWithButtons =
       msg.senderId === "ai-support" &&
       msg.suggestionButtons &&
-      msg._id ===
-        messages
-          .filter((m) => m.senderId === "ai-support" && m.suggestionButtons)
-          .slice(-1)[0]?._id;
+      msg._id === lastAiMessage;
 
     // Xử lý loading message
     if (msg._id === "loading") {
@@ -112,7 +131,7 @@ const Messages = ({ selectedUser, sendMessageHandler }) => {
           <div className="w-8 h-8" />
           <div className="flex items-center gap-2 p-2 rounded-lg bg-gray-200">
             <Loader2 className="h-4 w-4 animate-spin" />
-            <span>{msg.message}</span>
+            <span>{loadingText || messageContent}</span>
           </div>
         </div>
       );
@@ -122,10 +141,10 @@ const Messages = ({ selectedUser, sendMessageHandler }) => {
       <div key={msg._id} className="flex flex-col">
         <div
           className={`flex items-end gap-2 ${
-            msg.senderId === user?.id ? "justify-end" : "justify-start"
+            isSender ? "justify-end" : "justify-start"
           }`}
         >
-          {msg.senderId !== user?.id && (
+          {!isSender && (
             <div className="w-8 h-8 flex-shrink-0">
               {showAvatar ? (
                 <img
@@ -141,33 +160,52 @@ const Messages = ({ selectedUser, sendMessageHandler }) => {
           )}
           <div
             className={`p-3 rounded-lg max-w-[70%] break-words ${
-              msg.senderId === user?.id
+              isSender
                 ? "bg-blue-500 text-white ml-auto"
                 : "bg-gray-200 text-black"
-            }`}
+            } ${messageType === "image" ? "p-1" : ""}`}
           >
-            <div className="markdown-content prose prose-sm max-w-none">
-              <ReactMarkdown
-                components={{
-                  strong: ({ node, ...props }) => (
-                    <span className="font-bold text-red-500" {...props} />
-                  ),
-                  p: ({ node, ...props }) => (
-                    <p className="mb-1 last:mb-0" {...props} />
-                  ),
-                }}
-              >
-                {msg.message}
-              </ReactMarkdown>
-            </div>
+            {messageType === "image" ? (
+              <div className="relative group">
+                <img
+                  src={imageUrl}
+                  alt="Sent image"
+                  className="max-w-[200px] rounded-lg cursor-pointer hover:opacity-90"
+                  onClick={() => window.open(imageUrl, "_blank")}
+                />
+                <Button
+                  size="icon"
+                  variant="ghost"
+                  className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleDownloadImage(imageUrl);
+                  }}
+                >
+                  <Download className="h-4 w-4" />
+                </Button>
+              </div>
+            ) : (
+              <div className="markdown-content prose prose-sm max-w-none">
+                <ReactMarkdown
+                  components={{
+                    strong: ({ ...props }) => (
+                      <span className="font-bold text-red-500" {...props} />
+                    ),
+                    p: ({ ...props }) => (
+                      <p className="mb-1 last:mb-0" {...props} />
+                    ),
+                  }}
+                >
+                  {String(messageContent)}
+                </ReactMarkdown>
+              </div>
+            )}
           </div>
         </div>
 
         {/* Render post link nếu có */}
-        {renderPostLink(
-          msg.metadata,
-          msg.senderId === user?.id
-        )}
+        {metadata && renderPostLink(metadata, isSender)}
 
         {/* Hiển thị nút gợi ý */}
         {msg.senderId === "ai-support" && msg.suggestionButtons && (
@@ -184,9 +222,11 @@ const Messages = ({ selectedUser, sendMessageHandler }) => {
                 size="sm"
                 className={`
                   text-sm hover:bg-gray-200 
-                  ${!isLastAiMessageWithButtons 
-                    ? "opacity-50 cursor-not-allowed" 
-                    : ""}
+                  ${
+                    !isLastAiMessageWithButtons
+                      ? "opacity-50 cursor-not-allowed"
+                      : ""
+                  }
                 `}
                 disabled={!isLastAiMessageWithButtons}
               >
@@ -245,7 +285,8 @@ const Messages = ({ selectedUser, sendMessageHandler }) => {
       )}
 
       <div className="flex flex-col gap-3">
-        {messages && messages.map((msg, index) => renderMessage(msg, index, messages))}
+        {messages &&
+          messages.map((msg, index) => renderMessage(msg, index, messages))}
         <div ref={messagesEndRef} />
       </div>
     </div>
