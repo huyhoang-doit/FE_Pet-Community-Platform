@@ -282,6 +282,14 @@ const ChatPage = () => {
       if (receiverId === "ai-support") {
         console.log("🤖 Processing AI message...");
         
+        // Tạo tin nhắn của user trước
+        const userMessage = {
+          _id: Date.now().toString() + "-user",
+          senderId: user?.id,
+          message: effectiveMessage,
+          createdAt: new Date().toISOString(),
+        };
+        
         const hasRequiredKeyword = requiredKeywords.some(keyword => 
           effectiveMessage.toLowerCase().includes(keyword.toLowerCase())
         );
@@ -311,12 +319,16 @@ const ChatPage = () => {
             }))
           };
 
-          dispatch(setMessages([...messages, resetMessage, firstQuestion]));
+          // Thêm userMessage vào messages
+          dispatch(setMessages([...messages, userMessage, resetMessage, firstQuestion]));
           dispatch(setSurveyActive(true));
           sessionStorage.setItem("questionsAsked", JSON.stringify([questions[0].text]));
           setTextMessage("");
           return;
         }
+
+        // Thêm userMessage vào messages trước khi xử lý các trường hợp khác
+        dispatch(setMessages([...messages, userMessage]));
 
         dispatch(setSurveyActive(true));
         
@@ -333,6 +345,13 @@ const ChatPage = () => {
 
         if (!surveyCompleted && questionsAsked.length < questions.length) {
           dispatch(setSurveyActive(true));
+          
+          const userMessage = {
+            _id: Date.now().toString() + "-user",
+            senderId: user?.id,
+            message: effectiveMessage,
+            createdAt: new Date().toISOString(),
+          };
           
           if (questionsAsked.length > 0) {
             userAnswers[questionsAsked[questionsAsked.length - 1]] = effectiveMessage.trim();
@@ -354,7 +373,7 @@ const ChatPage = () => {
             }))
           };
 
-          dispatch(setMessages([...messages, aiResponse]));
+          dispatch(setMessages([...messages, userMessage, aiResponse]));
           setTextMessage("");
           return;
         }
@@ -364,6 +383,13 @@ const ChatPage = () => {
             userAnswers,
             questionsAsked
           });
+
+          const userMessage = {
+            _id: Date.now().toString() + "-user",
+            senderId: user?.id,
+            message: effectiveMessage,
+            createdAt: new Date().toISOString(),
+          };
 
           userAnswers[questionsAsked[questionsAsked.length - 1]] = effectiveMessage.trim();
           sessionStorage.setItem("userAnswers", JSON.stringify(userAnswers));
@@ -403,6 +429,7 @@ const ChatPage = () => {
 
           dispatch(setMessages([
             ...messages,
+            userMessage,
             { _id: "loading", senderId: "ai-support", message: "🔄 AI đang phân tích sở thích của bạn..." }
           ]));
 
@@ -499,8 +526,12 @@ const ChatPage = () => {
               }
             }
 
-            // Dispatch tất cả messages cùng lúc
-            const newMessages = [...messages.filter(msg => msg._id !== "loading"), geminiResponse];
+            // Dispatch tất cả messages cùng lúc, bao gồm cả tin nhắn của user
+            const newMessages = [
+              ...messages.filter(msg => msg._id !== "loading"), 
+              userMessage,  // Thêm tin nhắn của user
+              geminiResponse
+            ];
             if (postsResponse) {
               newMessages.push(postsResponse);
             }
@@ -531,12 +562,20 @@ const ChatPage = () => {
         }
 
         if (surveyCompleted) {
+          // Tạo tin nhắn của user trước
+          const userMessage = {
+            _id: Date.now().toString() + "-user",
+            senderId: user?.id,
+            message: effectiveMessage,
+            createdAt: new Date().toISOString(),
+          };
+
           const lastAiMessage = messages.findLast((msg) => msg.senderId === "ai-support" && msg.suggestionButtons);
           if (lastAiMessage && lastAiMessage.suggestionButtons) {
             const selectedIndex = parseInt(effectiveMessage) || -1;
             if (selectedIndex > 0 && selectedIndex <= lastAiMessage.suggestionButtons.length) {
               const selectedPet = lastAiMessage.suggestionButtons[selectedIndex - 1];
-  
+
               let breedName = "không xác định";
               try {
                 const breedRes = await getBreedsByIdAPI(selectedPet.petBreed);
@@ -544,90 +583,62 @@ const ChatPage = () => {
               } catch (error) {
                 console.error("Lỗi lấy giống thú cưng:", error);
               }
-  
+
               dispatch(setMessages([
                 ...messages,
+                userMessage, // Thêm tin nhắn của user
                 { _id: "loading", senderId: "ai-support", message: "🔄 AI đang tìm kiếm thông tin chăm sóc..." },
               ]));
-  
+
               const carePrompt = `Hãy cung cấp hướng dẫn chăm sóc chi tiết cho giống thú cưng "${breedName}" ở định dạng Markdown, với các tiêu đề rõ ràng (##, ###), danh sách gạch đầu dòng (-), và in đậm các từ khóa quan trọng (**text**).`;
               let careInstructions;
-  
+
               try {
                 const genAI = new GoogleGenerativeAI(import.meta.env.VITE_APP_GEMINI_API_KEY);
                 const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
                 const result = await model.generateContent(carePrompt);
                 careInstructions = result.response.text();
-              } catch (geminiError) {
-                console.error("Gemini API error:", geminiError);
-                careInstructions = `
-                  Hiện tại không thể lấy thông tin chăm sóc từ Gemini. Dưới đây là hướng dẫn cơ bản mặc định:\n
-                  - **Dinh dưỡng**: Cho ăn thức ăn chất lượng cao, phù hợp với kích thước và độ tuổi.\n
-                  - **Vệ sinh**: Tắm 1-2 lần/tháng, chải lông thường xuyên.\n
-                  - **Vận động**: Dắt đi dạo 20-30 phút/ngày.\n
-                  - **Sức khỏe**: Khám thú y định kỳ.\n
-                  - **Môi trường**: Chuẩn bị chỗ nghỉ sạch sẽ, thoáng mát.`;
+
+                dispatch(setMessages([
+                  ...messages.filter((msg) => msg._id !== "loading"),
+                  userMessage, // Thêm tin nhắn của user
+                  {
+                    _id: Date.now().toString(),
+                    senderId: "ai-support",
+                    message: `Bạn đã chọn **${selectedPet.petName}** tại ${selectedPet.location} (${selectedPet.adopt_status}). Đây là hướng dẫn chăm sóc cho giống **${breedName}**:\n${careInstructions}\nBạn muốn hỏi chi tiết hơn về phần nào không? (Ví dụ: dinh dưỡng, vận động, huấn luyện, v.v.)`,
+                    createdAt: new Date().toISOString(),
+                  },
+                ]));
+                setTextMessage("");
+                dispatch(setSurveyActive(false));
+                return;
+              } catch (error) {
+                console.error("Error getting care instructions:", error);
+                dispatch(setMessages([
+                  ...messages.filter((msg) => msg._id !== "loading"),
+                  userMessage, // Thêm tin nhắn của user
+                  {
+                    _id: Date.now().toString(),
+                    senderId: "ai-support",
+                    message: "Xin lỗi, tôi không thể lấy thông tin chăm sóc lúc này. Vui lòng thử lại sau!",
+                    createdAt: new Date().toISOString(),
+                  },
+                ]));
               }
-  
-              dispatch(setMessages([
-                ...messages.filter((msg) => msg._id !== "loading"),
-                {
-                  _id: Date.now().toString(),
-                  senderId: "ai-support",
-                  message: `Bạn đã chọn **${selectedPet.petName}** tại ${selectedPet.location} (${selectedPet.adopt_status}). Đây là hướng dẫn chăm sóc cho giống **${breedName}**:\n${careInstructions}\nBạn muốn hỏi chi tiết hơn về phần nào không? (Ví dụ: dinh dưỡng, vận động, huấn luyện, v.v.)`,
-                  createdAt: new Date().toISOString(),
-                },
-              ]));
-              setTextMessage("");
-              dispatch(setSurveyActive(false)); // Đảm bảo khung chat enable
-              return;
             }
           }
-  
-          const lastCareMessage = messages.findLast((msg) => msg.senderId === "ai-support" && msg.message.includes("Đây là hướng dẫn chăm sóc"));
-          if (lastCareMessage) {
-            const breedNameMatch = lastCareMessage.message.match(/giống \*\*(.*?)\*\*/);
-            const breedName = breedNameMatch ? breedNameMatch[1] : "Không xác định";
-  
-            dispatch(setMessages([
-              ...messages,
-              { _id: "loading", senderId: "ai-support", message: "🔄 AI đang tìm kiếm thông tin chi tiết..." },
-            ]));
-  
-            const detailPrompt = `Hãy cung cấp thông tin chi tiết về "${effectiveMessage}" cho giống thú cưng "${breedName}" ở định dạng Markdown, với các tiêu đề rõ ràng (##, ###), danh sách gạch đầu dòng (-), và in đậm các từ khóa quan trọng (**text**). Nếu không rõ ý người dùng, hãy hỏi lại.`;
-            let detailedResponse;
-  
-            try {
-              const genAI = new GoogleGenerativeAI(import.meta.env.VITE_APP_GEMINI_API_KEY);
-              const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-              const result = await model.generateContent(detailPrompt);
-              detailedResponse = result.response.text();
-            } catch (geminiError) {
-              console.error("Gemini API error:", geminiError);
-              detailedResponse = `Rất tiếc, tôi không thể lấy thông tin chi tiết vào lúc này. Vui lòng hỏi lại bằng cách cụ thể hơn (ví dụ: "Chế độ ăn uống cho ${breedName}")!`;
-            }
-  
-            dispatch(setMessages([
-              ...messages.filter((msg) => msg._id !== "loading"),
-              {
-                _id: Date.now().toString(),
-                senderId: "ai-support",
-                message: detailedResponse,
-                createdAt: new Date().toISOString(),
-              },
-            ]));
-            setTextMessage("");
-            dispatch(setSurveyActive(false)); 
-            return;
-          }
-  
-          const errorResponse = {
-            _id: Date.now().toString(),
-            senderId: "ai-support",
-            message: "Vui lòng chọn số hợp lệ từ danh sách hoặc hỏi chi tiết về chăm sóc!",
-            createdAt: new Date().toISOString(),
-          };
-          dispatch(setMessages([...messages, errorResponse]));
+
+          // Nếu không phải là lựa chọn hợp lệ
+          dispatch(setMessages([
+            ...messages,
+            userMessage, // Thêm tin nhắn của user
+            {
+              _id: Date.now().toString(),
+              senderId: "ai-support",
+              message: "Vui lòng chọn số hợp lệ từ danh sách hoặc hỏi chi tiết về chăm sóc!",
+              createdAt: new Date().toISOString(),
+            },
+          ]));
           setTextMessage("");
           dispatch(setSurveyActive(false));
           return;
