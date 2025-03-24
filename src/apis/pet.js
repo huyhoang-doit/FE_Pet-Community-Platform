@@ -59,3 +59,13 @@ export const getPetByIdAPI = async (breedId) => {
     `${BASE_URL}/pets/detail/${breedId}`
   );
 };
+export const getPetBySubmittedIdAPI = async (
+  userId,
+  page,
+  limit,
+  sortBy = "createdAt:desc"
+) => {
+  return await authorizedAxiosInstance.get(
+    `${BASE_URL}/pets/submitted/${userId}?limit=${limit}&page=${page}&sortBy=${sortBy}`
+  );
+};
