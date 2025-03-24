@@ -1,25 +1,27 @@
-import { Button, Pagination, Select, Modal, Timeline, Tag, Descriptions, Alert } from "antd";
+/* eslint-disable react/no-unknown-property */
+import { Button, Pagination, Select, Tag } from "antd";
 import { useEffect, useState } from "react";
 import ViewAdoptionFormModal from "./ViewAdoptionFormModal";
-import PeriodicCheckModal from "./PeriodicCheckModal";
+import PeriodicCheckResultsModal from "./PeriodicCheckResultsModal"; // Import component mới
 import { toast } from "sonner";
-import { fetchAllAdoptionFormsAPI } from "@/apis/post";
-import { useSelector } from "react-redux";
+import {
+  alertAdoptionFormStatusAPI,
+  fetchAllAdoptionFormsAPI,
+} from "@/apis/post";
 import moment from "moment";
-import { CheckCircleOutlined, ExclamationCircleOutlined, CloseCircleOutlined, HeartFilled, WarningOutlined } from "@ant-design/icons";
+import { ExclamationCircleOutlined, WarningOutlined } from "@ant-design/icons";
 
 const { Option } = Select;
 
 const ManageAdoptionForms = () => {
   const [forms, setForms] = useState([]);
-  const {user} = useSelector((store) => store.auth);
   const [currentPage, setCurrentPage] = useState(1);
   const [statusSort, setStatusSort] = useState(null);
   const [sortBy, setSortBy] = useState("createdAt:desc");
   const [totalResults, setTotalResults] = useState(0);
   const itemsPerPage = 4;
   const [viewModalOpen, setViewModalOpen] = useState(false);
-  const [checkModalOpen, setCheckModalOpen] = useState(false);
+  const [resultsModalOpen, setResultsModalOpen] = useState(false);
   const [selectedForm, setSelectedForm] = useState(null);
 
   const fetchForms = async () => {
@@ -76,20 +78,16 @@ const ManageAdoptionForms = () => {
     setViewModalOpen(true);
   };
 
-  const handleCheckClick = (form) => {
+  const handleViewResults = (form) => {
     setSelectedForm(form);
-    setCheckModalOpen(true);
+    setResultsModalOpen(true);
   };
 
-  const handlePeriodicCheck = async (checkData) => {
-    try {
-      fetchForms()
-        setCheckModalOpen(false);
-      
-    } catch (error) {
-      toast.error(
-        error.response?.data?.message || "Error adding periodic check!"
-      );
+  const handleRequestCheck = async (formId) => {
+    const { data } = await alertAdoptionFormStatusAPI(formId);
+    console.log("🚀 ~ handleRequestCheck ~ data:", data);
+    if (data.status === 200) {
+      toast.success(`Đã gửi yêu cầu kiểm tra cho đơn ${formId}`);
     }
   };
 
@@ -100,89 +98,15 @@ const ManageAdoptionForms = () => {
       )
     );
     setViewModalOpen(false);
-    fetchForms(); 
+    fetchForms();
   };
 
   const isCheckNeeded = (form) => {
-    if (!form.next_check_date) return false;
+    if (!form.next_check_date || form.status !== "Approved") return false;
     const now = moment();
     const checkDate = moment(form.next_check_date);
-    return now.isSameOrAfter(checkDate, 'day');
-  };
-
-  const [viewResultsModalOpen, setViewResultsModalOpen] = useState(false);
-  const [selectedChecks, setSelectedChecks] = useState([]);
-
-  const handleViewResults = (form) => {
-    setSelectedForm(form);
-    setSelectedChecks(form.periodicChecks || []);
-    setViewResultsModalOpen(true);
-  };
-
-  const renderCheckStatus = (check) => {
-    const statusConfig = {
-      'Good': {
-        color: 'success',
-        icon: <CheckCircleOutlined />,
-        text: 'Tốt'
-      },
-      'Needs Attention': {
-        color: 'warning',
-        icon: <ExclamationCircleOutlined />,
-        text: 'Cần chú ý'
-      },
-      'Critical': {
-        color: 'error',
-        icon: <CloseCircleOutlined />,
-        text: 'Nghiêm trọng'
-      }
-    };
-
-    const status = statusConfig[check.status];
-
     return (
-      <div className="bg-white p-6 rounded-lg shadow-sm mb-6 border border-pink-200">
-        <Descriptions
-          title={
-            <div className="flex items-center gap-2 mb-4">
-              <span className="text-lg font-semibold text-amber-800">Chi tiết kiểm tra</span>
-              <Tag icon={status?.icon} color={status?.color}>
-                {status?.text}
-              </Tag>
-            </div>
-          }
-          bordered
-          column={1}
-          className="w-full border-pink-200"
-        >
-          <Descriptions.Item label={<span className="text-pink-700">Ngày kiểm tra</span>}>
-            {moment(check.checkDate).format('DD/MM/YYYY HH:mm')}
-          </Descriptions.Item>
-          <Descriptions.Item label={<span className="text-pink-700">Người kiểm tra</span>}>
-            {check.checkedBy?.username || 'N/A'}
-          </Descriptions.Item>
-          <Descriptions.Item label={<span className="text-pink-700">Ghi chú</span>}>
-            {check.notes || 'Không có ghi chú'}
-          </Descriptions.Item>
-        </Descriptions>
-
-        {check.image_url && (
-          <div className="mt-4">
-            <p className="font-medium mb-2 text-pink-700">Hình ảnh kiểm tra:</p>
-            <div className="relative group">
-              <img 
-                src={check.image_url} 
-                alt="Check result" 
-                className="w-full max-w-lg rounded-lg cursor-pointer transition-transform hover:scale-105 border border-pink-200"
-                onClick={() => window.open(check.image_url, '_blank')}
-              />
-              <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-10 transition-opacity rounded-lg flex items-center justify-center">
-                <span className="text-white opacity-0 group-hover:opacity-100">Nhấn để xem ảnh đầy đủ</span>
-              </div>
-            </div>
-          </div>
-        )}
-      </div>
+      now.isSameOrAfter(checkDate, "day") && form.periodicChecks.length < 3
     );
   };
 
@@ -215,14 +139,16 @@ const ManageAdoptionForms = () => {
           <div className="flex items-center gap-2 text-pink-700">
             <ExclamationCircleOutlined />
             <span>
-              Tổng số đơn: <strong>{totalResults}</strong> | Trang hiện
-              tại: <strong>{currentPage}</strong>
+              Tổng số đơn: <strong>{totalResults}</strong> | Trang hiện tại:{" "}
+              <strong>{currentPage}</strong>
             </span>
           </div>
         </div>
 
         {forms.length === 0 ? (
-          <p className="text-gray-500 text-center py-8">Không có đơn nhận nuôi nào</p>
+          <p className="text-gray-500 text-center py-8">
+            Không có đơn nhận nuôi nào
+          </p>
         ) : (
           <div className="overflow-x-auto w-full">
             <table className="min-w-full bg-white border border-pink-200 rounded-md pet-friendly-table">
@@ -298,21 +224,13 @@ const ManageAdoptionForms = () => {
                         </Button>
                         {form.status === "Approved" && (
                           <>
-                            {isCheckNeeded(form) ? (
+                            {isCheckNeeded(form) && (
                               <Button
-                                onClick={() => handleCheckClick(form)}
+                                onClick={() => handleRequestCheck(form._id)}
                                 className="border-red-500 bg-red-50 text-red-600 hover:bg-red-600 hover:text-white hover:border-red-600 animate-pulse shadow-md"
                                 icon={<WarningOutlined />}
                               >
-                                <span className="font-bold">Cần kiểm tra ngay!</span>
-                              </Button>
-                            ) : (
-                              <Button
-                                onClick={() => handleCheckClick(form)}
-                                className="border-amber-500 bg-amber-50 text-amber-600 hover:bg-amber-600 hover:text-white hover:border-amber-600"
-                                disabled={form.periodicChecks.length >= 3}
-                              >
-                                Kiểm tra định kỳ {form.periodicChecks.length >= 3 && "(Đã đủ)"}
+                                Yêu cầu kiểm tra
                               </Button>
                             )}
                             {form.periodicChecks?.length > 0 && (
@@ -353,120 +271,14 @@ const ManageAdoptionForms = () => {
           />
         )}
 
-        {checkModalOpen && (
-          <PeriodicCheckModal
-            open={checkModalOpen}
-            setOpen={setCheckModalOpen}
+        {resultsModalOpen && (
+          <PeriodicCheckResultsModal
+            open={resultsModalOpen}
+            setOpen={setResultsModalOpen}
             form={selectedForm}
-            onSubmit={handlePeriodicCheck}
-            currentUser={user}
+            onRequestCheck={handleRequestCheck}
           />
         )}
-
-        <Modal
-          title={
-            <div className="flex items-center gap-2 text-amber-800">
-              <HeartFilled style={{ color: "#f472b6" }} />
-              <span className="font-semibold">Lịch sử kiểm tra định kỳ</span>
-            </div>
-          }
-          open={viewResultsModalOpen}
-          onCancel={() => setViewResultsModalOpen(false)}
-          footer={null}
-          width={800}
-          className="periodic-check-history-modal"
-        >
-          <div className="p-4 bg-pink-50/50 rounded-lg border border-pink-100 mb-6">
-            <h3 className="text-lg font-semibold text-amber-800 mb-2">Thông tin thú cưng</h3>
-            <div className="grid grid-cols-2 gap-2">
-              <p><span className="font-medium text-pink-700">Tên:</span> {selectedForm?.pet?.name}</p>
-              <p><span className="font-medium text-pink-700">Loài:</span> {selectedForm?.pet?.breed}</p>
-              <p><span className="font-medium text-pink-700">Người nhận nuôi:</span> {selectedForm?.adopter?.name}</p>
-              <p><span className="font-medium text-pink-700">Ngày nhận nuôi:</span> {selectedForm?.createdAt ? moment(selectedForm.createdAt).format('DD/MM/YYYY') : 'N/A'}</p>
-            </div>
-            
-            {selectedForm?.next_check_date && isCheckNeeded(selectedForm) && (
-              <Alert
-                message="Cần kiểm tra ngay!"
-                description={`Đã đến hoặc quá thời hạn kiểm tra định kỳ (${moment(selectedForm.next_check_date).format('DD/MM/YYYY')})`}
-                type="error"
-                showIcon
-                className="mt-4"
-                action={
-                  <Button 
-                    size="small" 
-                    danger 
-                    onClick={() => {
-                      setViewResultsModalOpen(false);
-                      setSelectedForm(selectedForm);
-                      setCheckModalOpen(true);
-                    }}
-                  >
-                    Kiểm tra ngay
-                  </Button>
-                }
-              />
-            )}
-          </div>
-
-          <div className="space-y-6">
-            {selectedChecks.length > 0 ? (
-              selectedChecks.map((check, index) => (
-                <div key={index} className="bg-white p-6 rounded-lg shadow-sm border border-pink-200">
-                  <div className="flex justify-between items-center mb-4">
-                    <h3 className="text-lg font-semibold text-amber-800">
-                      Kiểm tra #{index + 1}
-                    </h3>
-                    <Tag 
-                      color={
-                        check.status === 'Good' 
-                          ? 'success' 
-                          : check.status === 'Needs Attention'
-                          ? 'warning'
-                          : 'error'
-                      }
-                      icon={
-                        check.status === 'Good' 
-                          ? <CheckCircleOutlined /> 
-                          : check.status === 'Needs Attention'
-                          ? <ExclamationCircleOutlined />
-                          : <CloseCircleOutlined />
-                      }
-                    >
-                      {check.status === 'Good' 
-                        ? 'Tốt' 
-                        : check.status === 'Needs Attention'
-                        ? 'Cần chú ý'
-                        : 'Nghiêm trọng'}
-                    </Tag>
-                  </div>
-                  
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                      <p className="mb-2"><span className="font-medium text-pink-700">Ngày kiểm tra:</span> {moment(check.checkDate).format('DD/MM/YYYY')}</p>
-                      <p className="mb-2"><span className="font-medium text-pink-700">Người kiểm tra:</span> {check.checkedBy?.username || 'N/A'}</p>
-                      <p className="mb-2"><span className="font-medium text-pink-700">Ghi chú:</span> {check.notes}</p>
-                    </div>
-                    
-                    {check.image_url && (
-                      <div>
-                        <p className="font-medium mb-2 text-pink-700">Hình ảnh:</p>
-                        <img 
-                          src={check.image_url} 
-                          alt="Check result" 
-                          className="w-full max-w-xs rounded-lg cursor-pointer hover:opacity-90 border border-pink-200"
-                          onClick={() => window.open(check.image_url, '_blank')}
-                        />
-                      </div>
-                    )}
-                  </div>
-                </div>
-              ))
-            ) : (
-              <p className="text-center text-gray-500 py-8">Chưa có kiểm tra định kỳ nào</p>
-            )}
-          </div>
-        </Modal>
       </div>
 
       <style jsx global>{`
@@ -487,51 +299,44 @@ const ManageAdoptionForms = () => {
         .ant-pagination-item:hover {
           border-color: #f472b6;
         }
-        
+
         .ant-select-selector {
           border-color: #f9a8d4 !important;
         }
-        
+
         .ant-select:hover .ant-select-selector {
           border-color: #f472b6 !important;
         }
-        
+
         .periodic-check-history-modal .ant-modal-content {
           border-radius: 12px;
           overflow: hidden;
         }
-        
+
         .periodic-check-history-modal .ant-modal-header {
           background-color: #fdf2f8;
           border-bottom: 1px solid #fbcfe8;
           padding: 16px 24px;
         }
-        
+
         .periodic-check-history-modal .ant-modal-title {
           color: #9d174d;
         }
-        
+
         .periodic-check-history-modal .ant-modal-close {
           color: #be185d;
         }
-        
-        .periodic-check-history-modal .ant-descriptions-bordered .ant-descriptions-item-label {
-          background-color: #fdf2f8;
-        }
-        
-        .periodic-check-history-modal .ant-descriptions-bordered .ant-descriptions-view {
-          border-color: #fbcfe8;
-        }
-        
+
         @keyframes pulse {
-          0%, 100% {
+          0%,
+          100% {
             opacity: 1;
           }
           50% {
             opacity: 0.7;
           }
         }
-        
+
         .animate-pulse {
           animation: pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
         }

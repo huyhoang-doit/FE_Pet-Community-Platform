@@ -6,8 +6,9 @@ import {
 } from "@tanstack/react-table";
 import { format } from "date-fns";
 import { useState } from "react";
-import { Button } from "../../ui/button"; // Giả định bạn dùng shadcn/ui Button
-import PeriodicCheckModal from "../StaffPages/Services/PeriodicCheckModal";
+import { Button } from "../../ui/button";
+import PeriodicCheckModal from "./PeriodicCheckModal";
+import PetAdoptionInfoModal from "./PetAdoptionInfoModal";
 
 const AdoptionFormTable = ({
   data,
@@ -15,8 +16,28 @@ const AdoptionFormTable = ({
   currentUser,
   onCheckSubmit,
 }) => {
+  // State cho modal kiểm tra định kỳ
+  const [selectedCheckForm, setSelectedCheckForm] = useState(null);
+  const [isCheckModalOpen, setIsCheckModalOpen] = useState(false);
+  const [viewModalOpen, setViewModalOpen] = useState(false);
   const [selectedForm, setSelectedForm] = useState(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const handleViewClick = (form) => {
+    setSelectedForm(form);
+    setViewModalOpen(true);
+  };
+
+  // Hàm kiểm tra xem form có cần check ngay không
+  const isCheckOverdue = (form) => {
+    if (!form.next_check_date || form.status !== "Approved") return false;
+    const now = new Date();
+    const nextCheckDate = new Date(form.next_check_date);
+    // Kiểm tra nếu đã đến hoặc quá hạn và số lần kiểm tra chưa đạt tối đa (giả sử tối đa là 3)
+    return (
+      now >= nextCheckDate &&
+      (!form.periodicChecks || form.periodicChecks.length < 3)
+    );
+  };
 
   const columns = [
     {
@@ -25,10 +46,19 @@ const AdoptionFormTable = ({
       cell: (info) => info.getValue() || "N/A",
     },
     {
-      accessorKey: "adoptionPost.caption",
+      accessorKey: "adoptionPost._id",
       header: "Bài đăng",
       cell: (info) => (
-        <span className="line-clamp-2">{info.getValue() || "N/A"}</span>
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={(e) => {
+            e.stopPropagation();
+            window.open(`/adoptDetail/${info.getValue()}`, "_blank");
+          }}
+        >
+          Xem bài viết
+        </Button>
       ),
     },
     {
@@ -68,28 +98,37 @@ const AdoptionFormTable = ({
       header: "Hành động",
       cell: (info) => {
         const form = info.row.original;
-        if (form.status === "Approved") {
-          return (
+        const overdue = isCheckOverdue(form);
+
+        return (
+          <div className="flex items-center gap-2">
+            {form.status === "Approved" && (
+              <Button
+                variant={overdue ? "destructive" : "outline"}
+                size="sm"
+                onClick={() => {
+                  setSelectedCheckForm(form);
+                  setIsCheckModalOpen(true);
+                }}
+                className={overdue ? "animate-pulse" : ""}
+              >
+                {overdue ? "Check ngay!" : "Check định kỳ"}
+              </Button>
+            )}
             <Button
               variant="outline"
               size="sm"
-              onClick={() => {
-                setSelectedForm(form);
-                setIsModalOpen(true);
-              }}
+              onClick={() => handleViewClick(form)}
             >
-              Check định kỳ
+              Xem
             </Button>
-          );
-        }
-        if (form.status === "Rejected") {
-          return (
-            <div className="text-sm text-gray-600">
-              <strong>Ghi chú:</strong> {form.response_note || "Không có"}
-            </div>
-          );
-        }
-        return null;
+            {form.status === "Rejected" && (
+              <div className="text-sm text-gray-600">
+                <strong>Ghi chú:</strong> {form.response_note || "Không có"}
+              </div>
+            )}
+          </div>
+        );
       },
     },
   ];
@@ -100,8 +139,9 @@ const AdoptionFormTable = ({
     getCoreRowModel: getCoreRowModel(),
   });
 
-  const handleCheckSubmit = async (updatedForm) => {
-    await onCheckSubmit(updatedForm); // Gọi hàm từ props để cập nhật dữ liệu
+  const handleCheckSubmit = async () => {
+    await onCheckSubmit();
+    setIsCheckModalOpen(false);
   };
 
   return (
@@ -164,13 +204,21 @@ const AdoptionFormTable = ({
         </div>
       </div>
 
-      {selectedForm && (
+      {selectedCheckForm && (
         <PeriodicCheckModal
-          open={isModalOpen}
-          setOpen={setIsModalOpen}
-          form={selectedForm}
+          open={isCheckModalOpen}
+          setOpen={setIsCheckModalOpen}
+          form={selectedCheckForm}
           onSubmit={handleCheckSubmit}
           currentUser={currentUser}
+        />
+      )}
+
+      {viewModalOpen && (
+        <PetAdoptionInfoModal
+          open={viewModalOpen}
+          setOpen={setViewModalOpen}
+          form={selectedForm}
         />
       )}
     </div>

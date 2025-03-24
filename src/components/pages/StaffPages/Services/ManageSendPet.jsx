@@ -6,7 +6,7 @@ import lgThumbnail from "lightgallery/plugins/thumbnail";
 import lgZoom from "lightgallery/plugins/zoom";
 import { fetchAllAdoptionPostsAPI } from "@/apis/post";
 import EditAdoptPostModal from "./EditAdoptPostModal"; // Adjust path
-import CreateAdoptionFormModal from "./CreateAdoptionFormModal"; // Adjust path
+import CreateAdoptionFormModal from "../../../features/adoptions/CreateAdoptionFormModal"; // Adjust path
 import { ExclamationCircleOutlined } from "@ant-design/icons";
 
 const { Option } = Select;
@@ -127,7 +127,9 @@ const ManageSendPets = () => {
         </div>
 
         {posts.length === 0 ? (
-          <p className="text-gray-500 text-center py-8">Không có bài đăng nhận nuôi nào</p>
+          <p className="text-gray-500 text-center py-8">
+            Không có bài đăng nhận nuôi nào
+          </p>
         ) : (
           <div className="overflow-x-auto w-full">
             <table className="min-w-full bg-white border border-pink-200 rounded-md pet-friendly-table">
@@ -281,11 +283,11 @@ const ManageSendPets = () => {
         .ant-pagination-item:hover {
           border-color: #f472b6;
         }
-        
+
         .ant-select-selector {
           border-color: #f9a8d4 !important;
         }
-        
+
         .ant-select:hover .ant-select-selector {
           border-color: #f472b6 !important;
         }
