@@ -29,7 +29,11 @@ export const bookmarkAPI = async (postId) => {
   );
 };
 
-export const fetchAllPostsAPI = async (page = 1, limit = 4, isApproved = null) => {
+export const fetchAllPostsAPI = async (
+  page = 1,
+  limit = 4,
+  isApproved = null
+) => {
   let url = `${BASE_URL}/post/all?sortBy=createdAt:desc&limit=${limit}&page=${page}`;
   if (isApproved !== null) {
     url += `&isApproved=${isApproved}`;
@@ -111,6 +115,21 @@ export const fetchAllAdoptionFormsAPI = async (
   status = null
 ) => {
   let url = `${BASE_URL}/adoption-form/all?limit=${limit}&page=${page}&sortBy=${sortBy}`;
+  if (status) {
+    url += `&status=${status}`;
+  }
+
+  return await authorizedAxiosInstance.get(url);
+};
+
+export const fetchAdoptionFormsBySenderIdAPI = async (
+  senderId,
+  page,
+  limit,
+  sortBy = "createdAt:desc",
+  status = null
+) => {
+  let url = `${BASE_URL}/adoption-form/sender/${senderId}?limit=${limit}&page=${page}&sortBy=${sortBy}`;
   if (status) {
     url += `&status=${status}`;
   }
