@@ -25,7 +25,7 @@ const AdoptionDetail = () => {
         setLoading(true);
         const res = await getAdoptionPostById(id);
         setPost(res.data.data);
-        
+
         // Chỉ gọi getBreedById khi có post.pet.breed
         if (res.data.data?.pet?.breed) {
           try {
@@ -75,7 +75,7 @@ const AdoptionDetail = () => {
     } else if (userRole === "user") {
       return (
         <Button
-          className="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600"
+          className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-green-600"
           onClick={() =>
             navigate(`/chat/${post.author?.id}`, {
               state: {
@@ -90,7 +90,7 @@ const AdoptionDetail = () => {
         >
           <div className="flex items-center gap-2">
             <Send className="cursor-pointer hover:text-gray-600" size={16} />
-            <span>Liên hệ nhận nuôi</span>
+            <span>Liên hệ tư vấn</span>
           </div>
         </Button>
       );
@@ -192,7 +192,9 @@ const AdoptionDetail = () => {
             </div>
 
             {/* Số lượt thích */}
-            <p className="mt-2 text-gray-600">{post?.likes?.length} lượt thích</p>
+            <p className="mt-2 text-gray-600">
+              {post?.likes?.length} lượt thích
+            </p>
           </div>
         </div>
       </div>
