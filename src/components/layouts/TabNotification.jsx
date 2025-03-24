@@ -16,6 +16,10 @@ const TabNotification = () => {
   const { suggestedUsers } = useSelector((store) => store.auth);
 
   const groupNotificationsByDate = (notifications) => {
+    if (!Array.isArray(notifications)) {
+      console.warn("notifications is not an array:", notifications);
+      return [];
+    }
     return Object.entries(
       notifications?.reduce((acc, notification) => {
         const date = new Date(notification.createdAt);
@@ -38,17 +42,29 @@ const TabNotification = () => {
         acc[dateString].push(notification); // Thêm thông báo vào ngày tương ứng
         return acc;
       }, {})
-    ).sort((a, b) => {
-      const order = ["Hôm nay", "Hôm qua", "25/1", "24/1", "22/1"];
-      const dateA = a[0] === "Hôm nay" ? 0 : a[0] === "Hôm qua" ? 1 : new Date(a[0]).getTime();
-      const dateB = b[0] === "Hôm nay" ? 0 : b[0] === "Hôm qua" ? 1 : new Date(b[0]).getTime();
+    )
+      .sort((a, b) => {
+        const order = ["Hôm nay", "Hôm qua", "25/1", "24/1", "22/1"];
+        const dateA =
+          a[0] === "Hôm nay"
+            ? 0
+            : a[0] === "Hôm qua"
+            ? 1
+            : new Date(a[0]).getTime();
+        const dateB =
+          b[0] === "Hôm nay"
+            ? 0
+            : b[0] === "Hôm qua"
+            ? 1
+            : new Date(b[0]).getTime();
 
-      // Sắp xếp theo thứ tự đã định trước
-      const orderA = order.indexOf(a[0]);
-      const orderB = order.indexOf(b[0]);
+        // Sắp xếp theo thứ tự đã định trước
+        const orderA = order.indexOf(a[0]);
+        const orderB = order.indexOf(b[0]);
 
-      return orderA - orderB || dateB - dateA; // Sắp xếp theo thứ tự đã định trước và sau đó theo ngày
-    }).reverse();
+        return orderA - orderB || dateB - dateA; // Sắp xếp theo thứ tự đã định trước và sau đó theo ngày
+      })
+      .reverse();
   };
 
   // ... existing code ...
