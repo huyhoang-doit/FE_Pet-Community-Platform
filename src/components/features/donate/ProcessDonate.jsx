@@ -209,7 +209,7 @@ const ProcessDonate = ({ campaign }) => {
                 />
               </div>
 
-              <div className="flex items-center">
+              {/* <div className="flex items-center">
                 <input
                   type="checkbox"
                   id="anonymous"
@@ -218,7 +218,7 @@ const ProcessDonate = ({ campaign }) => {
                   className="mr-2"
                 />
                 <label htmlFor="anonymous">Ẩn danh</label>
-              </div>
+              </div> */}
               <div className="flex items-center">
                 <input
                   type="checkbox"
