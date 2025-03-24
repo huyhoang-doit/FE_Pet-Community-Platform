@@ -14,7 +14,7 @@ import Carousel from "../../ui/carousel";
 import { calculateTimeAgo } from "@/utils/calculateTimeAgo";
 import { Button } from "@/components/ui/button";
 import ShareButton from "./ShareButton";
-import CreateAdoptionFormModal from "@/components/pages/StaffPages/Services/CreateAdoptionFormModal";
+import CreateAdoptionFormModal from "@/components/features/adoptions/CreateAdoptionFormModal";
 
 const AdoptionPost = ({ post }) => {
   const { user } = useSelector((store) => store.auth);
@@ -26,7 +26,6 @@ const AdoptionPost = ({ post }) => {
   const pet = post.pet;
   const userRole = user?.role;
   const { posts } = useSelector((store) => store.adopt);
-
 
   const likeOrDislikeHandler = async () => {
     try {
@@ -80,32 +79,37 @@ const AdoptionPost = ({ post }) => {
     } else if (userRole === "user") {
       return (
         <div className="flex items-center gap-2">
-        <Button
-          className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-green-600"
-          onClick={() => navigate(`/chat/${post.author?.id}`, { 
-            state: { 
-              fromPost: true,
-              postId: post._id,
-              postTitle: post.caption,
-              petName: post.pet?.name,
-              location: post.location
-            } 
-          })}
-        >
-          <div className="flex items-center gap-2">
-            <Send className="cursor-pointer hover:text-gray-600" size={16} />
-            <span>Liên hệ tư vấn</span>
-          </div>
-        </Button>
-        <Button
-          className="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600"
-          onClick={handleOpenModal}
-        >
-          <div className="flex items-center gap-2">
-            <SquarePen className="cursor-pointer hover:text-gray-600" size={16} />
-            <span>Đăng ký nhận nuôi</span>
-          </div>
-        </Button>
+          <Button
+            className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-green-600"
+            onClick={() =>
+              navigate(`/chat/${post.author?.id}`, {
+                state: {
+                  fromPost: true,
+                  postId: post._id,
+                  postTitle: post.caption,
+                  petName: post.pet?.name,
+                  location: post.location,
+                },
+              })
+            }
+          >
+            <div className="flex items-center gap-2">
+              <Send className="cursor-pointer hover:text-gray-600" size={16} />
+              <span>Liên hệ tư vấn</span>
+            </div>
+          </Button>
+          <Button
+            className="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600"
+            onClick={handleOpenModal}
+          >
+            <div className="flex items-center gap-2">
+              <SquarePen
+                className="cursor-pointer hover:text-gray-600"
+                size={16}
+              />
+              <span>Đăng ký nhận nuôi</span>
+            </div>
+          </Button>
         </div>
       );
     }
@@ -255,15 +259,14 @@ const AdoptionPost = ({ post }) => {
         </>
       )}
 
-    {/* Thêm Modal vào đây */}
-    <CreateAdoptionFormModal
+      {/* Thêm Modal vào đây */}
+      <CreateAdoptionFormModal
         open={isModalOpen}
         setOpen={setIsModalOpen}
         post={post}
         onSubmit={handleFormSubmit}
       />
     </div>
-    
   );
 };
 

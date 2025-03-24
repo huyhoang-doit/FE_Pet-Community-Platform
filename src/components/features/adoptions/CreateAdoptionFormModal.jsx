@@ -18,7 +18,8 @@ import { addAdoptionForm } from "@/apis/post";
 import { HeartFilled } from "@ant-design/icons";
 import { useSelector } from "react-redux";
 import { getPetByIdAPI } from "@/apis/pet";
-
+import { DatePicker } from "antd";
+import moment from "moment";
 const CreateAdoptionFormModal = ({ open, setOpen, post, onSubmit }) => {
   const [adopterName, setAdopterName] = useState("");
   const [adopterEmail, setAdopterEmail] = useState("");
@@ -39,6 +40,7 @@ const CreateAdoptionFormModal = ({ open, setOpen, post, onSubmit }) => {
   const [agreeTerms2, setAgreeTerms2] = useState(false);
   const [hasSentForm, setHasSentForm] = useState(false);
   const [isChecking, setIsChecking] = useState(false);
+  const [expectedDate, setExpectedDate] = useState(null);
   const { user } = useSelector((store) => store.auth);
 
   const checkUserAlreadySentForm = async (userId) => {
@@ -69,6 +71,7 @@ const CreateAdoptionFormModal = ({ open, setOpen, post, onSubmit }) => {
       setAdopterEmail(user.email);
       setAdopterPhone(user.phoneNumber || "");
       setAddress("");
+      setExpectedDate(null);
       checkFormStatus();
     }
   }, [open, user, post.pet._id]);
@@ -158,6 +161,7 @@ const CreateAdoptionFormModal = ({ open, setOpen, post, onSubmit }) => {
         },
       },
       reason,
+      expectedDate: expectedDate ? expectedDate.toISOString() : null,
     };
 
     try {
@@ -177,6 +181,7 @@ const CreateAdoptionFormModal = ({ open, setOpen, post, onSubmit }) => {
         setDistrictCode("");
         setWardCode("");
         setSelectedUser(null);
+        setExpectedDate(null);
         setAgreeTerms1(false);
         setAgreeTerms2(false);
       }
@@ -404,6 +409,25 @@ const CreateAdoptionFormModal = ({ open, setOpen, post, onSubmit }) => {
                       required
                     />
                   </div>
+                </div>
+                <div>
+                  <Label
+                    htmlFor="expectedDate"
+                    className="block text-sm font-medium text-pink-700 mb-1"
+                  >
+                    Ngày nhận dự kiến
+                  </Label>
+                  <DatePicker
+                    id="expectedDate"
+                    value={expectedDate}
+                    onChange={(date) => setExpectedDate(date)}
+                    format="DD/MM/YYYY"
+                    className="w-full border-pink-200 hover:border-pink-400"
+                    disabledDate={(current) =>
+                      current && current < moment().startOf("day")
+                    }
+                    placeholder="Chọn ngày nhận dự kiến đến cơ sở tiếp nhận"
+                  />
                 </div>
                 <div>
                   <Label

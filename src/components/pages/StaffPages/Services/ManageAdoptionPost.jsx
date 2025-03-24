@@ -1,13 +1,12 @@
+/* eslint-disable react/no-unknown-property */
 import { Button, Pagination, Select } from "antd";
 import { useEffect, useState } from "react";
 import LightGallery from "lightgallery/react";
 import "lightgallery/css/lightgallery.css";
 import lgThumbnail from "lightgallery/plugins/thumbnail";
 import lgZoom from "lightgallery/plugins/zoom";
-import { addAdoptionForm, fetchAllAdoptionPostsAPI } from "@/apis/post";
+import { fetchAllAdoptionPostsAPI } from "@/apis/post";
 import EditAdoptPostModal from "./EditAdoptPostModal";
-import CreateAdoptionFormModal from "./CreateAdoptionFormModal";
-import { toast } from "sonner";
 import { ExclamationCircleOutlined } from "@ant-design/icons";
 
 const { Option } = Select;
@@ -20,7 +19,7 @@ const ManageAdoptionPost = () => {
   const [totalResults, setTotalResults] = useState(0);
   const itemsPerPage = 4;
   const [editModalOpen, setEditModalOpen] = useState(false);
-  const [formModalOpen, setFormModalOpen] = useState(false);
+  // const [formModalOpen, setFormModalOpen] = useState(false);
   const [selectedPost, setSelectedPost] = useState(null);
   const fetchData = async () => {
     try {
@@ -37,7 +36,6 @@ const ManageAdoptionPost = () => {
       console.error("Error fetching posts:", error);
     }
   };
-
 
   useEffect(() => {
     fetchData();
@@ -76,25 +74,24 @@ const ManageAdoptionPost = () => {
     setEditModalOpen(true);
   };
 
-  const handleFormClick = (post) => {
-    setSelectedPost(post);
-    setFormModalOpen(true);
-  };
+  // const handleFormClick = (post) => {
+  //   setSelectedPost(post);
+  //   setFormModalOpen(true);
+  // };
 
   const handleUpdatePost = async () => {
-    await fetchData()
+    await fetchData();
     setEditModalOpen(false);
   };
 
-  const handleFormSubmitted = async () => {
-    try {
-      await fetchData()
-        setFormModalOpen(false);
-      }
-     catch (error) {
-      toast.error(error.response?.data?.message || "Error creating form!");
-    }
-  };
+  // const handleFormSubmitted = async () => {
+  //   try {
+  //     await fetchData();
+  //     setFormModalOpen(false);
+  //   } catch (error) {
+  //     toast.error(error.response?.data?.message || "Error creating form!");
+  //   }
+  // };
 
   return (
     <div className="p-6 bg-gradient-to-b from-pink-50 to-white min-h-screen">
@@ -132,7 +129,9 @@ const ManageAdoptionPost = () => {
         </div>
 
         {posts.length === 0 ? (
-          <p className="text-gray-500 text-center py-8">Không có bài đăng nhận nuôi nào</p>
+          <p className="text-gray-500 text-center py-8">
+            Không có bài đăng nhận nuôi nào
+          </p>
         ) : (
           <div className="overflow-x-auto w-full">
             <table className="min-w-full bg-white border border-pink-200 rounded-md pet-friendly-table">
@@ -222,14 +221,14 @@ const ManageAdoptionPost = () => {
                         >
                           Sửa
                         </Button>
-                        {post.adopt_status === "Available" && (
+                        {/* {post.adopt_status === "Available" && (
                           <Button
                             onClick={() => handleFormClick(post)}
                             className="border-amber-500 bg-amber-50 text-amber-600 hover:bg-amber-600 hover:text-white hover:border-amber-600"
                           >
                             Tạo form nhận nuôi
                           </Button>
-                        )}
+                        )} */}
                       </div>
                     </td>
                   </tr>
@@ -258,14 +257,14 @@ const ManageAdoptionPost = () => {
             onUpdate={handleUpdatePost}
           />
         )}
-        {formModalOpen && (
+        {/* {formModalOpen && (
           <CreateAdoptionFormModal
             open={formModalOpen}
             setOpen={setFormModalOpen}
             post={selectedPost}
             onSubmit={handleFormSubmitted}
           />
-        )}
+        )} */}
       </div>
 
       <style jsx global>{`
@@ -286,11 +285,11 @@ const ManageAdoptionPost = () => {
         .ant-pagination-item:hover {
           border-color: #f472b6;
         }
-        
+
         .ant-select-selector {
           border-color: #f9a8d4 !important;
         }
-        
+
         .ant-select:hover .ant-select-selector {
           border-color: #f472b6 !important;
         }

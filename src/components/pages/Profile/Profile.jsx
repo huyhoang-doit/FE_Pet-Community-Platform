@@ -155,7 +155,6 @@ const Profile = () => {
         page,
         limit
       );
-      console.log("🚀 ~ getAdoptedPets ~ data:", data);
 
       setAdoptionForms(data.data);
     } catch (error) {
@@ -163,14 +162,8 @@ const Profile = () => {
     }
   };
 
-  const handleCheckSubmit = async (updatedForm) => {
-    // Cập nhật adoptionForms với dữ liệu mới sau khi check định kỳ
-    setAdoptionForms((prev) => ({
-      ...prev,
-      results: prev.results.map((form) =>
-        form._id === updatedForm._id ? updatedForm : form
-      ),
-    }));
+  const handleCheckSubmit = async () => {
+    await getAdoptedPets(userProfile?.id, petPage);
   };
 
   const handlePetPageChange = (newPage) => {
@@ -364,8 +357,8 @@ const Profile = () => {
                 <AdoptionFormTable
                   data={adoptionForms}
                   onPageChange={handlePetPageChange}
-                  currentUser={user} // Truyền thông tin user hiện tại
-                  onCheckSubmit={handleCheckSubmit} // Truyền hàm xử lý submit
+                  currentUser={user}
+                  onCheckSubmit={handleCheckSubmit}
                 />
               ) : (
                 <div className="flex flex-col items-center justify-center text-gray-500 py-10">

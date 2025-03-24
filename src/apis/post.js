@@ -154,6 +154,14 @@ export const updateAdoptionFormStatusAPI = async (formId, status) => {
   return response;
 };
 
+export const alertAdoptionFormStatusAPI = async (formId) => {
+  console.log("🚀 ~ alertAdoptionFormStatusAPI ~ formId:", formId);
+  const response = await authorizedAxiosInstance.put(
+    `${BASE_URL}/adoption-form/alert-check/${formId}`
+  );
+  return response;
+};
+
 export const addPeriodicCheckAPI = async (adoptionFormId, checkData) => {
   try {
     console.log("Sending periodic check data:", {

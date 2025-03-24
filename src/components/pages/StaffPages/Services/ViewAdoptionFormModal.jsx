@@ -33,7 +33,10 @@ const ViewAdoptionFormModal = ({ open, setOpen, form, onStatusUpdate }) => {
   const handleSaveStatus = async () => {
     try {
       setLoading(true);
-      const response = await updateAdoptionFormStatusAPI(form._id, selectedStatus);
+      const response = await updateAdoptionFormStatusAPI(
+        form._id,
+        selectedStatus
+      );
       if (response.status === 200) {
         toast.success("Cập nhật trạng thái thành công!");
         onStatusUpdate(form._id, selectedStatus);
@@ -80,13 +83,30 @@ const ViewAdoptionFormModal = ({ open, setOpen, form, onStatusUpdate }) => {
             <span className="w-1.5 h-5 bg-pink-500 rounded-full"></span>
             Thông tin người nhận nuôi
           </h3>
-          <Descriptions bordered column={1} size="small" className="border-pink-200">
-            <Descriptions.Item label={<span className="text-pink-700">Họ tên</span>}>{adopter.name}</Descriptions.Item>
-            <Descriptions.Item label={<span className="text-pink-700">Email</span>}>{adopter.email}</Descriptions.Item>
-            <Descriptions.Item label={<span className="text-pink-700">Số điện thoại</span>}>
+          <Descriptions
+            bordered
+            column={1}
+            size="small"
+            className="border-pink-200"
+          >
+            <Descriptions.Item
+              label={<span className="text-pink-700">Họ tên</span>}
+            >
+              {adopter.name}
+            </Descriptions.Item>
+            <Descriptions.Item
+              label={<span className="text-pink-700">Email</span>}
+            >
+              {adopter.email}
+            </Descriptions.Item>
+            <Descriptions.Item
+              label={<span className="text-pink-700">Số điện thoại</span>}
+            >
               {adopter.phone}
             </Descriptions.Item>
-            <Descriptions.Item label={<span className="text-pink-700">Địa chỉ</span>}>
+            <Descriptions.Item
+              label={<span className="text-pink-700">Địa chỉ</span>}
+            >
               {`${adopter.address.detail}, ${adopter.address.ward}, ${adopter.address.district}, ${adopter.address.province}`}
             </Descriptions.Item>
           </Descriptions>
@@ -99,17 +119,40 @@ const ViewAdoptionFormModal = ({ open, setOpen, form, onStatusUpdate }) => {
             <span className="w-1.5 h-5 bg-pink-500 rounded-full"></span>
             Thông tin thú cưng
           </h3>
-          <Descriptions bordered column={1} size="small" className="border-pink-200">
-            <Descriptions.Item label={<span className="text-pink-700">Tên</span>}>{pet.name}</Descriptions.Item>
-            <Descriptions.Item label={<span className="text-pink-700">Giống</span>}>{pet.breed}</Descriptions.Item>
-            <Descriptions.Item label={<span className="text-pink-700">Tuổi</span>}>{pet.age} tuổi</Descriptions.Item>
-            <Descriptions.Item label={<span className="text-pink-700">Tình trạng sức khỏe</span>}>
+          <Descriptions
+            bordered
+            column={1}
+            size="small"
+            className="border-pink-200"
+          >
+            <Descriptions.Item
+              label={<span className="text-pink-700">Tên</span>}
+            >
+              {pet.name}
+            </Descriptions.Item>
+            <Descriptions.Item
+              label={<span className="text-pink-700">Giống</span>}
+            >
+              {pet.breed}
+            </Descriptions.Item>
+            <Descriptions.Item
+              label={<span className="text-pink-700">Tuổi</span>}
+            >
+              {pet.age} tuổi
+            </Descriptions.Item>
+            <Descriptions.Item
+              label={<span className="text-pink-700">Tình trạng sức khỏe</span>}
+            >
               {pet.health_status}
             </Descriptions.Item>
-            <Descriptions.Item label={<span className="text-pink-700">Mô tả</span>}>
+            <Descriptions.Item
+              label={<span className="text-pink-700">Mô tả</span>}
+            >
               {pet.description}
             </Descriptions.Item>
-            <Descriptions.Item label={<span className="text-pink-700">Hình ảnh</span>}>
+            <Descriptions.Item
+              label={<span className="text-pink-700">Hình ảnh</span>}
+            >
               {pet.image_url?.[0]?.[0] ? (
                 <Image
                   src={pet.image_url[0][0]}
@@ -132,11 +175,22 @@ const ViewAdoptionFormModal = ({ open, setOpen, form, onStatusUpdate }) => {
             <span className="w-1.5 h-5 bg-pink-500 rounded-full"></span>
             Thông tin bài đăng
           </h3>
-          <Descriptions bordered column={1} size="small" className="border-pink-200">
-            <Descriptions.Item label={<span className="text-pink-700">Tiêu đề</span>}>
+          <Descriptions
+            bordered
+            column={1}
+            size="small"
+            className="border-pink-200"
+          >
+            <Descriptions.Item
+              label={<span className="text-pink-700">Tiêu đề</span>}
+            >
               {adoptionPost.caption}
             </Descriptions.Item>
-            <Descriptions.Item label={<span className="text-pink-700">Trạng thái nhận nuôi</span>}>
+            <Descriptions.Item
+              label={
+                <span className="text-pink-700">Trạng thái nhận nuôi</span>
+              }
+            >
               <Tag
                 color={
                   adoptionPost.adopt_status === "Available"
@@ -153,10 +207,14 @@ const ViewAdoptionFormModal = ({ open, setOpen, form, onStatusUpdate }) => {
                   : "Đã nhận nuôi"}
               </Tag>
             </Descriptions.Item>
-            <Descriptions.Item label={<span className="text-pink-700">Địa điểm</span>}>
+            <Descriptions.Item
+              label={<span className="text-pink-700">Địa điểm</span>}
+            >
               {adoptionPost.location}
             </Descriptions.Item>
-            <Descriptions.Item label={<span className="text-pink-700">Hình ảnh bài đăng</span>}>
+            <Descriptions.Item
+              label={<span className="text-pink-700">Hình ảnh bài đăng</span>}
+            >
               {adoptionPost.image?.[0] ? (
                 <Image
                   src={adoptionPost.image[0]}
@@ -169,7 +227,9 @@ const ViewAdoptionFormModal = ({ open, setOpen, form, onStatusUpdate }) => {
                 "Không có ảnh"
               )}
             </Descriptions.Item>
-            <Descriptions.Item label={<span className="text-pink-700">Ngày đăng</span>}>
+            <Descriptions.Item
+              label={<span className="text-pink-700">Ngày đăng</span>}
+            >
               {moment(adoptionPost.createdAt).format("DD/MM/YYYY HH:mm")}
             </Descriptions.Item>
           </Descriptions>
@@ -182,14 +242,25 @@ const ViewAdoptionFormModal = ({ open, setOpen, form, onStatusUpdate }) => {
             <span className="w-1.5 h-5 bg-pink-500 rounded-full"></span>
             Thông tin đơn
           </h3>
-          <Descriptions bordered column={1} size="small" className="border-pink-200">
-            <Descriptions.Item label={<span className="text-pink-700">Người gửi đơn</span>}>
-              {user.username}
+          <Descriptions
+            bordered
+            column={1}
+            size="small"
+            className="border-pink-200"
+          >
+            <Descriptions.Item
+              label={<span className="text-pink-700">Người gửi đơn</span>}
+            >
+              {user?.username}
             </Descriptions.Item>
-            <Descriptions.Item label={<span className="text-pink-700">Thông điệp</span>}>
+            <Descriptions.Item
+              label={<span className="text-pink-700">Thông điệp</span>}
+            >
               {message || "Không có"}
             </Descriptions.Item>
-            <Descriptions.Item label={<span className="text-pink-700">Trạng thái</span>}>
+            <Descriptions.Item
+              label={<span className="text-pink-700">Trạng thái</span>}
+            >
               {isEditing ? (
                 <Select
                   value={selectedStatus}
@@ -205,10 +276,16 @@ const ViewAdoptionFormModal = ({ open, setOpen, form, onStatusUpdate }) => {
                 getStatusTag(status)
               )}
             </Descriptions.Item>
-            <Descriptions.Item label={<span className="text-pink-700">Ngày tạo</span>}>
+            <Descriptions.Item
+              label={<span className="text-pink-700">Ngày tạo</span>}
+            >
               {moment(createdAt).format("DD/MM/YYYY HH:mm")}
             </Descriptions.Item>
-            <Descriptions.Item label={<span className="text-pink-700">Số lần kiểm tra định kỳ</span>}>
+            <Descriptions.Item
+              label={
+                <span className="text-pink-700">Số lần kiểm tra định kỳ</span>
+              }
+            >
               <Tag color="pink">{periodicChecks.length}/3</Tag>
             </Descriptions.Item>
           </Descriptions>
@@ -252,34 +329,40 @@ const ViewAdoptionFormModal = ({ open, setOpen, form, onStatusUpdate }) => {
           border-radius: 12px;
           overflow: hidden;
         }
-        
+
         .adoption-form-modal .ant-modal-header {
           background-color: #fdf2f8;
           border-bottom: 1px solid #fbcfe8;
           padding: 16px 24px;
         }
-        
-        .adoption-form-modal .ant-descriptions-bordered .ant-descriptions-item-label {
+
+        .adoption-form-modal
+          .ant-descriptions-bordered
+          .ant-descriptions-item-label {
           background-color: #fdf2f8;
         }
-        
+
         .adoption-form-modal .ant-descriptions-bordered .ant-descriptions-view {
           border-color: #fbcfe8;
         }
-        
+
         .adoption-form-modal .ant-descriptions-bordered .ant-descriptions-row {
           border-bottom-color: #fbcfe8;
         }
-        
-        .adoption-form-modal .ant-descriptions-bordered .ant-descriptions-item-label,
-        .adoption-form-modal .ant-descriptions-bordered .ant-descriptions-item-content {
+
+        .adoption-form-modal
+          .ant-descriptions-bordered
+          .ant-descriptions-item-label,
+        .adoption-form-modal
+          .ant-descriptions-bordered
+          .ant-descriptions-item-content {
           border-right-color: #fbcfe8;
         }
-        
+
         .adoption-form-modal .ant-select-selector {
           border-color: #f9a8d4 !important;
         }
-        
+
         .adoption-form-modal .ant-select:hover .ant-select-selector {
           border-color: #f472b6 !important;
         }
