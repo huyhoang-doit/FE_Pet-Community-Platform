@@ -139,7 +139,6 @@ const ManageAdoptionPost = () => {
                 <tr>
                   {[
                     "#",
-                    "Post ID",
                     "Caption",
                     "Image",
                     "Status",
@@ -166,7 +165,6 @@ const ManageAdoptionPost = () => {
                     <td className="px-6 py-4 text-sm text-gray-700 border-b border-pink-100 border-r">
                       {(currentPage - 1) * itemsPerPage + index + 1}
                     </td>
-                    <td className="px-6 py-4 text-sm text-gray-700 border-b border-pink-100 border-r"></td>
                     <td className="px-6 py-4 text-sm text-gray-700 border-b border-pink-100 border-r">
                       <div className="line-clamp-2 overflow-hidden">
                         {post.caption}

@@ -41,7 +41,7 @@ const PeriodicCheckResultsModal = ({ open, setOpen, form, onRequestCheck }) => {
           </p>
           <p>
             <span className="font-medium text-pink-700">Loài:</span>{" "}
-            {form?.pet?.breed || "N/A"}
+            {form?.pet?.breed?.name || "N/A"}
           </p>
           <p>
             <span className="font-medium text-pink-700">Người nhận nuôi:</span>{" "}
@@ -78,7 +78,7 @@ const PeriodicCheckResultsModal = ({ open, setOpen, form, onRequestCheck }) => {
       </div>
 
       <div className="space-y-6">
-        {form?.periodicChecks?.length > 0 ? (
+        {form?.periodicChecks && form.periodicChecks.length > 0 ? (
           form.periodicChecks.map((check, index) => (
             <div
               key={index}
