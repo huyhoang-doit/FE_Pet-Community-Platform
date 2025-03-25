@@ -33,7 +33,7 @@ const Donate = () => {
 
   const getCampaignOptions = async () => {
     try {
-      const { data } = await fetchCampaignsAPI(1, "");
+      const { data } = await fetchCampaignsAPI(1, "", "");
       setCampaigns(data.data.results);
     } catch (error) {
       console.error("Error fetching campaigns:", error);

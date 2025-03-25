@@ -52,3 +52,17 @@ export const getBreedsAPI = async () => {
 export const getBreedsByIdAPI = async (breedId) => {
   return await authorizedAxiosInstance.get(`${BASE_URL}/pets/breeds/${breedId}`);
 };
+
+export const getPetsHomePage = async (page = 1, limit = 10) => {
+  return await authorizedAxiosInstance.get(`${BASE_URL}/pets?page=${page}&limit=${limit}`);
+}
+
+export const getPetsHomePageQuery = async (queryParams) => {
+  console.log(queryParams.toString());
+  
+  return await authorizedAxiosInstance.get(`${BASE_URL}/pets?${queryParams.toString()}`);
+};
+
+export const updatePetDonationGoal = async (petId, donationGoal) => {
+  return await authorizedAxiosInstance.put(`${BASE_URL}/pets/${petId}/donation-goal`, { donationGoal });
+}

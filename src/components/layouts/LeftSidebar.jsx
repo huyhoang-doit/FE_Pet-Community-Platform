@@ -6,6 +6,7 @@ import {
   PlusSquare,
   Search,
   PawPrint,
+  HandHeart,
 } from "lucide-react";
 import { MdForum, MdOutlineForum } from "react-icons/md";
 import { useState, useEffect, useRef } from "react";
@@ -61,15 +62,6 @@ const LeftSidebar = () => {
     (store) => store.sidebar
   );
   const userRole = user?.role;
-
-  // useEffect(() => {
-  //   if (!user) {
-  //     dispatch(setAuthUser(null));
-  //     localStorage.removeItem("access_token");
-  //     localStorage.removeItem("refresh_token");
-  //     navigate("/login");
-  //   }
-  // }, [user, navigate]);
 
   const logoutHandler = async () => {
     Modal.confirm({
@@ -160,6 +152,7 @@ const LeftSidebar = () => {
       else if (isActiveTab("Notifications")) setActiveTab("Notifications");
       else if (isActiveTab("Search")) setActiveTab("Search");
       else if (isActiveTab("Adopt")) setActiveTab("Adopt");
+      else if (isActiveTab("Pets")) setActiveTab("Pets");
     }
 
     const shouldDisplayText = !["Messages", "Notifications", "Search"].includes(
@@ -176,6 +169,7 @@ const LeftSidebar = () => {
       "/chat": "Messages",
       "/adopt": "Adopt",
       "/submitPet": "SubmitPet",
+      "/pets": "Pets",
     };
 
     const activeKey = Object.keys(pathMapping).find((key) =>
@@ -201,6 +195,7 @@ const LeftSidebar = () => {
       Forum: () => navigate("/forum"),
       Messages: () => navigate("/chat"),
       Home: () => navigate("/"),
+      Pets: () => navigate("/pets"),
       Adopt: () => navigate("/adopt"),
       SubmitPet: () => navigate("/submitPet"),
       Notifications: () => {
@@ -235,10 +230,19 @@ const LeftSidebar = () => {
       textType: "Forum",
     },
     {
-      icon: isActiveTab("Adopt") ? (
+      icon: isActiveTab("Pets") ? (
         <Dog size={24} strokeWidth={3} />
       ) : (
         <Dog size={24} />
+      ),
+      text: "Thú cưng",
+      textType: "Pets",
+    },
+    {
+      icon: isActiveTab("Adopt") ? (
+        <HandHeart size={24} strokeWidth={3} />
+      ) : (
+        <HandHeart size={24} />
       ),
       text: "Nhận nuôi",
       textType: "Adopt",
@@ -305,6 +309,7 @@ const LeftSidebar = () => {
     "Notifications",
     "Create",
     "Profile",
+    "Pets",
   ];
 
   const filteredSidebarItems =

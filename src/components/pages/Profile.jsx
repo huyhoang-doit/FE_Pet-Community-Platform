@@ -291,6 +291,9 @@ const Profile = () => {
                             Chiến dịch
                           </th>
                           <th className="px-6 py-4 font-medium text-gray-900">
+                            Thú cưng
+                          </th>
+                          <th className="px-6 py-4 font-medium text-gray-900">
                             Mã giao dịch
                           </th>
                           <th className="px-6 py-4 font-medium text-gray-900">
@@ -325,7 +328,14 @@ const Profile = () => {
                             <td className="px-6 py-4">
                               <div className="flex items-center gap-2">
                                 <span className="font-medium text-gray-900 line-clamp-1">
-                                  {donation.campaign.title}
+                                  {donation?.campaign?.title || "-"}
+                                </span>
+                              </div>
+                            </td>
+                            <td className="px-6 py-4">
+                              <div className="flex items-center gap-2">
+                                <span className="font-medium text-gray-900 line-clamp-1">
+                                  {donation?.pet?.name || "-"}
                                 </span>
                               </div>
                             </td>

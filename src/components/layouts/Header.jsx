@@ -11,6 +11,7 @@ import {
   MessageCircle,
   PawPrintIcon,
   LogOut,
+  SquareKanban,
 } from "lucide-react";
 import { Button } from "../ui/button";
 import Navbar from "./Navbar";
@@ -69,6 +70,12 @@ function Header() {
       key: "profile",
       label: <NavLink to={`/profile/${user?.username}`}>Hồ sơ</NavLink>,
       icon: <PawPrintIcon size={16} />,
+    },
+    user?.role.includes("manager") && {
+      key: "managerStaff",
+      label: "Manager",
+      onClick: () => navigate("/manager"),
+      icon: <SquareKanban size={16} />,
     },
     user?.role.includes("services_staff") && {
       key: "approvePet",

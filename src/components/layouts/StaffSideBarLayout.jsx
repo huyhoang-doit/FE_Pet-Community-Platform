@@ -14,7 +14,6 @@ import { GoNote } from "react-icons/go";
 import { IoHomeOutline } from "react-icons/io5";
 import { useDispatch, useSelector } from "react-redux";
 import { handleLogoutAPI } from "@/apis/auth";
-import { FaListCheck } from "react-icons/fa6";
 import { setAuthUser } from "@/redux/authSlice";
 import { MdOutlinePostAdd } from "react-icons/md";
 import { setPosts, setSelectedPost } from "@/redux/postSlice";
@@ -70,6 +69,12 @@ const StaffSideBarLayout = () => {
       key: "/staff-services/manageAdoptionForms",
       icon: <TbDogBowl className="w-4 h-4" />,
       label: "Thú cưng về nhà",
+      roles: ["services_staff"],
+    },
+    {
+      key: "/staff-services/manageExpenses",
+      icon: <GoNote className="w-4 h-4" />,
+      label: "Quản lý chi tiêu",
       roles: ["services_staff"],
     },
     {

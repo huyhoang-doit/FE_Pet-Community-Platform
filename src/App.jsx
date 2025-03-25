@@ -20,14 +20,14 @@ import BlogEdit from "./components/features/blog/BlogEdit";
 import Dashboard from "./components/pages/AdminPages/Dashboard";
 import AdminLayout from "./components/layouts/AdminLayout";
 import User from "./components/pages/AdminPages/User";
-import Donate from "./components/pages/AdminPages/Donate";
+import Donate from "./components/pages/ManagerPages/Donate";
 import ManageStaff from "./components/pages/AdminPages/ManageStaff";
 import { SubmitPet } from "./components/submitPet";
 import { ApprovePet, ManagePet } from "./components/pages/StaffPages";
 import StaffSideBarLayout from "./components/layouts/StaffSideBarLayout";
 import ManageAdoptionPost from "./components/pages/StaffPages/Services/ManageAdoptionPost";
 import ManageAdoptionForms from "./components/pages/StaffPages/Services/ManageAdoptionForms";
-import ManageCampaign from "./components/pages/AdminPages/ManageCampaign";
+import ManageCampaign from "./components/pages/ManagerPages/ManageCampaign";
 import ManagePost from "./components/pages/StaffPages/Forum/ManagePost";
 import ManageBlog from "@/components/pages/StaffPages/Services/ManageBlog";
 import CampaignDetail from "./components/features/donate/CampaignDetail";
@@ -38,6 +38,12 @@ import { getClientSettingAPI } from "./apis/clientSetting";
 import { useDispatch } from "react-redux";
 import { setClientSetting } from "./redux/settingSlice";
 import ManageSetting from "./components/pages/AdminPages/ManageSetting";
+import ManagerLayout from "./components/layouts/ManagerLayout";
+import PetList from "./components/pages/PetList";
+import ApproveExpense from "./components/pages/ManagerPages/ApproveExpense";
+import ManageExpenses from "./components/pages/StaffPages/Services/ManageExpenses";
+import ManageExpense from "./components/pages/ManagerPages/ManageExpense";
+import ManagePetDonations from "./components/pages/ManagerPages/ManagePetDonations";
 
 const browserRouter = createBrowserRouter([
   {
@@ -59,6 +65,10 @@ const browserRouter = createBrowserRouter([
       {
         path: "/forum",
         element: <Home />,
+      },
+      {
+        path: "/pets",
+        element: <PetList />,
       },
       {
         path: "/profile/:username",
@@ -135,6 +145,16 @@ const browserRouter = createBrowserRouter([
         ),
       },
       {
+        path: "/donate/pet/cancel",
+        element: (
+          <ProtectedRoutes>
+            <DonateCancel>
+              <PetList />
+            </DonateCancel>
+          </ProtectedRoutes>
+        ),
+      },
+      {
         path: "/blog/create",
         element: (
           <ProtectedRoutes>
@@ -185,20 +205,46 @@ const browserRouter = createBrowserRouter([
         element: <User />,
       },
       {
-        path: "donate",
-        element: <Donate />,
-      },
-      {
         path: "staff",
         element: <ManageStaff />,
+      },
+      {
+        path: "client-setting",
+        element: <ManageSetting />,
+      },
+    ],
+  },
+  {
+    path: "/manager",
+    element: (
+      <ProtectedRoutes allowedRoles={["manager"]}>
+        <ManagerLayout />
+      </ProtectedRoutes>
+    ),
+    children: [
+      {
+        path: "",
+        element: <Dashboard />,
+      },
+      {
+        path: "donate",
+        element: <Donate />,
       },
       {
         path: "campaign",
         element: <ManageCampaign />,
       },
       {
-        path: "client-setting",
-        element: <ManageSetting />,
+        path: "/manager/approve-expense",
+        element: <ApproveExpense />,
+      },
+      {
+        path: "/manager/expense",
+        element: <ManageExpense />,
+      },
+      {
+        path: "/manager/pets-donation",
+        element: <ManagePetDonations />,
       },
     ],
   },
@@ -255,6 +301,10 @@ const browserRouter = createBrowserRouter([
       {
         path: "manageAdoptionForms",
         element: <ManageAdoptionForms />,
+      },
+      {
+        path: "manageExpenses",
+        element: <ManageExpenses />,
       },
     ],
   },

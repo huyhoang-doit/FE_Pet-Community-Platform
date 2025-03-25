@@ -14,6 +14,9 @@ const Home = () => {
     if (location.pathname.includes("/adopt")) {
       return <AdoptFeeds />;
     }
+    if (location.pathname.includes("/donate/cancel")) {
+      return <ForumFeeds />;
+    }
     return <Outlet />;
   };
 
