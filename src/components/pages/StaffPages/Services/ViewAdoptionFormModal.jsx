@@ -7,6 +7,10 @@ import moment from "moment";
 import { toast } from "sonner";
 import { updateAdoptionFormStatusAPI } from "@/apis/post";
 import { HeartFilled } from "@ant-design/icons";
+import { Link } from "react-router-dom";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import VerifiedBadge from "@/components/core/VerifiedBadge";
+import { Textarea } from "@/components/ui/textarea";
 
 const ViewAdoptionFormModal = ({ open, setOpen, form, onStatusUpdate }) => {
   if (!form) return null;
@@ -15,8 +19,8 @@ const ViewAdoptionFormModal = ({ open, setOpen, form, onStatusUpdate }) => {
     adopter,
     adoptionPost,
     pet,
-    user,
-    message,
+    sender,
+    reason,
     status,
     periodicChecks,
     createdAt,
@@ -25,17 +29,27 @@ const ViewAdoptionFormModal = ({ open, setOpen, form, onStatusUpdate }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [selectedStatus, setSelectedStatus] = useState(status);
   const [loading, setLoading] = useState(false);
+  const [note, setNote] = useState("");
 
   const handleStatusChange = (value) => {
     setSelectedStatus(value);
   };
 
   const handleSaveStatus = async () => {
+    if (!selectedStatus) {
+      toast.error("Vui lòng chọn trạng thái!");
+      return;
+    }
+    if (!note.trim()) {
+      toast.error("Vui lòng nhập phản hồi cho người đăng ký!");
+      return;
+    }
     try {
       setLoading(true);
       const response = await updateAdoptionFormStatusAPI(
         form._id,
-        selectedStatus
+        selectedStatus,
+        note
       );
       if (response.status === 200) {
         toast.success("Cập nhật trạng thái thành công!");
@@ -133,7 +147,7 @@ const ViewAdoptionFormModal = ({ open, setOpen, form, onStatusUpdate }) => {
             <Descriptions.Item
               label={<span className="text-pink-700">Giống</span>}
             >
-              {pet.breed}
+              {pet.breed.name}
             </Descriptions.Item>
             <Descriptions.Item
               label={<span className="text-pink-700">Tuổi</span>}
@@ -251,12 +265,30 @@ const ViewAdoptionFormModal = ({ open, setOpen, form, onStatusUpdate }) => {
             <Descriptions.Item
               label={<span className="text-pink-700">Người gửi đơn</span>}
             >
-              {user?.username}
+              <div className="flex items-center gap-2">
+                <Link to={`/profile/${sender?.username}`} target="_blank">
+                  <Avatar style={{ border: "1px solid #e0e0e0" }}>
+                    <AvatarImage
+                      src={sender?.profilePicture}
+                      alt="post_image"
+                    />
+                    <AvatarFallback>CN</AvatarFallback>
+                  </Avatar>
+                </Link>
+                <Link to={`/profile/${sender?.username}`} target="_blank">
+                  <div className="flex items-center gap-2">
+                    <span className="font-medium text-sm">
+                      {sender?.username}
+                    </span>
+                    {sender?.isVerified && <VerifiedBadge size={14} />}
+                  </div>
+                </Link>
+              </div>
             </Descriptions.Item>
             <Descriptions.Item
               label={<span className="text-pink-700">Thông điệp</span>}
             >
-              {message || "Không có"}
+              {reason || "Không có"}
             </Descriptions.Item>
             <Descriptions.Item
               label={<span className="text-pink-700">Trạng thái</span>}
@@ -276,6 +308,20 @@ const ViewAdoptionFormModal = ({ open, setOpen, form, onStatusUpdate }) => {
                 getStatusTag(status)
               )}
             </Descriptions.Item>
+            {/* Thêm item ghi chú khi isEditing là true */}
+            {isEditing && (
+              <Descriptions.Item
+                label={<span className="text-pink-700">Phản hồi</span>}
+              >
+                <Textarea
+                  rows={3}
+                  value={note}
+                  onChange={(e) => setNote(e.target.value)}
+                  placeholder="Nhập phản hồi cho người đăng ký"
+                  className="border-pink-200 hover:border-pink-400"
+                />
+              </Descriptions.Item>
+            )}
             <Descriptions.Item
               label={<span className="text-pink-700">Ngày tạo</span>}
             >

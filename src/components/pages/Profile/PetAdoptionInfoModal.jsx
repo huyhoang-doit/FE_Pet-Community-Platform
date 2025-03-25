@@ -7,7 +7,7 @@ import { HeartFilled } from "@ant-design/icons";
 const PetAdoptionInfoModal = ({ open, setOpen, form }) => {
   if (!form) return null;
 
-  const { adopter, pet, user, reason, status, periodicChecks, createdAt } =
+  const { adopter, pet, sender, reason, status, periodicChecks, createdAt } =
     form;
 
   const getStatusTag = (status) => {
@@ -86,32 +86,32 @@ const PetAdoptionInfoModal = ({ open, setOpen, form }) => {
             <Descriptions.Item
               label={<span className="text-pink-700">Tên</span>}
             >
-              {pet.name || "N/A"}
+              {pet?.name || "N/A"}
             </Descriptions.Item>
             <Descriptions.Item
               label={<span className="text-pink-700">Giống</span>}
             >
-              {pet.breed.name || "N/A"}
+              {pet?.breed.name || "N/A"}
             </Descriptions.Item>
             <Descriptions.Item
               label={<span className="text-pink-700">Tuổi</span>}
             >
-              {pet.age ? `${pet.age} tuổi` : "N/A"}
+              {pet?.age ? `${pet.age} tuổi` : "N/A"}
             </Descriptions.Item>
             <Descriptions.Item
               label={<span className="text-pink-700">Tình trạng sức khỏe</span>}
             >
-              {pet.health_status || "N/A"}
+              {pet?.health_status || "N/A"}
             </Descriptions.Item>
             <Descriptions.Item
               label={<span className="text-pink-700">Mô tả</span>}
             >
-              {pet.description || "Không có"}
+              {pet?.description || "Không có"}
             </Descriptions.Item>
             <Descriptions.Item
               label={<span className="text-pink-700">Hình ảnh</span>}
             >
-              {pet.image_url?.[0]?.[0] ? (
+              {pet?.image_url?.[0]?.[0] ? (
                 <Image
                   src={pet.image_url[0][0]}
                   alt={pet.name}
@@ -139,9 +139,9 @@ const PetAdoptionInfoModal = ({ open, setOpen, form }) => {
             className="border-pink-200"
           >
             <Descriptions.Item
-              label={<span className="text-pink-700">Người gửi đơn</span>}
+              label={<span className="text-pink-700">Người gửi yêu cầu</span>}
             >
-              {user?.username || "N/A"}
+              {sender?.username || "N/A"}
             </Descriptions.Item>
             <Descriptions.Item
               label={<span className="text-pink-700">Thông điệp</span>}

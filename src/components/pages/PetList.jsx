@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import { useState, useEffect } from "react";
 import { formatDistance } from "date-fns";
 import { vi } from "date-fns/locale";
@@ -7,19 +8,64 @@ import { FE_URL } from "@/configs/globalVariables";
 import { message } from "antd";
 import dayjs from "dayjs";
 
+// Pagination Component
+const Pagination = ({ page, total, pageSize, onPageChange }) => {
+  const totalPages = Math.ceil(total / pageSize);
+
+  return (
+    <div className="flex justify-center items-center space-x-2 mb-8">
+      <button
+        onClick={() => onPageChange(Math.max(1, page - 1))}
+        disabled={page === 1}
+        className={`px-4 py-2 rounded-lg ${
+          page === 1
+            ? "bg-gray-200 text-gray-500 cursor-not-allowed"
+            : "bg-pink-500 text-white hover:bg-pink-600"
+        }`}
+      >
+        Trang trước
+      </button>
+      <span className="text-gray-600">
+        Trang {page} / {totalPages}
+      </span>
+      <button
+        onClick={() => onPageChange(Math.min(totalPages, page + 1))}
+        disabled={page >= totalPages}
+        className={`px-4 py-2 rounded-lg ${
+          page >= totalPages
+            ? "bg-gray-200 text-gray-500 cursor-not-allowed"
+            : "bg-pink-500 text-white hover:bg-pink-600"
+        }`}
+      >
+        Trang sau
+      </button>
+    </div>
+  );
+};
+
 function PetList() {
   const pageSize = 10;
-  const [pets, setPets] = useState([]);
+
+  // State for Pet Cards
+  const [cardPets, setCardPets] = useState([]);
+  const [cardPage, setCardPage] = useState(1);
+  const [cardTotal, setCardTotal] = useState(0);
+  const [cardLoading, setCardLoading] = useState(false);
+
+  // State for Overview Table
+  const [tablePets, setTablePets] = useState([]);
+  const [tablePage, setTablePage] = useState(1);
+  const [tableTotal, setTableTotal] = useState(0);
+  const [tableLoading, setTableLoading] = useState(false);
+
+  // Shared states for modal and donation
   const [selectedPet, setSelectedPet] = useState(null);
   const [openDialog, setOpenDialog] = useState(false);
   const [donationAmount, setDonationAmount] = useState(200000);
-  const [page, setPage] = useState(1);
-  const [total, setTotal] = useState(0);
-  const [loading, setLoading] = useState(false);
   const [customAmount, setCustomAmount] = useState("");
   const [isProcessing, setIsProcessing] = useState(false);
 
-  // Add filter states
+  // Filter states (shared between both sections)
   const [filters, setFilters] = useState({
     health_status: "",
     vaccinated: "",
@@ -28,30 +74,53 @@ function PetList() {
     sortBy: "totalDonation:asc",
   });
 
+  // Fetch pets for cards
   useEffect(() => {
-    const fetchPets = async () => {
-      setLoading(true);
+    const fetchCardPets = async () => {
+      setCardLoading(true);
       try {
-        // Add filters to the API call
         const queryParams = new URLSearchParams({
-          page,
+          page: cardPage,
           pageSize,
           ...Object.fromEntries(
             Object.entries(filters).filter(([, value]) => value !== "")
           ),
         });
-
         const response = await getPetsHomePageQuery(queryParams);
-        setTotal(response.data.data.totalResults);
-        setPets(response.data.data.results);
+        setCardTotal(response.data.data.totalResults);
+        setCardPets(response.data.data.results);
       } catch (error) {
-        console.error("Error fetching pets:", error);
+        console.error("Error fetching card pets:", error);
       } finally {
-        setLoading(false);
+        setCardLoading(false);
       }
     };
-    fetchPets();
-  }, [page, pageSize, filters]);
+    fetchCardPets();
+  }, [cardPage, pageSize, filters]);
+
+  // Fetch pets for table
+  useEffect(() => {
+    const fetchTablePets = async () => {
+      setTableLoading(true);
+      try {
+        const queryParams = new URLSearchParams({
+          page: tablePage,
+          pageSize,
+          ...Object.fromEntries(
+            Object.entries(filters).filter(([, value]) => value !== "")
+          ),
+        });
+        const response = await getPetsHomePageQuery(queryParams);
+        setTableTotal(response.data.data.totalResults);
+        setTablePets(response.data.data.results);
+      } catch (error) {
+        console.error("Error fetching table pets:", error);
+      } finally {
+        setTableLoading(false);
+      }
+    };
+    fetchTablePets();
+  }, [tablePage, pageSize, filters]);
 
   // Handle filter changes
   const handleFilterChange = (name, value) => {
@@ -59,7 +128,8 @@ function PetList() {
       ...prev,
       [name]: value,
     }));
-    setPage(1); // Reset to first page when filters change
+    setCardPage(1); // Reset card pagination
+    setTablePage(1); // Reset table pagination
   };
 
   const handleOpenDetails = (pet) => {
@@ -86,7 +156,6 @@ function PetList() {
     }
   };
 
-  // Format currency in VND
   const formatCurrency = (amount) => {
     return new Intl.NumberFormat("vi-VN", {
       style: "currency",
@@ -99,22 +168,15 @@ function PetList() {
       message.error("Vui lòng nhập số tiền quyên góp tối thiểu 10,000 VND");
       return;
     }
-
     if (!selectedPet) return;
 
     setIsProcessing(true);
     try {
-      // Get description from somewhere in your UI or set a default
       const description = "Pet donation";
-
-      // Get isAnonymous value from a checkbox or toggle in your UI
-      const isAnonymous = false; // or get from form state
-
-      // Set return and cancel URLs
+      const isAnonymous = false;
       const returnUrl = `${FE_URL}/pets`;
       const cancelUrl = `${FE_URL}/donate/pet/cancel`;
 
-      // Call the donateAPI with petId instead of campaignId
       const response = await donatePetAPI(
         donationAmount,
         description,
@@ -129,7 +191,6 @@ function PetList() {
       }
     } catch (error) {
       console.error("Error creating payment link:", error);
-      // Handle error (show message to user)
     } finally {
       setIsProcessing(false);
     }
@@ -210,17 +271,15 @@ function PetList() {
             </div>
           </div>
 
-          {/* Loading State */}
-          {loading && (
+          {/* Pet Cards Grid */}
+          {cardLoading && (
             <div className="text-center py-8">
               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-pink-500 mx-auto"></div>
             </div>
           )}
-
-          {/* Pet Cards Grid */}
-          {!loading && (
+          {!cardLoading && (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
-              {pets.map((pet) => (
+              {cardPets.map((pet) => (
                 <div
                   key={pet._id}
                   className="bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 border border-pink-100 transform hover:-translate-y-1"
@@ -250,7 +309,6 @@ function PetList() {
                     <h3 className="text-2xl font-bold mb-3 text-pink-600">
                       {pet.name}
                     </h3>
-
                     <div className="flex flex-wrap gap-2 mb-4">
                       <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-pink-50 text-pink-700">
                         {pet.age} tuổi
@@ -271,11 +329,9 @@ function PetList() {
                         {pet.coat}
                       </span>
                     </div>
-
                     <p className="text-gray-600 mb-6 line-clamp-2 h-12">
                       {pet.description}
                     </p>
-
                     <div className="mb-6">
                       <div className="flex justify-between text-sm mb-2">
                         <span className="font-medium text-pink-700">
@@ -313,7 +369,6 @@ function PetList() {
                         </span>
                       </div>
                     </div>
-
                     <div className="flex justify-between items-center pt-4 border-t border-pink-100">
                       <span className="text-xs text-pink-500">
                         {formatDistance(new Date(pet.createdAt), new Date(), {
@@ -333,144 +388,138 @@ function PetList() {
               ))}
             </div>
           )}
-
-          {/* Pagination */}
-          {!loading && total > 0 && (
-            <div className="flex justify-center items-center space-x-2 mb-8">
-              <button
-                onClick={() => setPage(Math.max(1, page - 1))}
-                disabled={page === 1}
-                className={`px-4 py-2 rounded-lg ${
-                  page === 1
-                    ? "bg-gray-200 text-gray-500 cursor-not-allowed"
-                    : "bg-pink-500 text-white hover:bg-pink-600"
-                }`}
-              >
-                Trang trước
-              </button>
-              <span className="text-gray-600">
-                Trang {page} / {Math.ceil(total / pageSize)}
-              </span>
-              <button
-                onClick={() =>
-                  setPage(Math.min(Math.ceil(total / pageSize), page + 1))
-                }
-                disabled={page >= Math.ceil(total / pageSize)}
-                className={`px-4 py-2 rounded-lg ${
-                  page >= Math.ceil(total / pageSize)
-                    ? "bg-gray-200 text-gray-500 cursor-not-allowed"
-                    : "bg-pink-500 text-white hover:bg-pink-600"
-                }`}
-              >
-                Trang sau
-              </button>
-            </div>
-          )}
-
-          {/* No Results */}
-          {!loading && total === 0 && (
+          {!cardLoading && cardTotal === 0 && (
             <div className="text-center py-8">
               <p className="text-gray-500">
                 Không tìm thấy thú cưng nào phù hợp với bộ lọc
               </p>
             </div>
           )}
-
+          {!cardLoading && cardTotal > 0 && (
+            <Pagination
+              page={cardPage}
+              total={cardTotal}
+              pageSize={pageSize}
+              onPageChange={setCardPage}
+            />
+          )}
           {/* Overview Table */}
           <div className="bg-white rounded-2xl shadow-lg overflow-hidden mb-12 border border-pink-100">
             <h2 className="text-2xl font-bold p-6 bg-pink-50 text-pink-700 border-b border-pink-100">
               Danh sách tổng quan
             </h2>
-            <div className="overflow-x-auto">
-              <table className="min-w-full">
-                <thead className="bg-pink-50">
-                  <tr>
-                    <th className="px-6 py-4 text-left text-sm font-medium text-pink-700">
-                      Tên
-                    </th>
-                    <th className="px-6 py-4 text-left text-sm font-medium text-pink-700">
-                      Tình trạng
-                    </th>
-                    <th className="px-6 py-4 text-right text-sm font-medium text-pink-700">
-                      Mục tiêu quyên góp
-                    </th>
-                    <th className="px-6 py-4 text-right text-sm font-medium text-pink-700">
-                      Đã quyên góp
-                    </th>
-                    <th className="px-6 py-4 text-right text-sm font-medium text-pink-700">
-                      Đã chi tiêu
-                    </th>
-                    <th className="px-6 py-4 text-right text-sm font-medium text-pink-700">
-                      Còn lại
-                    </th>
-                    <th className="px-6 py-4 text-center text-sm font-medium text-pink-700">
-                      Chi tiết
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-pink-100">
-                  {pets.map((pet) => (
-                    <tr
-                      key={pet._id}
-                      className="hover:bg-pink-50 transition-colors"
-                    >
-                      <td className="flex items-center space-x-2 px-6 py-4 text-sm text-gray-900 font-medium">
-                        <img
-                          src={
-                            pet.image_url?.[0]?.[0] ||
-                            "https://via.placeholder.com/40"
-                          }
-                          alt={pet.name}
-                          className="w-8 h-8 rounded-full object-cover"
-                        />
-                        <span>{pet.name}</span>
-                      </td>
-                      <td className="px-6 py-4 text-sm">
-                        <span
-                          className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium ${
-                            pet.health_status === "Healthy"
-                              ? "bg-green-100 text-green-800"
-                              : pet.health_status === "Recovering"
-                              ? "bg-yellow-100 text-yellow-800"
-                              : "bg-red-100 text-red-800"
-                          }`}
-                        >
-                          {pet.health_status}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 text-sm text-pink-600 font-medium text-right">
-                        {formatCurrency(pet.donationGoal)}
-                      </td>
-                      <td className="px-6 py-4 text-sm text-pink-600 font-medium text-right">
-                        {formatCurrency(pet.totalDonation)}
-                      </td>
-                      <td className="px-6 py-4 text-sm text-pink-600 font-medium text-right">
-                        {formatCurrency(pet.totalExpenses)}
-                      </td>
-                      <td className="px-6 py-4 text-sm text-right">
-                        <span
-                          className={
-                            pet.totalDonation - pet.totalExpenses > 0
-                              ? "text-green-600 font-medium"
-                              : "text-red-600 font-medium"
-                          }
-                        >
-                          {formatCurrency(pet.remainingFunds)}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 text-sm text-center">
-                        <button
-                          onClick={() => handleOpenDetails(pet)}
-                          className="bg-pink-100 hover:bg-pink-200 text-pink-700 px-4 py-2 rounded-full transition-colors font-medium"
-                        >
-                          Chi tiết
-                        </button>
-                      </td>
+            {tableLoading && (
+              <div className="text-center py-8">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-pink-500 mx-auto"></div>
+              </div>
+            )}
+            {!tableLoading && (
+              <div className="overflow-x-auto">
+                <table className="min-w-full">
+                  <thead className="bg-pink-50">
+                    <tr>
+                      <th className="px-6 py-4 text-left text-sm font-medium text-pink-700">
+                        Tên
+                      </th>
+                      <th className="px-6 py-4 text-left text-sm font-medium text-pink-700">
+                        Tình trạng
+                      </th>
+                      <th className="px-6 py-4 text-right text-sm font-medium text-pink-700">
+                        Mục tiêu quyên góp
+                      </th>
+                      <th className="px-6 py-4 text-right text-sm font-medium text-pink-700">
+                        Đã quyên góp
+                      </th>
+                      <th className="px-6 py-4 text-right text-sm font-medium text-pink-700">
+                        Đã chi tiêu
+                      </th>
+                      <th className="px-6 py-4 text-right text-sm font-medium text-pink-700">
+                        Còn lại
+                      </th>
+                      <th className="px-6 py-4 text-center text-sm font-medium text-pink-700">
+                        Chi tiết
+                      </th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                  </thead>
+                  <tbody className="divide-y divide-pink-100">
+                    {tablePets.map((pet) => (
+                      <tr
+                        key={pet._id}
+                        className="hover:bg-pink-50 transition-colors"
+                      >
+                        <td className="flex items-center space-x-2 px-6 py-4 text-sm text-gray-900 font-medium">
+                          <img
+                            src={
+                              pet.image_url?.[0]?.[0] ||
+                              "https://via.placeholder.com/40"
+                            }
+                            alt={pet.name}
+                            className="w-8 h-8 rounded-full object-cover"
+                          />
+                          <span>{pet.name}</span>
+                        </td>
+                        <td className="px-6 py-4 text-sm">
+                          <span
+                            className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium ${
+                              pet.health_status === "Healthy"
+                                ? "bg-green-100 text-green-800"
+                                : pet.health_status === "Recovering"
+                                ? "bg-yellow-100 text-yellow-800"
+                                : "bg-red-100 text-red-800"
+                            }`}
+                          >
+                            {pet.health_status}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 text-sm text-pink-600 font-medium text-right">
+                          {formatCurrency(pet.donationGoal)}
+                        </td>
+                        <td className="px-6 py-4 text-sm text-pink-600 font-medium text-right">
+                          {formatCurrency(pet.totalDonation)}
+                        </td>
+                        <td className="px-6 py-4 text-sm text-pink-600 font-medium text-right">
+                          {formatCurrency(pet.totalExpenses)}
+                        </td>
+                        <td className="px-6 py-4 text-sm text-right">
+                          <span
+                            className={
+                              pet.totalDonation - pet.totalExpenses > 0
+                                ? "text-green-600 font-medium"
+                                : "text-red-600 font-medium"
+                            }
+                          >
+                            {formatCurrency(pet.remainingFunds)}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 text-sm text-center">
+                          <button
+                            onClick={() => handleOpenDetails(pet)}
+                            className="bg-pink-100 hover:bg-pink-200 text-pink-700 px-4 py-2 rounded-full transition-colors font-medium"
+                          >
+                            Chi tiết
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+            {!tableLoading && tableTotal === 0 && (
+              <div className="text-center py-8">
+                <p className="text-gray-500">
+                  Không tìm thấy thú cưng nào phù hợp với bộ lọc
+                </p>
+              </div>
+            )}
+            {!tableLoading && tableTotal > 0 && (
+              <Pagination
+                page={tablePage}
+                total={tableTotal}
+                pageSize={pageSize}
+                onPageChange={setTablePage}
+              />
+            )}
           </div>
 
           {/* Pet Details Modal */}

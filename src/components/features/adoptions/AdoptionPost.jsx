@@ -76,7 +76,7 @@ const AdoptionPost = ({ post }) => {
           Quản lý bài đăng
         </Button>
       );
-    } else if (userRole === "user") {
+    } else if (userRole === "user" && post.adopt_status !== "Adopted") {
       return (
         <div className="flex items-center gap-2">
           <Button
