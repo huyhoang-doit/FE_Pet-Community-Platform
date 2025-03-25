@@ -6,12 +6,12 @@ import {
   MenuFoldOutlined,
   MenuUnfoldOutlined,
   PieChartOutlined,
-  SettingOutlined,
-  TeamOutlined,
   UserOutlined,
   BellOutlined,
   SearchOutlined,
+  GiftOutlined,
   ExclamationCircleOutlined,
+  DollarOutlined,
 } from "@ant-design/icons";
 import {
   Button,
@@ -28,11 +28,12 @@ import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Outlet, useNavigate, useLocation, Link } from "react-router-dom";
 import { toast } from "sonner";
-import { PawPrintIcon } from "lucide-react";
+import { BellElectric, Caravan, PawPrintIcon } from "lucide-react";
+import { IoHomeOutline } from "react-icons/io5";
 
 const { Header, Sider, Content } = Layout;
 
-const AdminLayout = () => {
+const ManagerLayout = () => {
   const { user } = useSelector((store) => store.auth);
   const clientSetting = useSelector((state) => state.setting.clientSetting);
   const logo = clientSetting?.find((item) => item.name === "Logo")?.value;
@@ -152,24 +153,43 @@ const AdminLayout = () => {
             }}
             items={[
               {
-                key: "/admin/",
+                key: "/forum",
+                icon: <IoHomeOutline />,
+                label: "Trang chủ",
+              },
+              {
+                key: "/manager",
                 icon: <PieChartOutlined />,
                 label: "Bảng điều khiển",
               },
               {
-                key: "/admin/users",
-                icon: <UserOutlined />,
-                label: "Người dùng",
+                key: "/manager/donate",
+                icon: <GiftOutlined />,
+                label: "Danh sách quyên góp",
               },
               {
-                key: "/admin/staff",
-                icon: <TeamOutlined />,
-                label: "Nhân viên",
+                key: "/manager/campaign",
+                icon: (
+                  <div style={{ position: "relative" }}>
+                    <Caravan style={{ width: 16, height: 16 }} />
+                  </div>
+                ),
+                label: "Chiến dịch",
               },
               {
-                key: "/admin/client-setting",
-                icon: <SettingOutlined />,
-                label: "Cài đặt",
+                key: "/manager/pets-donation",
+                icon: <PawPrintIcon style={{ width: 16, height: 16 }} />,
+                label: "Thú cưng",
+              },
+              {
+                key: "/manager/approve-expense",
+                icon: <BellElectric size={16} />,
+                label: "Duyệt chi tiêu",
+              },
+              {
+                key: "/manager/expense",
+                icon: <DollarOutlined />,
+                label: "Quản lý chi tiêu",
               },
             ]}
             style={{
@@ -229,11 +249,9 @@ const AdminLayout = () => {
 
           {/* Breadcrumb or page title placeholder */}
           <div className="font-semibold text-lg">
-            {location.pathname === "/admin/" && "Bảng điều khiển"}
-            {location.pathname === "/admin/users" && "Quản lý người dùng"}
-            {location.pathname === "/admin/staff" && "Quản lý nhân viên"}
-            {location.pathname === "/admin/client-setting" &&
-              "Cài đặt hệ thống"}
+            {location.pathname === "/manager/" && "Bảng điều khiển"}
+            {location.pathname === "/manager/donate" && "Quản lý quyên góp"}
+            {location.pathname === "/manager/campaign" && "Quản lý chiến dịch"}
           </div>
 
           {/* Right side items */}
@@ -286,7 +304,7 @@ const AdminLayout = () => {
                 />
                 <div className="ml-2 hidden md:block">
                   <div className="text-sm font-medium">{user.username}</div>
-                  <div className="text-xs text-gray-500">Administrator</div>
+                  <div className="text-xs text-gray-500">Manager</div>
                 </div>
               </div>
             </Dropdown>
@@ -318,4 +336,4 @@ const AdminLayout = () => {
   );
 };
 
-export default AdminLayout;
+export default ManagerLayout;

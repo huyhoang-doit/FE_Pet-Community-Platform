@@ -72,6 +72,12 @@ const StaffSideBarLayout = () => {
       roles: ["services_staff"],
     },
     {
+      key: "/staff-services/manageExpenses",
+      icon: <GoNote className="w-4 h-4" />,
+      label: "Quản lý chi tiêu",
+      roles: ["services_staff"],
+    },
+    {
       key: "/staff-forum/manageBlog",
       icon: <MdOutlinePostAdd className="w-5 h-5" />,
       label: "Blogs",
