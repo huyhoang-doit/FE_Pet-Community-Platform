@@ -144,18 +144,18 @@ export const fetchAllAdoptionPostsByBreedAPI = async (page, breed) => {
   return response;
 };
 
-export const updateAdoptionFormStatusAPI = async (formId, status) => {
+export const updateAdoptionFormStatusAPI = async (formId, status, note) => {
   const response = await authorizedAxiosInstance.put(
     `${BASE_URL}/adoption-form/form/${formId}`,
     {
       status,
+      note,
     }
   );
   return response;
 };
 
 export const alertAdoptionFormStatusAPI = async (formId) => {
-  console.log("🚀 ~ alertAdoptionFormStatusAPI ~ formId:", formId);
   const response = await authorizedAxiosInstance.put(
     `${BASE_URL}/adoption-form/alert-check/${formId}`
   );

@@ -85,7 +85,6 @@ const ManageAdoptionForms = () => {
 
   const handleRequestCheck = async (formId) => {
     const { data } = await alertAdoptionFormStatusAPI(formId);
-    console.log("🚀 ~ handleRequestCheck ~ data:", data);
     if (data.status === 200) {
       toast.success(`Đã gửi yêu cầu kiểm tra cho đơn ${formId}`);
     }

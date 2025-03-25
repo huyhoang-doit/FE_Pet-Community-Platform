@@ -14,6 +14,8 @@ const TabNotification = () => {
   useGetSuggestedUsers(30);
   const { notifications } = useSelector((store) => store.realTimeNotification);
   const { suggestedUsers } = useSelector((store) => store.auth);
+  const clientSetting = useSelector((state) => state.setting.clientSetting);
+  const logo = clientSetting?.find((item) => item.name === "Logo")?.value;
 
   const groupNotificationsByDate = (notifications) => {
     if (!Array.isArray(notifications)) {
@@ -164,7 +166,13 @@ const TabNotification = () => {
                       style={{ border: "1px solid #e0e0e0" }}
                     >
                       <AvatarImage src={suggestedUser?.profilePicture} />
-                      <AvatarFallback>CN</AvatarFallback>
+                      <AvatarFallback>
+                        <img
+                          src={logo}
+                          alt="PetPals"
+                          className="object-contain h-full w-full"
+                        />
+                      </AvatarFallback>
                     </Avatar>
                   </div>
                   <div className="flex flex-col">
@@ -214,7 +222,13 @@ const TabNotification = () => {
                               <AvatarImage
                                 src={notification?.sender?.profilePicture}
                               />
-                              <AvatarFallback>CN</AvatarFallback>
+                              <AvatarFallback>
+                                <img
+                                  src={logo}
+                                  alt="PetPals"
+                                  className="object-contain h-full w-full"
+                                />
+                              </AvatarFallback>
                             </Avatar>
                             <span className="text-sm">
                               <div className="inline-flex mr-1 font-semibold inline-flex items-center gap-1">
@@ -243,7 +257,13 @@ const TabNotification = () => {
                               <AvatarImage
                                 src={notification?.sender?.profilePicture}
                               />
-                              <AvatarFallback>CN</AvatarFallback>
+                              <AvatarFallback>
+                                <img
+                                  src={logo}
+                                  alt="PetPals"
+                                  className="object-contain h-full w-full"
+                                />
+                              </AvatarFallback>
                             </Avatar>
                             <span className="text-sm">
                               <div className="inline-flex mr-1 font-semibold inline-flex items-center gap-1">
