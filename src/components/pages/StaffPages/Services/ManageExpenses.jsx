@@ -261,7 +261,7 @@ function ManageExpenses() {
         const labels = {
           "Waiting for Review": "Chờ duyệt hóa đơn",
           "Receipt Pending": "Chờ hóa đơn",
-          Pending: "Chờ quản lý duyệt",
+          Pending: "Chờ được duyệt",
           Completed: "Đã hoàn thành",
           Rejected: "Từ chối",
         };
