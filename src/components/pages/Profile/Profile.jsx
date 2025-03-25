@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
-import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "../../ui/avatar";
 import useGetUserProfile from "@/hooks/useGetUserProfile";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { Button } from "../ui/button";
-import { Badge } from "../ui/badge";
+import { Button } from "../../ui/button";
+import { Badge } from "../../ui/badge";
 import {
   AtSign,
   Grid3x3,
@@ -13,20 +13,31 @@ import {
   Gift,
   Calendar,
   Receipt,
+  PawPrint,
+  Bone,
 } from "lucide-react";
 import { setUserProfile } from "@/redux/authSlice";
 import { toast } from "sonner";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "../../ui/dialog";
 import authorizedAxiosInstance from "@/utils/authorizedAxios";
 import { setSelectedPost } from "@/redux/postSlice";
-import CommentDialog from "../features/posts/CommentDialog";
+import CommentDialog from "../../features/posts/CommentDialog";
 import { FaBookmark } from "react-icons/fa";
 import { followOrUnfollowAPI } from "@/apis/user";
-import VerifiedBadge from "../core/VerifiedBadge";
-import UserListItem from "../features/users/UserListItem";
+import VerifiedBadge from "../../core/VerifiedBadge";
+import UserListItem from "../../features/users/UserListItem";
 import useFetchData from "@/hooks/useFetchData";
 import { getDonationByUserIdAPI } from "@/apis/donate";
 import { BASE_URL } from "@/configs/globalVariables";
+import { getPetBySubmittedIdAPI } from "@/apis/pet";
+import SubmittedPetTable from "./SubmittedPetTable";
+import { fetchAdoptionFormsBySenderIdAPI } from "@/apis/post";
+import AdoptionFormTable from "./AdoptionFormTable";
 
 const Profile = () => {
   useFetchData();
@@ -51,6 +62,10 @@ const Profile = () => {
   const [modalType, setModalType] = useState("");
   const [showPostModal, setShowPostModal] = useState(false);
   const [donations, setDonations] = useState([]);
+  const [submittedPets, setSubmittedPets] = useState({ results: [] });
+  const [adoptionForms, setAdoptionForms] = useState({ results: [] });
+  const [petPage, setPetPage] = useState(1);
+  const limit = 5;
 
   const handleTabChange = (tab) => {
     setActiveTab(tab);
@@ -60,23 +75,26 @@ const Profile = () => {
     setNumberFollowers(userProfile?.followers.length);
     setNumberFollowing(userProfile?.following.length);
     setIsFollowing(userProfile?.followers.includes(user?.id));
-    user && getDonation(userProfile?.id);
-  }, [userProfile, user]);
+    if (user) {
+      getDonation(userProfile?.id);
+      getSubmittedPets(userProfile?.id, petPage);
+      getAdoptedPets(userProfile?.id, petPage);
+    }
+  }, [userProfile, user, petPage]);
 
   const followOrUnfollowHandler = async () => {
     try {
       if (!user) {
         toast.warning("Vui lòng đăng nhập!");
         navigate("/login");
+        return;
       }
       const { data } = await followOrUnfollowAPI(userProfile.id);
-
       if (data.status === 200) {
         setIsFollowing(!isFollowing);
         setNumberFollowers(
           isFollowing ? numberFollowers - 1 : numberFollowers + 1
         );
-
         dispatch(
           setUserProfile({
             ...userProfile,
@@ -109,7 +127,6 @@ const Profile = () => {
       const { data } = await authorizedAxiosInstance.get(
         `${BASE_URL}/post/${post._id}/getpostbyid`
       );
-
       dispatch(setSelectedPost(data.data));
       setShowPostModal(true);
     } catch (error) {
@@ -120,6 +137,37 @@ const Profile = () => {
   const getDonation = async (userId) => {
     const { data } = await getDonationByUserIdAPI(userId, 1, 5);
     setDonations(data.data.results);
+  };
+
+  const getSubmittedPets = async (userId, page) => {
+    try {
+      const { data } = await getPetBySubmittedIdAPI(userId, { page, limit });
+      setSubmittedPets(data.data);
+    } catch (error) {
+      console.error("Error fetching submitted pets:", error);
+    }
+  };
+
+  const getAdoptedPets = async (userId, page) => {
+    try {
+      const { data } = await fetchAdoptionFormsBySenderIdAPI(
+        userId,
+        page,
+        limit
+      );
+
+      setAdoptionForms(data.data);
+    } catch (error) {
+      console.error("Error fetching adopted pets:", error);
+    }
+  };
+
+  const handleCheckSubmit = async () => {
+    await getAdoptedPets(userProfile?.id, petPage);
+  };
+
+  const handlePetPageChange = (newPage) => {
+    setPetPage(newPage);
   };
 
   const displayedPost =
@@ -194,9 +242,7 @@ const Profile = () => {
                   <Button
                     variant="secondary"
                     className="h-8"
-                    onClick={() => {
-                      navigate(`/chat/${userProfile?.id}`);
-                    }}
+                    onClick={() => navigate(`/chat/${userProfile?.id}`)}
                   >
                     Nhắn tin
                   </Button>
@@ -235,7 +281,7 @@ const Profile = () => {
                   style={{ fontWeight: "400" }}
                 >
                   <AtSign size={14} />{" "}
-                  <span className="pl-1">{userProfile?.username}</span>{" "}
+                  <span className="pl-1">{userProfile?.username}</span>
                 </Badge>
                 <span className="text-sm" style={{ fontWeight: "400" }}>
                   {userProfile?.bio}
@@ -272,117 +318,147 @@ const Profile = () => {
                 <Gift size={18} /> LỊCH SỬ QUYÊN GÓP
               </span>
             )}
+            {user && (
+              <span
+                className={`py-3 cursor-pointer flex items-center gap-2 ${
+                  activeTab === "pets" ? "font-bold" : "text-gray-500"
+                }`}
+                onClick={() => handleTabChange("pets")}
+              >
+                <PawPrint size={18} /> THÚ CƯNG
+              </span>
+            )}
+            {user && (
+              <span
+                className={`py-3 cursor-pointer flex items-center gap-2 ${
+                  activeTab === "adopts" ? "font-bold" : "text-gray-500"
+                }`}
+                onClick={() => handleTabChange("adopts")}
+              >
+                <Bone size={18} /> NHẬN NUÔI
+              </span>
+            )}
           </div>
-          <div className="grid grid-cols-4 gap-4 min-h-[200px]">
-            {activeTab === "donations" ? (
-              donations?.length > 0 ? (
-                <div className="col-span-4">
-                  <div className="overflow-x-auto">
-                    <table className="w-full text-sm text-left">
-                      <thead className="text-xs uppercase bg-gray-100">
-                        <tr>
-                          <th className="px-6 py-4 font-medium text-gray-900">
-                            Ngày
-                          </th>
-                          <th className="px-6 py-4 font-medium text-gray-900">
-                            Số tiền
-                          </th>
-                          <th className="px-6 py-4 font-medium text-gray-900">
-                            Chiến dịch
-                          </th>
-                          <th className="px-6 py-4 font-medium text-gray-900">
-                            Thú cưng
-                          </th>
-                          <th className="px-6 py-4 font-medium text-gray-900">
-                            Mã giao dịch
-                          </th>
-                          <th className="px-6 py-4 font-medium text-gray-900">
-                            Trạng thái
-                          </th>
+          <div className="min-h-[200px]">
+            {activeTab === "pets" ? (
+              submittedPets.results.length > 0 ? (
+                <SubmittedPetTable
+                  data={submittedPets}
+                  onPageChange={handlePetPageChange}
+                />
+              ) : (
+                <div className="flex flex-col items-center justify-center text-gray-500 py-10">
+                  <PawPrint size={48} className="mb-4 text-gray-400" />
+                  <p>Chưa gửi đi con pet nào</p>
+                </div>
+              )
+            ) : activeTab === "adopts" ? (
+              adoptionForms.results.length > 0 ? (
+                <AdoptionFormTable
+                  data={adoptionForms}
+                  onPageChange={handlePetPageChange}
+                  currentUser={user}
+                  onCheckSubmit={handleCheckSubmit}
+                />
+              ) : (
+                <div className="flex flex-col items-center justify-center text-gray-500 py-10">
+                  <Bone size={48} className="mb-4 text-gray-400" />
+                  <p>Chưa nhận nuôi con pet nào</p>
+                </div>
+              )
+            ) : activeTab === "donations" ? (
+              donations.length > 0 ? (
+                <div className="overflow-x-auto">
+                  <table className="w-full text-sm text-left">
+                    <thead className="text-xs uppercase bg-gray-100">
+                      <tr>
+                        <th className="px-6 py-4 font-medium text-gray-900">
+                          Ngày
+                        </th>
+                        <th className="px-6 py-4 font-medium text-gray-900">
+                          Số tiền
+                        </th>
+                        <th className="px-6 py-4 font-medium text-gray-900">
+                          Chiến dịch
+                        </th>
+                        <th className="px-6 py-4 font-medium text-gray-900">
+                          Mã giao dịch
+                        </th>
+                        <th className="px-6 py-4 font-medium text-gray-900">
+                          Trạng thái
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-gray-200">
+                      {donations.map((donation) => (
+                        <tr
+                          key={donation._id}
+                          className="bg-white hover:bg-gray-50 transition-colors duration-200"
+                        >
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <div className="flex items-center gap-2">
+                              <Calendar size={14} className="text-gray-500" />
+                              <span>
+                                {new Date(
+                                  donation.createdAt
+                                ).toLocaleDateString("vi-VN")}
+                              </span>
+                            </div>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <span className="font-medium text-green-600">
+                              {new Intl.NumberFormat("vi-VN", {
+                                style: "currency",
+                                currency: "VND",
+                              }).format(donation.amount)}
+                            </span>
+                          </td>
+                          <td className="px-6 py-4">
+                            <span className="font-medium text-gray-900 line-clamp-1">
+                              {donation.campaign.title}
+                            </span>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <div className="flex items-center gap-2">
+                              <Receipt size={14} className="text-gray-500" />
+                              <span className="text-gray-500">
+                                {donation.code}
+                              </span>
+                            </div>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <span
+                              style={{
+                                color:
+                                  donation.status === "pending"
+                                    ? "yellow"
+                                    : donation.status === "completed"
+                                    ? "green"
+                                    : "red",
+                              }}
+                            >
+                              {donation.status.charAt(0).toUpperCase() +
+                                donation.status.slice(1)}
+                            </span>
+                          </td>
                         </tr>
-                      </thead>
-                      <tbody className="divide-y divide-gray-200">
-                        {donations.map((donation) => (
-                          <tr
-                            key={donation._id}
-                            className="bg-white hover:bg-gray-50 transition-colors duration-200"
-                          >
-                            <td className="px-6 py-4 whitespace-nowrap">
-                              <div className="flex items-center gap-2">
-                                <Calendar size={14} className="text-gray-500" />
-                                <span>
-                                  {new Date(
-                                    donation.createdAt
-                                  ).toLocaleDateString("vi-VN")}
-                                </span>
-                              </div>
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap">
-                              <span className="font-medium text-green-600">
-                                {new Intl.NumberFormat("vi-VN", {
-                                  style: "currency",
-                                  currency: "VND",
-                                }).format(donation.amount)}
-                              </span>
-                            </td>
-                            <td className="px-6 py-4">
-                              <div className="flex items-center gap-2">
-                                <span className="font-medium text-gray-900 line-clamp-1">
-                                  {donation?.campaign?.title || "-"}
-                                </span>
-                              </div>
-                            </td>
-                            <td className="px-6 py-4">
-                              <div className="flex items-center gap-2">
-                                <span className="font-medium text-gray-900 line-clamp-1">
-                                  {donation?.pet?.name || "-"}
-                                </span>
-                              </div>
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap">
-                              <div className="flex items-center gap-2">
-                                <Receipt size={14} className="text-gray-500" />
-                                <span className="text-gray-500">
-                                  {donation.code}
-                                </span>
-                              </div>
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap">
-                              <span
-                                style={{
-                                  color:
-                                    donation.status === "pending"
-                                      ? "yellow"
-                                      : donation.status === "completed"
-                                      ? "green"
-                                      : "red",
-                                }}
-                              >
-                                {donation.status.charAt(0).toUpperCase() +
-                                  donation.status.slice(1)}
-                              </span>
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
+                      ))}
+                    </tbody>
+                  </table>
                 </div>
               ) : (
-                <div className="col-span-3 flex flex-col items-center justify-center text-gray-500 py-10">
+                <div className="flex flex-col items-center justify-center text-gray-500 py-10">
                   <Gift size={48} className="mb-4 text-gray-400" />
                   <p>Chưa có lịch sử quyên góp nào</p>
                 </div>
               )
             ) : (
-              displayedPost?.map((post) => {
-                return (
+              <div className="grid grid-cols-3 gap-4">
+                {displayedPost?.map((post) => (
                   <div
                     key={post._id}
                     className="relative group cursor-pointer"
-                    onClick={() => {
-                      handlePostClick(post);
-                    }}
+                    onClick={() => handlePostClick(post)}
                   >
                     {post.image?.[0] ? (
                       <img
@@ -401,7 +477,6 @@ const Profile = () => {
                         />
                       )
                     )}
-
                     <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                       <div className="flex items-center text-white space-x-4">
                         <button className="flex items-center gap-2 hover:text-gray-300">
@@ -415,12 +490,12 @@ const Profile = () => {
                       </div>
                     </div>
                   </div>
-                );
-              })
-            )}
-            {!displayedPost?.length && (
-              <div className="col-span-3 flex items-center justify-center text-gray-500">
-                Không có bài viết nào
+                ))}
+                {!displayedPost?.length && (
+                  <div className="col-span-3 flex items-center justify-center text-gray-500">
+                    Không có bài viết nào
+                  </div>
+                )}
               </div>
             )}
           </div>
@@ -428,7 +503,6 @@ const Profile = () => {
       </div>
 
       <CommentDialog open={showPostModal} setOpen={setShowPostModal} />
-
       <Dialog open={showFollowModal} onOpenChange={setShowFollowModal}>
         <DialogContent className="max-w-md">
           <DialogHeader>

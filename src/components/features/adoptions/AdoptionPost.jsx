@@ -1,7 +1,7 @@
 /* eslint-disable react/prop-types */
 import { useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "../../ui/avatar";
-import { HandHeart, MapPin, PawPrint, Send } from "lucide-react";
+import { HandHeart, MapPin, PawPrint, Send, SquarePen } from "lucide-react";
 import { FaHeart, FaRegHeart } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "sonner";
@@ -14,108 +14,18 @@ import Carousel from "../../ui/carousel";
 import { calculateTimeAgo } from "@/utils/calculateTimeAgo";
 import { Button } from "@/components/ui/button";
 import ShareButton from "./ShareButton";
+import CreateAdoptionFormModal from "@/components/features/adoptions/CreateAdoptionFormModal";
 
 const AdoptionPost = ({ post }) => {
   const { user } = useSelector((store) => store.auth);
   const [liked, setLiked] = useState(post.likes.includes(user?.id) || false);
   const [postLike, setPostLike] = useState(post.likes.length);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const pet = post.pet;
   const userRole = user?.role;
   const { posts } = useSelector((store) => store.adopt);
-
-  // const changeEventHandler = (e) => {
-  //   const inputText = e.target.value;
-  //   if (inputText.trim()) {
-  //     setText(inputText);
-  //   } else {
-  //     setText("");
-  //   }
-  // };
-
-  // const likeOrDislikeHandler = async () => {
-  //   try {
-  //     const action = liked ? "dislike" : "like";
-  //     const res = await likeOrDislikeAPI(post._id, action);
-  //     if (res.data.success) {
-  //       const updatedLikes = liked ? postLike - 1 : postLike + 1;
-  //       setPostLike(updatedLikes);
-  //       setLiked(!liked);
-
-  //       // apne post ko update krunga
-  //       const updatedPostData = posts.map((p) =>
-  //         p._id === post._id
-  //           ? {
-  //               ...p,
-  //               likes: liked
-  //                 ? p.likes.filter((id) => id !== user.id)
-  //                 : [...p.likes, user.id],
-  //             }
-  //           : p
-  //       );
-  //       dispatch(setPosts(updatedPostData));
-  //       toast.success(res.data.message);
-  //     }
-  //   } catch (error) {
-  //     console.log(error);
-  //   }
-  // };
-
-  // const commentHandler = async () => {
-  //   try {
-  //     const res = await commentAPI(post._id, text);
-  //     if (res.data.success) {
-  //       const updatedCommentData = [...comment, res.data.comment];
-  //       setComment(updatedCommentData);
-
-  //       const updatedPostData = posts.map((p) =>
-  //         p._id === post._id ? { ...p, comments: updatedCommentData } : p
-  //       );
-
-  //       dispatch(setPosts(updatedPostData));
-  //       toast.success(res.data.message);
-  //       setText("");
-  //     }
-  //   } catch (error) {
-  //     console.log(error);
-  //   }
-  // };
-
-  // const deletePostHandler = async () => {
-  //   try {
-  //     const res = await deletePostAPI(post._id);
-  //     if (res.data.success) {
-  //       const updatedPostData = posts.filter(
-  //         (postItem) => postItem?._id !== post?._id
-  //       );
-  //       dispatch(setPosts(updatedPostData));
-  //       toast.success(res.data.message);
-  //     }
-  //   } catch (error) {
-  //     console.log(error);
-  //     toast.error(error.response.data.messsage);
-  //   }
-  // };
-
-  // const bookmarkHandler = async () => {
-  //   try {
-  //     const res = await bookmarkAPI(post._id);
-  //     if (res.data.success) {
-  //       setBookmarked(!bookmarked);
-  //       const updatedUser = {
-  //         ...user,
-  //         bookmarks: bookmarked
-  //           ? user.bookmarks.filter((id) => id !== post._id)
-  //           : [...user.bookmarks, post._id],
-  //       };
-  //       dispatch(setAuthUser(updatedUser));
-  //       toast.success(res.data.message);
-  //     }
-  //   } catch (error) {
-  //     console.log(error);
-  //   }
-  // };
 
   const likeOrDislikeHandler = async () => {
     try {
@@ -145,6 +55,17 @@ const AdoptionPost = ({ post }) => {
     }
   };
 
+  // Hàm xử lý khi nhấn "Đăng ký nhận nuôi" để mở modal
+  const handleOpenModal = () => {
+    setIsModalOpen(true);
+  };
+
+  // Hàm xử lý khi submit form thành công
+  const handleFormSubmit = () => {
+    toast.success("Đăng ký nhận nuôi thành công!");
+    // Có thể thêm logic cập nhật trạng thái bài đăng nếu cần
+  };
+
   const renderActionButton = (post) => {
     if (userRole === "services_staff") {
       return (
@@ -157,23 +78,39 @@ const AdoptionPost = ({ post }) => {
       );
     } else if (userRole === "user") {
       return (
-        <Button
-          className="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600"
-          onClick={() => navigate(`/chat/${post.author?.id}`, { 
-            state: { 
-              fromPost: true,
-              postId: post._id,
-              postTitle: post.caption,
-              petName: post.pet?.name,
-              location: post.location
-            } 
-          })}
-        >
-          <div className="flex items-center gap-2">
-            <Send className="cursor-pointer hover:text-gray-600" size={16} />
-            <span>Liên hệ nhận nuôi</span>
-          </div>
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button
+            className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-green-600"
+            onClick={() =>
+              navigate(`/chat/${post.author?.id}`, {
+                state: {
+                  fromPost: true,
+                  postId: post._id,
+                  postTitle: post.caption,
+                  petName: post.pet?.name,
+                  location: post.location,
+                },
+              })
+            }
+          >
+            <div className="flex items-center gap-2">
+              <Send className="cursor-pointer hover:text-gray-600" size={16} />
+              <span>Liên hệ tư vấn</span>
+            </div>
+          </Button>
+          <Button
+            className="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600"
+            onClick={handleOpenModal}
+          >
+            <div className="flex items-center gap-2">
+              <SquarePen
+                className="cursor-pointer hover:text-gray-600"
+                size={16}
+              />
+              <span>Đăng ký nhận nuôi</span>
+            </div>
+          </Button>
+        </div>
       );
     }
     return null;
@@ -316,24 +253,19 @@ const AdoptionPost = ({ post }) => {
                 <ShareButton post={post} />
               </div>
             </div>
-
-            {/* <Button
-          className="button--primary button rippleButton"
-          onClick={() => {
-            navigate(`/chat/${post.author?.id}`);
-          }}
-        >
-          <div className="flex items-center gap-2">
-            <Send className="cursor-pointer hover:text-gray-600" size={16} />
-            <span className="button-text"> Liên Hệ Nhận Nuôi</span>
-          </div>
-        </Button> */}
-
             {renderActionButton(post)}
           </div>
           <span className="font-medium">{postLike} likes</span>
         </>
       )}
+
+      {/* Thêm Modal vào đây */}
+      <CreateAdoptionFormModal
+        open={isModalOpen}
+        setOpen={setIsModalOpen}
+        post={post}
+        onSubmit={handleFormSubmit}
+      />
     </div>
   );
 };

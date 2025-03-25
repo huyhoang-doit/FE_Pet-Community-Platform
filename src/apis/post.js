@@ -29,7 +29,11 @@ export const bookmarkAPI = async (postId) => {
   );
 };
 
-export const fetchAllPostsAPI = async (page = 1, limit = 4, isApproved = null) => {
+export const fetchAllPostsAPI = async (
+  page = 1,
+  limit = 4,
+  isApproved = null
+) => {
   let url = `${BASE_URL}/post/all?sortBy=createdAt:desc&limit=${limit}&page=${page}`;
   if (isApproved !== null) {
     url += `&isApproved=${isApproved}`;
@@ -118,6 +122,21 @@ export const fetchAllAdoptionFormsAPI = async (
   return await authorizedAxiosInstance.get(url);
 };
 
+export const fetchAdoptionFormsBySenderIdAPI = async (
+  senderId,
+  page,
+  limit,
+  sortBy = "createdAt:desc",
+  status = null
+) => {
+  let url = `${BASE_URL}/adoption-form/sender/${senderId}?limit=${limit}&page=${page}&sortBy=${sortBy}`;
+  if (status) {
+    url += `&status=${status}`;
+  }
+
+  return await authorizedAxiosInstance.get(url);
+};
+
 export const fetchAllAdoptionPostsByBreedAPI = async (page, breed) => {
   const response = await authorizedAxiosInstance.get(
     `${BASE_URL}/adoption-post/breed/${breed}?limit=4&page=${page}`
@@ -131,6 +150,14 @@ export const updateAdoptionFormStatusAPI = async (formId, status) => {
     {
       status,
     }
+  );
+  return response;
+};
+
+export const alertAdoptionFormStatusAPI = async (formId) => {
+  console.log("🚀 ~ alertAdoptionFormStatusAPI ~ formId:", formId);
+  const response = await authorizedAxiosInstance.put(
+    `${BASE_URL}/adoption-form/alert-check/${formId}`
   );
   return response;
 };

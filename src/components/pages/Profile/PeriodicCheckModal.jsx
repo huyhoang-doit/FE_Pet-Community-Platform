@@ -1,5 +1,15 @@
+/* eslint-disable react/no-unknown-property */
 /* eslint-disable react/prop-types */
-import { Modal, Form, Select, Input, Button, DatePicker, Upload, Alert } from "antd";
+import {
+  Modal,
+  Form,
+  Select,
+  Input,
+  Button,
+  DatePicker,
+  Upload,
+  Alert,
+} from "antd";
 import { useState, useEffect } from "react";
 import moment from "moment";
 import { addPeriodicCheckAPI } from "@/apis/post";
@@ -66,12 +76,14 @@ const PeriodicCheckModal = ({ open, setOpen, form, onSubmit, currentUser }) => {
       const { data } = await addPeriodicCheckAPI(form._id, formData);
       if (data.status === 200) {
         toast.success("Periodic check added successfully");
-        await onSubmit(data.data);
+        await onSubmit();
         setOpen(false);
       }
     } catch (error) {
       console.error("Error submitting periodic check:", error);
-      toast.error(error.response?.data?.message || "Failed to add periodic check");
+      toast.error(
+        error.response?.data?.message || "Failed to add periodic check"
+      );
     } finally {
       setLoading(false);
     }
@@ -94,7 +106,9 @@ const PeriodicCheckModal = ({ open, setOpen, form, onSubmit, currentUser }) => {
       title={
         <div className="flex items-center gap-2 text-amber-800">
           <HeartFilled style={{ color: "#f472b6" }} />
-          <span className="font-semibold">Kiểm tra định kỳ ({form?.periodicChecks.length + 1}/3)</span>
+          <span className="font-semibold">
+            Kiểm tra định kỳ ({form?.periodicChecks.length + 1}/3)
+          </span>
         </div>
       }
       open={open}
@@ -104,11 +118,17 @@ const PeriodicCheckModal = ({ open, setOpen, form, onSubmit, currentUser }) => {
     >
       <div className="space-y-4">
         <div className="mb-4 p-4 bg-pink-50 rounded-lg border border-pink-100">
-          <p className="text-gray-700">Số lần kiểm tra hiện tại: <span className="font-semibold">{form?.periodicChecks.length}</span></p>
+          <p className="text-gray-700">
+            Số lần kiểm tra hiện tại:{" "}
+            <span className="font-semibold">{form?.periodicChecks.length}</span>
+          </p>
           {form.next_check_date && (
             <>
               <p className="mt-2 text-gray-700">
-                Đợt kiểm tra tiếp theo: <span className="font-semibold">{moment(form.next_check_date).format("DD/MM/YYYY")}</span>
+                Đợt kiểm tra tiếp theo:{" "}
+                <span className="font-semibold">
+                  {moment(form.next_check_date).format("DD/MM/YYYY")}
+                </span>
               </p>
               {isCheckNeeded() && (
                 <Alert
@@ -146,7 +166,9 @@ const PeriodicCheckModal = ({ open, setOpen, form, onSubmit, currentUser }) => {
             <DatePicker
               format="DD/MM/YYYY"
               className="w-full border-pink-200 hover:border-pink-400"
-              disabledDate={(current) => current && current > moment().endOf("day")}
+              disabledDate={(current) =>
+                current && current > moment().endOf("day")
+              }
             />
           </Form.Item>
 
@@ -160,7 +182,7 @@ const PeriodicCheckModal = ({ open, setOpen, form, onSubmit, currentUser }) => {
               },
             ]}
           >
-            <Select 
+            <Select
               placeholder="Chọn trạng thái"
               className="border-pink-200 hover:border-pink-400"
             >
@@ -180,9 +202,9 @@ const PeriodicCheckModal = ({ open, setOpen, form, onSubmit, currentUser }) => {
               },
             ]}
           >
-            <TextArea 
-              rows={4} 
-              placeholder="Ghi chú về tình trạng thú cưng..." 
+            <TextArea
+              rows={4}
+              placeholder="Ghi chú về tình trạng thú cưng..."
               className="border-pink-200 hover:border-pink-400"
             />
           </Form.Item>
@@ -197,7 +219,9 @@ const PeriodicCheckModal = ({ open, setOpen, form, onSubmit, currentUser }) => {
               {
                 validator(_, value) {
                   if (!value || value.length === 0) {
-                    return Promise.reject(new Error("Vui lòng tải lên hình ảnh kiểm tra"));
+                    return Promise.reject(
+                      new Error("Vui lòng tải lên hình ảnh kiểm tra")
+                    );
                   }
                   return Promise.resolve();
                 },
@@ -211,7 +235,7 @@ const PeriodicCheckModal = ({ open, setOpen, form, onSubmit, currentUser }) => {
               fileList={fileList}
               className="upload-pink"
             >
-              <Button 
+              <Button
                 icon={<UploadOutlined />}
                 className="border-pink-300 text-pink-600 hover:border-pink-500 hover:text-pink-700"
               >
@@ -222,8 +246,8 @@ const PeriodicCheckModal = ({ open, setOpen, form, onSubmit, currentUser }) => {
 
           <Form.Item className="pt-4 border-t border-pink-100">
             <div className="flex justify-end gap-2">
-              <Button 
-                onClick={() => setOpen(false)} 
+              <Button
+                onClick={() => setOpen(false)}
                 disabled={loading}
                 className="border-gray-300 text-gray-600 hover:border-gray-400 hover:text-gray-800"
               >
@@ -235,9 +259,11 @@ const PeriodicCheckModal = ({ open, setOpen, form, onSubmit, currentUser }) => {
                 loading={loading}
                 danger={isCheckNeeded()}
                 disabled={isCheckButtonDisabled()}
-                className={isCheckNeeded() 
-                  ? "bg-red-500 hover:bg-red-600 border-red-500 hover:border-red-600" 
-                  : "bg-pink-500 hover:bg-pink-600 border-pink-500 hover:border-pink-600"}
+                className={
+                  isCheckNeeded()
+                    ? "bg-red-500 hover:bg-red-600 border-red-500 hover:border-red-600"
+                    : "bg-pink-500 hover:bg-pink-600 border-pink-500 hover:border-pink-600"
+                }
               >
                 {isCheckNeeded() ? "Hoàn tất kiểm tra!" : "Lưu"}
               </Button>
@@ -251,29 +277,29 @@ const PeriodicCheckModal = ({ open, setOpen, form, onSubmit, currentUser }) => {
           border-radius: 12px;
           overflow: hidden;
         }
-        
+
         .periodic-check-modal .ant-modal-header {
           background-color: #fdf2f8;
           border-bottom: 1px solid #fbcfe8;
           padding: 16px 24px;
         }
-        
+
         .periodic-check-modal .ant-modal-body {
           padding: 20px;
         }
-        
+
         .periodic-check-modal .ant-form-item-label > label {
           color: #9d174d;
           font-weight: 500;
         }
-        
+
         .periodic-check-modal .ant-picker:hover,
         .periodic-check-modal .ant-select-selector:hover,
         .periodic-check-modal .ant-input:hover,
         .periodic-check-modal .ant-input-affix-wrapper:hover {
           border-color: #f472b6 !important;
         }
-        
+
         .periodic-check-modal .ant-picker-focused,
         .periodic-check-modal .ant-select-focused .ant-select-selector,
         .periodic-check-modal .ant-input-focused,
@@ -281,11 +307,11 @@ const PeriodicCheckModal = ({ open, setOpen, form, onSubmit, currentUser }) => {
           border-color: #f472b6 !important;
           box-shadow: 0 0 0 2px rgba(244, 114, 182, 0.2) !important;
         }
-        
+
         .upload-pink .ant-upload-list-item-card-actions-btn {
           color: #f472b6;
         }
-        
+
         .upload-pink .ant-upload-list-item {
           border-color: #fbcfe8;
         }

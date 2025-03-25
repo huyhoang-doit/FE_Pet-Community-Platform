@@ -1,6 +1,6 @@
 import ChatPage from "./components/pages/ChatPage";
 import EditProfile from "./components/pages/EditProfile";
-import Profile from "./components/pages/Profile";
+import Profile from "./components/pages/Profile/Profile";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import ProtectedRoutes from "./components/routing/ProtectedRoutes";
 import "./App.css";

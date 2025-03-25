@@ -50,8 +50,26 @@ export const getBreedsAPI = async () => {
 };
 
 export const getBreedsByIdAPI = async (breedId) => {
-  return await authorizedAxiosInstance.get(`${BASE_URL}/pets/breeds/${breedId}`);
+  return await authorizedAxiosInstance.get(
+    `${BASE_URL}/pets/breeds/${breedId}`
+  );
 };
+export const getPetByIdAPI = async (breedId) => {
+  return await authorizedAxiosInstance.get(
+    `${BASE_URL}/pets/detail/${breedId}`
+  );
+};
+export const getPetBySubmittedIdAPI = async (
+  userId,
+  page,
+  limit,
+  sortBy = "createdAt:desc"
+) => {
+  return await authorizedAxiosInstance.get(
+    `${BASE_URL}/pets/submitted/${userId}?limit=${limit}&page=${page}&sortBy=${sortBy}`
+  );
+};
+
 
 export const getPetsHomePage = async (page = 1, limit = 10) => {
   return await authorizedAxiosInstance.get(`${BASE_URL}/pets?page=${page}&limit=${limit}`);

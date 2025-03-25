@@ -68,7 +68,7 @@ const StaffSideBarLayout = () => {
     {
       key: "/staff-services/manageAdoptionForms",
       icon: <TbDogBowl className="w-4 h-4" />,
-      label: "Thú cưng về nhà",
+      label: "Nhận nuôi",
       roles: ["services_staff"],
     },
     {
