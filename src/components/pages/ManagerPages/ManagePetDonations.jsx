@@ -254,7 +254,7 @@ function ManagePetDonations() {
             <span>Chỉnh sửa mục tiêu quyên góp</span>
           </div>
         }
-        visible={!!editingPet}
+        open={!!editingPet}
         onCancel={() => setEditingPet(null)}
         footer={[
           <Button key="back" onClick={() => setEditingPet(null)}>

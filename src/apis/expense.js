@@ -24,3 +24,7 @@ export const approveExpense = async (expenseId, status) => {
 export const verifyExpense = async (expenseId, status) => {
   return await authorizedAxiosInstance.put(`${BASE_URL}/expense/${expenseId}/verify`, { status });
 }
+
+export const deleteExpense = async (expenseId) => {
+  return await authorizedAxiosInstance.delete(`${BASE_URL}/expense/${expenseId}`);
+}

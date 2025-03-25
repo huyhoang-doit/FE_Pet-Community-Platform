@@ -229,13 +229,15 @@ function ApproveExpense() {
             exp._id === expenseId
               ? {
                   ...exp,
-                  status: action.includes("verify")
-                    ? action === "verify"
+                  status:
+                    action === "verify"
                       ? "Completed"
-                      : "Rejected"
-                    : action === "approve"
-                    ? "Receipt Pending"
-                    : "Rejected",
+                      : action === "reject-verification"
+                      ? "Receipt Pending"
+                      : action === "approve"
+                      ? "Receipt Pending"
+                      : "Rejected",
+                  receipt: action === "verify" ? exp.receipt : null,
                 }
               : exp
           )
@@ -488,7 +490,7 @@ function ApproveExpense() {
       ellipsis: true,
       render: (status) => {
         if (status === "Pending") {
-          return <Tag color="blue">Chờ quản lí duyệt</Tag>;
+          return <Tag color="blue">Chờ duyệt</Tag>;
         } else if (status === "Waiting for Review") {
           return <Tag color="yellow">Cần kiểm tra hóa đơn</Tag>;
         } else if (status === "Receipt Pending") {
@@ -653,7 +655,7 @@ function ApproveExpense() {
 
       <Modal
         title="Xác nhận"
-        visible={approvalConfirmation.visible}
+        open={approvalConfirmation.visible}
         onOk={handleConfirmation}
         onCancel={handleCancelConfirmation}
       >
@@ -671,7 +673,7 @@ function ApproveExpense() {
         )}
       </Modal>
       <Modal
-        visible={!!selectedReceipt}
+        open={!!selectedReceipt}
         footer={null}
         onCancel={() => setSelectedReceipt(null)}
         width="80%"

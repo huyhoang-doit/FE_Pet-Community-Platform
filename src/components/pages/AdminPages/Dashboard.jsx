@@ -10,7 +10,7 @@ import {
   RiseOutlined,
   TrophyOutlined,
 } from "@ant-design/icons";
-import { PawPrintIcon, UserPen, UserSearch } from "lucide-react";
+import { PawPrint, PawPrintIcon, UserPen, UserSearch } from "lucide-react";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -43,6 +43,7 @@ const Dashboard = () => {
   const [totalForumStaffs, setTotalForumStaffs] = useState(0);
   const [totalServiceStaffs, setTotalServiceStaffs] = useState(0);
   const [currentMonthTotal, setCurrentMonthTotal] = useState(0);
+  const [totalsPetNotAdopted, setTotalsPetNotAdopted] = useState(0);
   const [prevMonthTotal, setPrevMonthTotal] = useState(0);
   const [top5, setTop5] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -68,6 +69,7 @@ const Dashboard = () => {
         setTotalUsers(data?.data?.user || 0);
         setTotalForumStaffs(data?.data?.numberForumStaff || 0);
         setTotalServiceStaffs(data?.data?.numberServiceStaff || 0);
+        setTotalsPetNotAdopted(data?.data?.totalsPetNotAdopted || 0);
 
         const donationsData = data?.data?.donations || [];
         const donationsMap = new Map(
@@ -395,6 +397,32 @@ const Dashboard = () => {
                 <div className="mt-4 bg-gradient-to-r from-yellow-50 to-purple-50 p-2 rounded text-sm text-yellow-700">
                   <PawPrintIcon className="inline-block w-4 h-4 mr-1" /> Hỗ trợ
                   cho các bé thú cưng
+                </div>
+              </Card>
+            </Col>
+            <Col span={8}>
+              <Card
+                bordered={false}
+                className="h-full shadow-sm hover:shadow-md transition-shadow"
+                style={{ borderRadius: "12px", overflow: "hidden" }}
+              >
+                <Statistic
+                  title={
+                    <div className="text-lg font-medium">
+                      Số thú cưng chưa được nhận nuôi
+                    </div>
+                  }
+                  value={totalsPetNotAdopted}
+                  prefix={<PawPrint className="text-orange-500 mr-2" />}
+                  valueStyle={{
+                    color: "orange",
+                    fontSize: "28px",
+                    fontWeight: "bold",
+                  }}
+                />
+                <div className="mt-4 bg-gradient-to-r from-orange-50 to-purple-50 p-2 rounded text-sm text-yellow-700">
+                  <PawPrintIcon className="inline-block w-4 h-4 mr-1" /> 
+                  Hãy giúp đỡ các bé thú cưng
                 </div>
               </Card>
             </Col>

@@ -31,6 +31,7 @@ import locale from "antd/locale/vi_VN";
 import { getExpenseTypes } from "@/apis/expenseType";
 import {
   createExpense,
+  deleteExpense,
   getExpenses,
   uploadExpenseReceipt,
 } from "@/apis/expense";
@@ -258,9 +259,9 @@ function ManageExpenses() {
           Rejected: "bg-red-100 text-red-800 border-red-200",
         };
         const labels = {
-          "Waiting for Review": "Chờ kiểm tra hóa đơn",
+          "Waiting for Review": "Chờ duyệt hóa đơn",
           "Receipt Pending": "Chờ hóa đơn",
-          Pending: "Chờ duyệt",
+          Pending: "Chờ quản lý duyệt",
           Completed: "Đã hoàn thành",
           Rejected: "Từ chối",
         };
@@ -305,18 +306,20 @@ function ManageExpenses() {
               Tải hóa đơn
             </Button>
           )}
-          <Popconfirm
-            title="Bạn có chắc muốn xóa chi tiêu này?"
-            onConfirm={() => handleDelete(record._id)}
-            okText="Xóa"
-            cancelText="Hủy"
-            okButtonProps={{ className: "bg-red-500 hover:bg-red-600" }}
-          >
-            <Button
-              icon={<DeleteOutlined />}
-              className="text-red-600 hover:text-red-700 hover:bg-red-50 border-none shadow-none"
-            />
-          </Popconfirm>
+          {record.status === "Pending" && (
+            <Popconfirm
+              title="Bạn có chắc muốn xóa chi tiêu này?"
+              onConfirm={() => handleDelete(record._id)}
+              okText="Xóa"
+              cancelText="Hủy"
+              okButtonProps={{ className: "bg-red-500 hover:bg-red-600" }}
+            >
+              <Button
+                icon={<DeleteOutlined />}
+                className="text-red-600 hover:text-red-700 hover:bg-red-50 border-none shadow-none"
+              />
+            </Popconfirm>
+          )}
         </Space>
       ),
     },
@@ -331,8 +334,11 @@ function ManageExpenses() {
   const handleDelete = async (id) => {
     try {
       // TODO: Implement delete API call
-      setExpenses(expenses.filter((expense) => expense.id !== id));
-      message.success("Xóa chi tiêu thành công");
+      const res = await deleteExpense(id);
+      if (res.status === 200) {
+        setExpenses(expenses.filter((expense) => expense._id !== id));
+        message.success("Xóa chi tiêu thành công");
+      }
     } catch (error) {
       message.error("Không thể xóa chi tiêu");
     }
@@ -469,15 +475,15 @@ function ManageExpenses() {
           uploadingExpenseId,
           formData
         );
-
+        
         if (response.status === 200) {
-          // Update the expense in the list
           const updatedExpenses = expenses.map((expense) =>
-            expense.id === uploadingExpenseId
+            expense._id === uploadingExpenseId
               ? {
                   ...expense,
-                  status: "Completed",
-                  receipt: response.data.receiptUrl,
+                  status: response.data.data.status,
+                  receipt: response.data.data.receipt,
+                  updatedAt: response.data.data.updatedAt,
                 }
               : expense
           );

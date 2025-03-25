@@ -203,7 +203,7 @@ function ManageExpense() {
 
     return (
       <Modal
-        visible={visible}
+        open={visible}
         onCancel={onCancel}
         width={800}
         footer={null}

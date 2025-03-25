@@ -100,7 +100,7 @@ const EditPetModal = ({ visible, pet, onClose, onUpdate }) => {
           <span className="font-semibold">Chỉnh sửa thú cưng</span>
         </div>
       }
-      visible={visible}
+      open={visible}
       onCancel={onClose}
       footer={null}
       width={800}
